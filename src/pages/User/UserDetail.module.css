@@ -1,0 +1,40 @@
+.container {
+    background-color: #eeeeee;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper {
+    width: 500px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.avatar {
+   position: absolute;
+   top: -65px;
+   border-radius: 100%;
+}
+
+.name {
+    margin-top: 80px;
+    text-align: center;
+}
+
+.detail {
+    width: 100%;
+    margin: 20px;
+}
+
+.pullLeft {
+    float: left;
+}
+
+.pullRight {
+    float: right;
+}
