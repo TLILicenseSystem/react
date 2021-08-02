@@ -4,21 +4,21 @@ import ExamRoundPage from "./pages/ExamRound/ExamRound";
 import ExamOrganizerPage from "./pages/ExamOrganizer/ExamOrganizer";
 import ExamSchedulePage from "./pages/ExamSchedule/ExamSchedule";
 import "./App.css";
-import {Spinner, Popup} from "./components/shared";
+//import {Spinner, Popup} from "./components/shared";
 
 const App = () => {
   return (
     <BrowserRouter>
-      <Spinner />
-      <Popup />
+     
+     
       <Switch>
 
-      { <Route path="/examSchedule" render={(props) => <ExamSchedulePage {...props} />} /> }
-        {/* { <Route path="/examOrganizer" render={(props) => <ExamOrganizerPage {...props} />} /> }
-        { <Route path="/examRound" render={(props) => <ExamRoundPage {...props} />} /> } */}
+      {/* { <Route path="/examSchedule" render={(props) => <ExamSchedulePage {...props} />} /> } */}
+        { <Route path="/examOrganizer" render={(props) => <ExamOrganizerPage {...props} />} /> }
+        {/* { <Route path="/examRound" render={(props) => <ExamRoundPage {...props} />} /> } */}
        
-       { <Redirect from="*" to="/examSchedule" /> }
-       {/* { <Redirect from="*" to="/examOrganizer" /> } */}
+       {/* { <Redirect from="*" to="/examSchedule" /> } */}
+       { <Redirect from="*" to="/examOrganizer" /> }
       </Switch>
     </BrowserRouter>
   );
