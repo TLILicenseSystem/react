@@ -13,7 +13,7 @@ const App = () => {
      
       <Switch>
 
-      {/* { <Route path="/examSchedule" render={(props) => <ExamSchedulePage {...props} />} /> } */}
+      { <Route path="/examSchedule" render={(props) => <ExamSchedulePage {...props} />} /> }
         { <Route path="/examOrganizer" render={(props) => <ExamOrganizerPage {...props} />} /> }
         {/* { <Route path="/examRound" render={(props) => <ExamRoundPage {...props} />} /> } */}
        
