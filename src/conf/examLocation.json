@@ -1,0 +1,14 @@
+{
+    "region": [
+        {"regionCode": "0","regionName": "กรุงเทพมหานคร"},
+        {"regionCode": "1","regionName": "ภาคกลาง"},
+        {"regionCode": "2","regionName": "ภาคตะวันออก"},
+        {"regionCode": "3","regionName": "ภาคตะวันออกเฉียงเหนือ"},
+        {"regionCode": "4","regionName": "ภาคเหนือ"},
+        {"regionCode": "5","regionName": "ภาคใต้"}
+    ],
+    "examType": [
+        {"examTypeId": "1", "examTypeName": "Regular"},
+        {"examTypeId": "2", "examTypeName": "Temporary"}
+    ]
+}

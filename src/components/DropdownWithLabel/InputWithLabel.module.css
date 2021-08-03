@@ -1,0 +1,18 @@
+.label {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.input {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.scrollable {
+    
+    max-height: 240px;
+    overflow-y: scroll;
+}
+.required {
+    color: red;
+    font-weight: bold;
+}

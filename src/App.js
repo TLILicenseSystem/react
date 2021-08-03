@@ -15,10 +15,10 @@ const App = () => {
 
       { <Route path="/examSchedule" render={(props) => <ExamSchedulePage {...props} />} /> }
         { <Route path="/examOrganizer" render={(props) => <ExamOrganizerPage {...props} />} /> }
-        {/* { <Route path="/examRound" render={(props) => <ExamRoundPage {...props} />} /> } */}
+        { <Route path="/examRound" render={(props) => <ExamRoundPage {...props} />} /> }
        
        {/* { <Redirect from="*" to="/examSchedule" /> } */}
-       { <Redirect from="*" to="/examOrganizer" /> }
+       { <Redirect from="*" to="/examSchedule" /> }
       </Switch>
     </BrowserRouter>
   );

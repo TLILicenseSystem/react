@@ -8,7 +8,6 @@ const Container = styled.div`
   padding: 10px;
   margin: 10px;
   flex: 1;
-  border: 1px solid;
   font-size: 15px;
   display: flex;
   justify-content: center; 
@@ -17,17 +16,14 @@ const Container = styled.div`
 const BoxUserModify = ({ color, lUser, lModifyDate, InUser, InModifyDate, width, height }) => {
 
   return (
-    
-    <Container color={color}>
+    <Container>
       <div>
         <tr>
           <td >{lUser}</td>
-          <td><Input style={{ width: width,height :height}} InUser={InUser} /></td>
+          <td><Input style={{ width: width,height :height}} value={InUser} onChange={{}}/></td>
           <td >{lModifyDate}</td>
-          <td><Input style={{ width: width,height :height}} InModifyDate={InModifyDate} /></td>
-          
+          <td><Input style={{ width: width,height :height}} value={InModifyDate} onChange={{}}/></td>
         </tr>
-  
       </div>
     </Container>
   );

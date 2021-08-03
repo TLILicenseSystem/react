@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Input } from "reactstrap";
+import { Input, Row, Col } from "reactstrap";
 
 const Container = styled.div`
   background-color: ${({ color }) => color};
@@ -33,39 +33,77 @@ const Head = styled.div`
   flex: 1;
   border: 1px solid;
   font-size: 15px;
-  
 `;
-const BoxSchedule = ({ color, lLocationID, lOrg, lProvince, lType, lLocation,  InLocationID, InOrg, 
-                      InProvince, InProvinceName,InType, InLocation,wLocationID, wOrg, wProvince, wProvinceName,wType, wLocation, height }) => {
-  console.log("type1 = ",{lLocationID});
+const BoxSchedule = ({
+  color,
+  lLocationID,
+  lOrg,
+  lProvince,
+  lType,
+  lLocation,
+  InLocationID,
+  InOrg,
+  InProvince,
+  InProvinceName,
+  InType,
+  InLocation,
+  wLocationID,
+  wOrg,
+  wProvince,
+  wProvinceName,
+  wType,
+  wLocation,
+  height,
+}) => {
   return (
-    
- 
-    <Container color={color}>
-      {/* <h1>{total}</h1>
-          <p>(+{increase})</p> */}
-      <div>
-              <tr>
-          <td >{lLocationID}</td>
-          <td><Input style={{ width: wLocationID,height :height}} InLocationID={InLocationID} /></td>
-          <td >{lOrg}</td>
-          <td><Input style={{ width: wOrg,height :height}} InOrg={InOrg} /></td>
-          <td>{lProvince}</td>
-          <td><Input style={{ width: wProvince,height :height}} InProvince={InProvince} /></td>&nbsp;
-          <td><Input style={{ width: wProvinceName,height :height}} InProvinceName={InProvinceName} /></td>
-        </tr>
-  
-        <tr>
- 
-          <td>{lType}</td>
-          <td ><Input style={{ width: wType,height :height}} InType={InType} /></td>
-          <td >{lLocation}</td>
-          <td colSpan='6'><Input style={{ width: wLocation,height :"100px"}} type="textarea" InLocation={InLocation} /></td>
-         
+    <div>
+      <Row>
+        <Col xs="2">{lLocationID}</Col>
+        <Col xs="2">
+          <Input
+            style={{ width: wLocationID, height: height }}
+            value={InLocationID}
+            onChange={{}}
+          />
+        </Col>
+        <Col xs="2">{lOrg}</Col>
+        <Col xs="2">
+          <Input
+            style={{ width: wOrg, height: height }}
+            value={InOrg}
+            onChange={{}}
+          />
+        </Col>
+        <Col xs="1">{lProvince}</Col>
+        <Col xs="3">
+          <Input
+            style={{ height: height }}
+            value={InProvince + " " + InProvinceName}
+            onChange={{}}
+          />
+        </Col>
+      </Row>
 
-        </tr>
-      </div>
-    </Container>
+      <Row>
+        <Col xs="2">{lType}</Col>
+        <Col xs="2">
+          <Input
+            style={{ width: wType, height: height }}
+            value={InType}
+            onChange={{}}
+          />
+        </Col>
+        <Col xs="2">{lLocation}</Col>
+        <Col xs="6">
+          <Input
+            style={{ width: wLocation, height: "100px" }}
+            type="textarea"
+            value={InLocation}
+            onChange={{}}
+          />
+        </Col>
+      </Row>
+    </div>
   );
 };
 
@@ -88,7 +126,7 @@ BoxSchedule.defaultProps = {
   wProvinceName: "120px",
   wType: "120px",
   wLocation: "370px",
-  height:"30px"
+  height: "30px",
 };
 
 BoxSchedule.propTypes = {
@@ -103,7 +141,7 @@ BoxSchedule.propTypes = {
   InProvince: PropTypes.string,
   InProvinceName: PropTypes.string,
   InType: PropTypes.string,
-  InLocation: PropTypes.string
+  InLocation: PropTypes.string,
 };
 
 export default BoxSchedule;

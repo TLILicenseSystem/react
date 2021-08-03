@@ -1,13 +1,14 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Input } from "reactstrap";
+import { Input, Row, Col } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {Dropdown,DropdownToggle,DropdownMenu,DropdownItem,} from "reactstrap";
+import { DropdownButton, Dropdown } from "react-bootstrap";
 import styles from "./ExamSchedule.module.css";
 import "./customDatePickerWidth.css";
+import { get } from "lodash";
+import { getExamRoundAll } from "../../api/apiGetExamRound";
 
 const Container = styled.div`
   background-color: ${({ color }) => color};
@@ -16,87 +17,96 @@ const Container = styled.div`
   border-radius: 0px;
   flex: 1;
   border: 1px solid;
-  font-size: 15px;
- 
+  font-size: 15px; 
 `;
 
-
-
 const BoxSchedule = ({color,lExamDate,lCloseDate,lRoundTime,lReceiveDate,lReceiveTime,lNum,
-                     InExamDate,InCloseDate,InRoundTime,InReceiveDate,InReceiveTime,InNum,width, height,}) => {
-
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggle = () => setDropdownOpen((prevState) => !prevState);
+                     InExamDate,onClickInExamDate,InCloseDate,onClickInCloseDate,InRoundTime,onClickRoundTime,
+                     InReceiveDate,onClickInReceiveDate,InReceiveTime,onClickInReceiveTime,InNum,onChangeInNum,width, height,}) => {
 
   const [examDate, setExamDate] = useState("");
   const [closeDate, setCloseDate] = useState("");
   const [receiveDate, setReceiveDate] = useState("");
+  const [examRoundList, setExamRoundList] = useState([]);
 
- console.log("examDate=",examDate);
- console.log("examDate format =",examDate);
+  const fetchData = async() => {
+    const response = await getExamRoundAll();
+    setExamRoundList(get(response, "data", []));
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const getRoundTime = (e) => {    
+    let roundTime = examRoundList.filter((item) => item.roundId === e);
+    console.log("roundTime ", roundTime);
+    return get(roundTime[0], "timeStr", "");
+  }
+
   return (
-    <Container color={color}>
-      <div >
-        <tr>
-          <td>{lExamDate}</td>
-          <td>
-            
-            {/* <Input style={{ width: width, height: height }} InExamDate={InExamDate} /> */}
-
-
+      <div>
+        <Row>
+          <Col xs="2">{lExamDate}</Col>
+          <Col xs="2">
             <DatePicker className="customDatePickerWidth" dateFormat="dd/MM/yyyy" 
-              selected={examDate} InExamDate={InExamDate}
-              onChange={date => setExamDate(date)} 
-        
-            />
-
-           
-          </td>
-          <td>{lCloseDate}</td>
-          <td>
-            {/* <Input style={{ width: width, height: height }} InCloseDate={InCloseDate} /> */}
-
+              value={InExamDate}
+              onChange={onClickInExamDate}
+            />           
+          </Col>
+          <Col xs="2">{lCloseDate}</Col>
+          <Col xs="2">
             <DatePicker className="customDatePickerWidth" dateFormat="dd/MM/yyyy"
-              selected={closeDate} InCloseDate={InCloseDate}
-              onChange={date => setCloseDate(date)} 
+              value={InCloseDate}
+              onChange={onClickInCloseDate} 
             />
+          </Col>
+          <Col xs="2">{lRoundTime}</Col>
+          <Col xs="2">
+            <DropdownButton
+              className={styles.input}
+              id="dropdown-basic-button"
+              title={
+                InRoundTime === "" || InRoundTime === null || InRoundTime === "null"
+                  ? "- โปรดระบุ - "
+                  : getRoundTime(InRoundTime)
+              }
+              onSelect={onClickRoundTime}
+              size="sm"
+            >
+              {examRoundList.map((detail, index) => {
+                return (
+                  <Dropdown.Item
+                    key={index}
+                    eventKey={get(detail, "roundId", "")}
+                    href="#"
+                  >
+                    {get(detail, "timeStr", "")}
+                  </Dropdown.Item>
+                );
+              })}
+            </DropdownButton>
+          </Col>  
+        </Row>
 
-
-          </td>
-          <td>{lRoundTime}</td>
-          <Dropdown isOpen={dropdownOpen} toggle={toggle} size="sm">
-            <DropdownToggle caret>- โปรดระบุ -</DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem>08.00-09.00</DropdownItem>
-              <DropdownItem>09.00-10.00</DropdownItem>
-              <DropdownItem>10.00-11.00</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </tr>
-
-        <tr>
-          <td>{lReceiveDate}</td>
-          <td>
-            {/* <Input style={{ width: width, height: height }} InReceiveDate={InReceiveDate} /> */}
-
+        <Row>
+          <Col sm="2">{lReceiveDate}</Col>
+          <Col sm="2">
             <DatePicker className="customDatePickerWidth" dateFormat="dd/MM/yyyy"
-              selected={receiveDate} InReceiveDate={InReceiveDate}
-              onChange={date => setReceiveDate(date)} 
+              value={InReceiveDate}
+              onChange={onClickInReceiveDate} 
             />
-
-
-          </td>
-          <td>{lReceiveTime}</td>
-          <td>
-            <Input style={{ width: width, height: height }} InReceiveTime={InReceiveTime} />
-          </td>
-          <td>{lNum}</td>
-          <td>
-            <Input style={{ width: "97px", height: height }} InNum={InNum} />
-          </td>
-        </tr>
+          </Col>
+          <Col sm="2">{lReceiveTime}</Col>
+          <Col sm="2">
+            <Input style={{ width: width, height: height }} value={InReceiveTime} onChange={onClickInReceiveTime}/>
+          </Col>
+          <Col sm="2">{lNum}</Col>
+          <Col sm="2">
+            <Input style={{ width: "97px", height: height }} value={InNum} onChange={onChangeInNum}/>
+          </Col>
+        </Row>
       </div>
-    </Container>
   );
 };
 
@@ -109,11 +119,17 @@ BoxSchedule.defaultProps = {
   lReceiveTime: "",
   lNum: "",
   InExamDate: "",
+  onClickInExamDate: () => {},
   InCloseDate: "",
+  onClickInCloseDate: () => {},
   InRoundTime: "",
+  onClickRoundTime: () => {},
   InReceiveDate: "",
+  onClickInReceiveDate: () => {},
   InReceiveTime: "",
+  onClickInReceiveTime: () => {},
   InNum: "",
+  onChangeInNum: () => {},
   width: "120px",
   height: "30px",
 };
@@ -127,11 +143,17 @@ BoxSchedule.propTypes = {
   lReceiveTime: PropTypes.string,
   lNum: PropTypes.string,
   InExamDate: PropTypes.string,
+  onClickInExamDate: PropTypes.func,
   InCloseDate: PropTypes.string,
+  onClickInCloseDate: PropTypes.func,
   InRoundTime: PropTypes.string,
+  onClickRoundTime: PropTypes.func,
   InReceiveDate: PropTypes.string,
+  onClickInReceiveDate: PropTypes.func,
   InReceiveTime: PropTypes.string,
+  onClickInReceiveTime: PropTypes.func,
   InNum: PropTypes.string,
+  onChangeInNum: PropTypes.func,
 
 };
 

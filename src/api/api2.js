@@ -1,7 +1,6 @@
 import axios from "axios";
 
-// const baseURL = 'https://randomuser.me/api';
-const baseURL = process.env.REACT_APP_API_URL;
+const baseURL = 'http://localhost:8080/licenseexam';
 
 const refreshToken = async () => {
   // call api refreshToken
@@ -27,7 +26,7 @@ api.interceptors.request.use(
 		if (token) {
 			newConfig = {
 				...config,
-				headers: {authorization: `Bearer ${token}`},
+				// headers: {authorization: `Bearer ${token}`},
 			};
 			return newConfig;
 		}
