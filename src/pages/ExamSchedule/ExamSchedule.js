@@ -6,17 +6,19 @@ import BoxScheduleFirst from "./BoxScheduleFirst";
 import BoxSchedule from "./BoxSchedule";
 import BoxUserModify  from "./BoxUserModify";
 import styles from "./ExamSchedule.module.css";
-import { get } from "lodash";
+import { cond, get } from "lodash";
+import { addExamSchedule } from "../../api/apiAddExamSchedule";
 import { ButtonGroup, Button, Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import moment from "moment";
+import Swal from 'sweetalert2';
 
 const ExamSchedule = (props) => {
     const dispatch = useDispatch();
-    const [examDate, setExamDate] = useState("00/00/0000");
-    const [closeDate, setCloseDate] = useState("00/00/0000");
+    const [examDate, setExamDate] = useState("");
+    const [closeDate, setCloseDate] = useState("");
     const [examTime, setExamTime] = useState("");
-    const [receiveDate, setReceiveDate] = useState("00/00/0000");
-    const [receiveTime, setReceiveTime] = useState("00:00");
+    const [receiveDate, setReceiveDate] = useState("");
+    const [receiveTime, setReceiveTime] = useState("");
     const [num, setNum] = useState("0");
 
     //--------------สถานที่ตั้งสอบหลัก (main)--------------
@@ -49,9 +51,15 @@ const ExamSchedule = (props) => {
     const [alterLocation, setAlterLocation] = useState({});
 
     const getSearchValue = (e) => {
-      console.log("getSearchValue ", e);
-      setMainLocation(e);
-      setIsShowMainLocation(true);
+      if (radioValue === "1"){
+        console.log("getSearchValue case new ", e);
+        setMainLocation(e);
+        setIsShowMainLocation(true);
+      } else if (radioValue === "2" && isShowMainLocation){
+        console.log("getSearchValue case edit ", e);
+        setAlterLocation(e);
+        setIsShowMainLocation(true);
+      }      
     };
     const onClickChangeLocation = () => {
       dispatch(
@@ -60,6 +68,62 @@ const ExamSchedule = (props) => {
           description: "",
         })
       );
+    };
+    const validateForm = () => {
+      if (examDate === "" || closeDate === "" || examTime === "" || receiveDate === "" || receiveTime === "" || num === ""){
+        return false;
+      } else return true;
+    };
+    const onClickSaveChange = async () => {
+      console.log("isShowMainLocation ", isShowMainLocation);
+      const responseStatue = "error";
+      if (!isShowMainLocation || !validateForm()){
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: "กรุณาระบุข้อมูลให้ครบถ้วน",
+        });
+        return;
+      } else {
+        if(radioValue === "1") {
+          console.log("moment ", moment(closeDate).format("yyyy-MM-DD"))
+          let examSchedule = {
+            "scheduleId":"3",
+            "locationId":get(mainLocation,"locationId",""),
+            "alteredLocationId":get(mainLocation,"locationId",""),
+            "examDate":moment(examDate).format("yyyy-MM-DD"),
+            "roundId":examTime,
+            "maxApplicant":num,
+            "applyOpenDate":moment(closeDate).format("yyyy-MM-DD"),
+            "applyCloseDate":moment(receiveDate).format("yyyy-MM-DD"),
+            "openStatus":"N",
+            "createUserCode":userModify,
+            "createTime":moment(modifyDate).format("yyyy-MM-DD"),
+            "updateUserCode":userModify,
+            "lastUpdate":moment(modifyDate).format("yyyy-MM-DD"),
+          };
+          let response = await addExamSchedule(examSchedule);
+          if (response !== "error") responseStatue = "";
+        } else if (radioValue === "2") {
+
+
+        };
+      };
+
+      if (responseStatue !== "error"){
+        Swal.fire(
+          'Added!',
+          'อัพโหลดข้อมูลแล้ว',
+          'success'
+        );
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'ไม่สามารถแก้ไขข้อมูลได้',
+        });
+      };  
+
     };
 
   return (
@@ -104,7 +168,7 @@ const ExamSchedule = (props) => {
               InReceiveDate={receiveDate}
               onClickInReceiveDate={(e) => setReceiveDate(moment(e).format("DD/MM/YYYY"))}
               InReceiveTime={receiveTime}
-              onClickInReceiveTime={(e) => setReceiveTime(e.target.value)}
+              onClickInReceiveTime={(e) => setReceiveTime(moment(e).format("HH:mm"))}
               InNum={num}
               onChangeInNum={(e) => setNum(e.target.value)}
             />
@@ -142,38 +206,38 @@ const ExamSchedule = (props) => {
         {!isShowAlterLocation ? "" :
           <Card>
             <CardHeader style={{ textAlign: 'center' }}>ข้อมูลสถานที่สอบอื่นๆ</CardHeader>
-            {/* <CardBody>
-              <BoxSchedule 
+            <CardBody>
+              <BoxSchedule  
                 lLocationID="รหัสสถานที่ตั้งสอบ" 
                 lOrg="สถานที่สอบ"
                 lProvince="สนามสอบ"
                 lType="ประเภทสถานที่ตั้ง"
                 lLocation="สถานที่ตั้งสอบ"
-                InLocationID={locationID1}
-                InOrg={org1}
-                InProvince={regionCode1}
-                InProvinceName={regionName1}
-                InType={locationType1}
-                InLocation={Location1}
+                InLocationID={get(alterLocation,"locationId","")}
+                InOrg={get(alterLocation,"organizerName","")}
+                InProvince={get(alterLocation,"provinceCode","")}
+                InProvinceName={get(alterLocation,"provinceName","")}
+                InType={get(alterLocation,"locationTypeName","")}
+                InLocation={get(alterLocation,"locationDetail","")}
               />
-            </CardBody> */}
+            </CardBody>
           </Card>
         }
 
         <Card> 
           <CardBody style={{ textAlign: "center" }}>
-            {/* <BoxUserModify
+            <BoxUserModify
               lUser="ผู้บันทึก"
               lModifyDate="วันที่บันทึก"
               InUser={userModify}
               InModifyDate={modifyDate}
-            /> */}
+            />
           </CardBody> 
         </Card>
 
         <Row>
           <Col style={{ textAlign: "right" }}>
-            <Button color="primary" type="button" onClick={{}}>บันทึก</Button>
+            <Button color="primary" type="button" onClick={onClickSaveChange}>บันทึก</Button>
           </Col>
           <Col>
             <Button color="secondary" type="button" onClick={{}}>ยกเลิก</Button>

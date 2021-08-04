@@ -24,6 +24,7 @@ export const SearchPopup = ({onChange}) => {
   const [provinceName, setProvinceName] = useState("");
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [examOrganizerName, setExamOrganizerName] = useState("");
+  const [searchProvince, setSearchProvince] = useState({});
 
   const examZoneResonse = getExamLocationZone();
   const dispatch = useDispatch();
@@ -42,6 +43,7 @@ export const SearchPopup = ({onChange}) => {
   const onClickExamOrganizerButton = (e) => {
     setExamOrganizerCode(e);
     fetchExamOrganizer(e);
+    setSearchProvince({"provinceCode":provinceCode,"examOrganizerCode":examOrganizerCode});
   };
 
   const toggle = () => dispatch(hideSearchPopup());
@@ -72,7 +74,7 @@ export const SearchPopup = ({onChange}) => {
   };
 
   return (
-    <Modal isOpen={isShow} size="lg">
+    <Modal isOpen={isShow} size="lg" toggle={toggle}> 
       <ModalHeader toggle={toggle}>{title}</ModalHeader>
       <ModalBody>
         <DropdownExamRegion
@@ -91,7 +93,10 @@ export const SearchPopup = ({onChange}) => {
         />
       </ModalBody>
       <ModalFooter>
-          <LocationTable onClick={handleAction}/>
+          <LocationTable 
+            provinceCode={provinceCode}
+            examOrganizerCode={examOrganizerCode}
+            onClick={handleAction}/>
       </ModalFooter>
     </Modal>
   );

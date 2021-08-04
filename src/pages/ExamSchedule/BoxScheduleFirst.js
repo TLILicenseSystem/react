@@ -9,6 +9,7 @@ import styles from "./ExamSchedule.module.css";
 import "./customDatePickerWidth.css";
 import { get } from "lodash";
 import { getExamRoundAll } from "../../api/apiGetExamRound";
+import moment from "moment";
 
 const Container = styled.div`
   background-color: ${({ color }) => color};
@@ -21,7 +22,7 @@ const Container = styled.div`
 `;
 
 const BoxSchedule = ({color,lExamDate,lCloseDate,lRoundTime,lReceiveDate,lReceiveTime,lNum,
-                     InExamDate,onClickInExamDate,InCloseDate,onClickInCloseDate,InRoundTime,onClickRoundTime,
+                     InExamDate,onClickInExamDate,InCloseDate,onClickInCloseDate,InRoundTime,onClickInRoundTime,
                      InReceiveDate,onClickInReceiveDate,InReceiveTime,onClickInReceiveTime,InNum,onChangeInNum,width, height,}) => {
 
   const [examDate, setExamDate] = useState("");
@@ -52,13 +53,15 @@ const BoxSchedule = ({color,lExamDate,lCloseDate,lRoundTime,lReceiveDate,lReceiv
             <DatePicker className="customDatePickerWidth" dateFormat="dd/MM/yyyy" 
               value={InExamDate}
               onChange={onClickInExamDate}
+              placeholderText="dd/mm/yyyy" 
             />           
           </Col>
           <Col xs="2">{lCloseDate}</Col>
           <Col xs="2">
             <DatePicker className="customDatePickerWidth" dateFormat="dd/MM/yyyy"
               value={InCloseDate}
-              onChange={onClickInCloseDate} 
+              onChange={onClickInCloseDate}
+              placeholderText="dd/mm/yyyy" 
             />
           </Col>
           <Col xs="2">{lRoundTime}</Col>
@@ -71,7 +74,7 @@ const BoxSchedule = ({color,lExamDate,lCloseDate,lRoundTime,lReceiveDate,lReceiv
                   ? "- โปรดระบุ - "
                   : getRoundTime(InRoundTime)
               }
-              onSelect={onClickRoundTime}
+              onSelect={onClickInRoundTime}
               size="sm"
             >
               {examRoundList.map((detail, index) => {
@@ -95,11 +98,26 @@ const BoxSchedule = ({color,lExamDate,lCloseDate,lRoundTime,lReceiveDate,lReceiv
             <DatePicker className="customDatePickerWidth" dateFormat="dd/MM/yyyy"
               value={InReceiveDate}
               onChange={onClickInReceiveDate} 
+              placeholderText="dd/mm/yyyy" 
             />
           </Col>
           <Col sm="2">{lReceiveTime}</Col>
           <Col sm="2">
-            <Input style={{ width: width, height: height }} value={InReceiveTime} onChange={onClickInReceiveTime}/>
+            <DatePicker
+              className="customDatePickerWidth"
+              selected={(InReceiveTime === "" ? "" : moment(InReceiveTime,"hh:mm").toDate())}
+              onChange={onClickInReceiveTime}
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={30}
+              timeCaption="time"
+              timeFormat="HH:mm"
+              dateFormat="HH:mm"
+              minTime={moment("08:00","hh:mm").toDate()}
+              maxTime={moment("18:00","hh:mm").toDate()}
+              placeholderText="hh24:mm"
+            />
+            {/* <Input style={{ width: width, height: height }} value={InReceiveTime} onChange={onClickInReceiveTime}/> */}
           </Col>
           <Col sm="2">{lNum}</Col>
           <Col sm="2">
@@ -123,7 +141,7 @@ BoxSchedule.defaultProps = {
   InCloseDate: "",
   onClickInCloseDate: () => {},
   InRoundTime: "",
-  onClickRoundTime: () => {},
+  onClickInRoundTime: () => {},
   InReceiveDate: "",
   onClickInReceiveDate: () => {},
   InReceiveTime: "",
@@ -147,7 +165,7 @@ BoxSchedule.propTypes = {
   InCloseDate: PropTypes.string,
   onClickInCloseDate: PropTypes.func,
   InRoundTime: PropTypes.string,
-  onClickRoundTime: PropTypes.func,
+  onClickInRoundTime: PropTypes.func,
   InReceiveDate: PropTypes.string,
   onClickInReceiveDate: PropTypes.func,
   InReceiveTime: PropTypes.string,

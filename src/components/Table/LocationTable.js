@@ -12,7 +12,7 @@ import { getExamLocationZone, getExamType } from "../../api/apiGetConfig";
 import { Table, Button } from "reactstrap";
 import PropTypes from "prop-types";
 
-export const LocationTable = ({ value, onClick }) => {
+export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
   //จังหวะที่ subscribe isShow /state.spinner สามารถดึง state ได้ทั้งหมด
   //const { isShow } = useSelector((state) => state.spinner);
 
@@ -21,8 +21,6 @@ export const LocationTable = ({ value, onClick }) => {
   const [examZoneList, setExamZoneList] = useState([]);
   const [examOrganizerList, setExamOrganizerList] = useState([]);
   const [examLocationTypeList, setExamLocationTypeList] = useState([]);
-  const [provinceCode, setProvinceCode] = useState("");
-  const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const fetchData = async () => {
     const responseLocation = await getExamLocation("A");
     setExamLocationList(get(responseLocation, "data", []));
@@ -33,10 +31,7 @@ export const LocationTable = ({ value, onClick }) => {
     const responseOrganizer = await getOrganizerAll();
     setExamOrganizerList(get(responseOrganizer, "data", []));
     const responseLocationType = await getExamType();
-    setExamLocationTypeList(responseLocationType);
-    console.log("LocationTable searchValue ", value);
-    setProvinceCode(get(value, "provinceCode", ""));
-    setExamOrganizerCode(get(value, "examOrganizerCode", ""));
+    setExamLocationTypeList(responseLocationType);   
   };
 
   useEffect(() => {
@@ -51,7 +46,6 @@ export const LocationTable = ({ value, onClick }) => {
         "provinceName",
         ""
       );
-      console.log("getProvinceData " ,provinceName);
       return provinceName;
     } else {
       return "";
@@ -105,11 +99,11 @@ export const LocationTable = ({ value, onClick }) => {
 
   return (
     <div style={{
-      maxHeight: '700px',
-      overflowY: 'auto'
+      maxHeight: '600px',
+      overflowY: 'auto',
+      margin: 'auto',
     }}>
-    <Table hover striped responsive bordered>
-      {provinceCode}
+    <Table hover striped bordered>
       <thead>
         <tr>
           <th>รหัสที่ตั้ง</th>
@@ -170,10 +164,12 @@ export const LocationTable = ({ value, onClick }) => {
   );
 };
 LocationTable.defaultProps = {
-  value: {},
+  provinceCode: "",
+  examOrganizerCode: "",
   onClick: () => {},
 };
 LocationTable.propTypes = {
-  value: PropTypes.object,
+  provinceCode: PropTypes.string,
+  examOrganizerCode: PropTypes.string,
   onClick: PropTypes.func,
 };

@@ -59,7 +59,7 @@ const BoxSchedule = ({
     <div>
       <Row>
         <Col xs="2">{lLocationID}</Col>
-        <Col xs="2">
+        <Col xs="3">
           <Input
             style={{ width: wLocationID, height: height }}
             value={InLocationID}
@@ -67,32 +67,35 @@ const BoxSchedule = ({
           />
         </Col>
         <Col xs="2">{lOrg}</Col>
-        <Col xs="2">
-          <Input
-            style={{ width: wOrg, height: height }}
-            value={InOrg}
-            onChange={{}}
-          />
-        </Col>
-        <Col xs="1">{lProvince}</Col>
-        <Col xs="3">
+        <Col xs="5">
           <Input
             style={{ height: height }}
-            value={InProvince + " " + InProvinceName}
+            value={InOrg}
             onChange={{}}
           />
         </Col>
       </Row>
 
       <Row>
+        <Col xs="2">{lProvince}</Col>
+        <Col xs="3">
+          <Input
+            style={{ width: wType, height: height }}
+            value={InProvinceName}
+            onChange={{}}
+          />
+        </Col>
         <Col xs="2">{lType}</Col>
-        <Col xs="2">
+        <Col xs="3">
           <Input
             style={{ width: wType, height: height }}
             value={InType}
             onChange={{}}
           />
         </Col>
+        
+      </Row>
+      <Row>
         <Col xs="2">{lLocation}</Col>
         <Col xs="6">
           <Input
