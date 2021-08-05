@@ -41,8 +41,8 @@ export const SearchPopup = ({onChange}) => {
     fetchProvinceData(get(e, "provinceCode", ""));
   };
   const onClickExamOrganizerButton = (e) => {
-    setExamOrganizerCode(e);
-    fetchExamOrganizer(e);
+    setExamOrganizerCode(get(e,"orgCode",""));
+    fetchExamOrganizer(get(e,"orgCode",""));
     setSearchProvince({"provinceCode":provinceCode,"examOrganizerCode":examOrganizerCode});
   };
 
@@ -69,8 +69,11 @@ export const SearchPopup = ({onChange}) => {
     );
   };
   const fetchExamOrganizer = async (e) => {
-    const response = await getOrganizer(e);
-    setExamOrganizerName(get(response[0], "orgName", ""));
+    console.log("fetchExamOrganizer " , e);
+    if (e !== ""){
+      const response = await getOrganizer(e);
+      setExamOrganizerName(get(response[0], "orgName", ""));
+    }
   };
 
   return (
@@ -86,7 +89,7 @@ export const SearchPopup = ({onChange}) => {
         />
         <DropdownExamOrganizer
           label="สถานที่สอบ"
-          value={examOrganizerCode + examOrganizerName}
+          value={examOrganizerCode}
           onClick={(e) => {
             onClickExamOrganizerButton(e);
           }}

@@ -2,6 +2,8 @@ export {InputWithLabel,InputTimeWithLabel,InputWithLabelID} from "./InputWithLab
 export {Container} from "./Container/Container";
 export {Wrapper} from "./Wrapper/Wrapper";
 export {SearchPopup} from "./Popup/SearchPopup";
+export {SearchSchedulePopup} from "./Popup/SearchSchedulePopup";
 export {DropdownExamOrganizer} from "./DropdownWithLabel/DropdownExamOrganizer";
 export {DropdownExamRegion} from "./DropdownWithLabel/DropdownExamRegion";
 export {LocationTable} from "./Table/LocationTable";
+export {ScheduleTable} from "./Table/ScheduleTable";

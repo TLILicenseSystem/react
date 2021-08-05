@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { DropdownButton, Dropdown } from "react-bootstrap";
 import { FormGroup, Form, Col } from "reactstrap";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 import { get } from "lodash";
 import { getOrganizerAll } from "../../api/apiGetExamOrganizer";
+import Select from "react-select";
 
 // 4 props เพิ้อคุยกับ componant ชื่อ InputWithLabel
 // label
@@ -14,7 +17,13 @@ import { getOrganizerAll } from "../../api/apiGetExamOrganizer";
 
 // { label, type, value, onChange } คือ props
 
-export const DropdownExamOrganizer = ({ label, type, value, onClick, requiredField }) => {
+export const DropdownExamOrganizer = ({
+  label,
+  type,
+  value,
+  onClick,
+  requiredField,
+}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   const [userData, setUserData] = useState([]);
@@ -30,40 +39,25 @@ export const DropdownExamOrganizer = ({ label, type, value, onClick, requiredFie
   }, []);
 
   return (
-    <div>
-      {/* ใส่ colon ที่ label เพื่อไม่ต้องใส่ที่หน้า login */}
-      <Form>
+    <Form>
         <FormGroup row>
-          <Col xs={3}>
-            <label className={styles.label}>{label} :</label>
-            <label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label>
-          </Col>
-          <Col xs={9}>
-            <DropdownButton
-              className={styles.input}
-              id="dropdown-basic-button"
-              title={
-                value === "" || value === null || value === "null"
-                  ? "กรุณาเลือก"
-                  : value
-              }
-              onSelect={onClick}
-            >
-              {userData.map((detail, index) => {
-                return (
-                  <Dropdown.Item
-                    key={index}
-                    eventKey={get(detail, "orgCode", "")}
-                  >
-                    {get(detail, "orgCode", "")} {get(detail, "orgName", "")}
-                  </Dropdown.Item>
-                );
-              })}
-            </DropdownButton>
-          </Col>
-        </FormGroup>
-      </Form>
-    </div>
+        <label >{label} :</label>
+        <label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label>      
+        <Select
+          className={styles.input}
+          isClearable={false}
+          isSearchable={false}
+          name="examOrganizer"
+          options={userData}
+          getOptionLabel={(option) => `${option.orgCode}${option.orgName}`}
+          getOptionValue={(option) => `${option.orgCode}`}
+          onChange={onClick}
+          isDisabled={requiredField}
+          value={userData.filter((option) => option.orgCode === value)}
+        />
+
+      </FormGroup>
+    </Form>
   );
 };
 

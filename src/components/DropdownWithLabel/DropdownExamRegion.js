@@ -39,11 +39,8 @@ export const DropdownExamRegion = ({
     <div>
       <Form>
         <FormGroup row>
-          <Col xs={3}>
-            <label className={styles.label}>{label} :</label>
+            <label>{label} :</label>
             <label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label>
-          </Col>
-          <Col xs={9}>
             <Select
                 className={styles.input}
                 isClearable={true}
@@ -55,8 +52,7 @@ export const DropdownExamRegion = ({
                 onChange={onClick}
                 isDisabled={disabled}
                 value={userData.filter(option => option.provinceCode === value)}
-              />              
-          </Col>
+              />    
         </FormGroup>
       </Form>
     </div>

@@ -20,9 +20,9 @@ export const addExamSchedule = async (examSchedule) => {
     }
 }
 
-export const updateExamSchedule = async (examLocation) => {
+export const updateExamSchedule = async (examSchedule) => {
     try {
-        const inputPut = examLocation;
+        const inputPut = examSchedule;
         const response = await api.put(`/examschedule/update`, inputPut);
         if (response.status === 200) {
             console.log('updateExamLocation response ', response.data);
@@ -39,14 +39,32 @@ export const updateExamSchedule = async (examLocation) => {
     }
 }
 
-export const deleteExamLocation = async (examLocation) => {
+export const deleteExamSchedule = async (examSchedule) => {
     try {
-        console.log('deleteExamLocation ', examLocation);
-        const locationId = examLocation;
+        console.log('deleteExamLocation ', examSchedule);
+        const locationId = examSchedule;
         const response = await api.delete(`/examlocation/delete/${locationId}`);
         if (response.status === 200) {
             console.log('deleteExamLocation response ', response.data);
             return response.data;
+        }
+        else {
+            return response.data;
+        }
+    }
+    catch (err) {
+        console.log("msg", err);
+        return "error";
+    }
+}
+
+export const getExamSchedule = async () => {
+    try {
+        
+        const response = await api.get(`/examschedule/searchGET`);
+        if (response.status === 200) {
+            console.log('getExamSchedule response ', response.data);
+            return response;
         }
         else {
             return response.data;

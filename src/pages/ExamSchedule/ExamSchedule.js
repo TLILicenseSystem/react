@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { showSearchPopup } from "../../redux/actions";
-import { Container, InputWithLabel, Wrapper, SearchPopup, LocationTable } from "../../components/shared";
+import { showSearchPopup, showSearchSchedulePopup } from "../../redux/actions";
+import { Container, InputWithLabel, Wrapper, SearchPopup, LocationTable, SearchSchedulePopup } from "../../components/shared";
 import BoxScheduleFirst from "./BoxScheduleFirst";
 import BoxSchedule from "./BoxSchedule";
 import BoxUserModify  from "./BoxUserModify";
@@ -69,6 +69,14 @@ const ExamSchedule = (props) => {
         })
       );
     };
+    const onClickSearchSchedule = () => {
+      dispatch(
+        showSearchSchedulePopup({
+          title: "SearchSchedule",
+          description: "",
+        })
+      );
+    };
     const validateForm = () => {
       if (examDate === "" || closeDate === "" || examTime === "" || receiveDate === "" || receiveTime === "" || num === ""){
         return false;
@@ -88,7 +96,6 @@ const ExamSchedule = (props) => {
         if(radioValue === "1") {
           console.log("moment ", moment(closeDate).format("yyyy-MM-DD"))
           let examSchedule = {
-            "scheduleId":"3",
             "locationId":get(mainLocation,"locationId",""),
             "alteredLocationId":get(mainLocation,"locationId",""),
             "examDate":moment(examDate).format("yyyy-MM-DD"),
@@ -103,35 +110,33 @@ const ExamSchedule = (props) => {
             "lastUpdate":moment(modifyDate).format("yyyy-MM-DD"),
           };
           let response = await addExamSchedule(examSchedule);
-          if (response !== "error") responseStatue = "";
+          if (response !== "error"){
+            Swal.fire(
+              'Added!',
+              'อัพโหลดข้อมูลแล้ว',
+              'success'
+            );
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถแก้ไขข้อมูลได้',
+            });
+          };  
         } else if (radioValue === "2") {
 
 
         };
       };
-
-      if (responseStatue !== "error"){
-        Swal.fire(
-          'Added!',
-          'อัพโหลดข้อมูลแล้ว',
-          'success'
-        );
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: 'ไม่สามารถแก้ไขข้อมูลได้',
-        });
-      };  
-
     };
 
   return (
     <Container>
       <SearchPopup onChange={getSearchValue} />
+      <SearchSchedulePopup />
       <Wrapper>
 
-            <Button color="primary" type="button" >ค้นหา</Button>
+            <Button color="primary" type="button" onClick={onClickSearchSchedule} >ค้นหา</Button>
  
             <ButtonGroup>
               <Button 

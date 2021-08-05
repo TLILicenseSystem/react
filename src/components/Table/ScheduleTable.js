@@ -5,6 +5,7 @@ import { getExamLocation } from "../../api/apiGetExamLocation";
 import { getProvinceCodeAll } from "../../api/apiGetProvinceCode";
 import { getOrganizerAll } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone, getExamType } from "../../api/apiGetConfig";
+import { getExamSchedule } from "../../api/apiAddExamSchedule";
 import { Button } from "reactstrap";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -13,18 +14,19 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import { useStyles } from "./table.style";
 import PropTypes from "prop-types";
+import moment from "moment";
 
-export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
+
+export const ScheduleTable = ({ provinceCode, examOrganizerCode, onClick }) => {
   //จังหวะที่ subscribe isShow /state.spinner สามารถดึง state ได้ทั้งหมด
   //const { isShow } = useSelector((state) => state.spinner);
-  const classes = useStyles();
   const [examLocationList, setExamLocationList] = useState([]);
   const [examProvinceList, setExamProvinceList] = useState([]);
   const [examZoneList, setExamZoneList] = useState([]);
   const [examOrganizerList, setExamOrganizerList] = useState([]);
   const [examLocationTypeList, setExamLocationTypeList] = useState([]);
+  const [examScheduleList, setExamScheduleList] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(8);
   const fetchData = async () => {
@@ -38,6 +40,9 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
     setExamOrganizerList(get(responseOrganizer, "data", []));
     const responseLocationType = await getExamType();
     setExamLocationTypeList(responseLocationType);
+    const responseSchedule = await getExamSchedule("A");
+    setExamScheduleList(get(responseSchedule, "data", []));
+
   };
 
   useEffect(() => {
@@ -110,32 +115,39 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
     }
   };
 
-  //examOrganizerList
-
   const columns = [
-    { id: "locationId", label: "รหัสที่ตั้ง", minWidth: 80 },
-    { id: "provinceCode", label: "สนามสอบ", minWidth: 100 },
+    { id: "examDate", label: "วันที่สอบ", minWidth: 50 },
+    { id: "roundId", label: "เวลาสอบ", minWidth: 50 },
+    { id: "maxApplicant", label: "จำนวนผู้สมัครสอบ", align: "left", minWidth: 50,},
     {
-      id: "orgCode",
-      label: "สถานที่สอบ",
-      minWidth: 150,
+      id: "applyCloseDate",
+      label: "วันที่ปิดรับสมัคร",
+      minWidth: 50,
       align: "left",
     },
+    { id: "examLocation.provinceName", label: "สนามสอบ", minWidth: 50, align: "left" },
+    { id: "examLocation.locationType", label: "ประเภท", minWidth: 50, align: "left" },
     {
-      id: "locationType",
-      label: "ประเภท",
-      minWidth: 100,
-      align: "left",
-    },
-    {
-      id: "locationDetail",
+      id: "examLocation.locationDetail",
       label: "สถานที่ตั้งสอบ",
-      minWidth: 200,
+      minWidth: 50,
+      align: "left",
+    },
+    {
+      id: "applyOpenDate",
+      label: "วันที่ได้รับหนังสือ",
+      minWidth: 50,
+      align: "left",
+    },
+    {
+      id: "roundId",
+      label: "เวลาที่ได้รับหนังสือ",
+      minWidth: 50,
       align: "left",
     },
     {
       id: "edit",
-      label: "แก้ไข",
+      label: "เลือก",
       minWidth: 50,
       align: "left",
     },
@@ -165,35 +177,43 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {examLocationList
-              .filter(
-                (zone) =>
-                  (zone.provinceCode === provinceCode &&
-                    zone.orgCode === examOrganizerCode) ||
-                  provinceCode === ""
-              )
+            {examScheduleList
+              // .filter(
+              //   (zone) =>
+              //     (zone.provinceCode === provinceCode &&
+              //       zone.orgCode === examOrganizerCode) ||
+              //     provinceCode === ""
+              // )
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((detail, index) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                     <TableCell key={index}>
+                      {moment(get(detail, "examDate", "")).format("DD/MM/yyyy")}
+                    </TableCell>
+                    <TableCell key={index}>
+                      {get(detail, "roundId", "")}
+                    </TableCell>
+                    <TableCell key={index}>
+                      {get(detail, "maxApplicant", "")}{" "}
+                    </TableCell>
+                    <TableCell key={index}>
+                      {moment(get(detail, "applyCloseDate", "")).format("DD/MM/yyyy")}
+                    </TableCell>
+                    <TableCell key={index}>
                       {get(detail, "locationId", "")}
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "provinceCode", "")}{" "}
-                      {getProvinceData(get(detail, "provinceCode", ""))}
+                      {get(detail, "locationId", "")}
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "orgCode", "")}{" "}
-                      {getOrganizerData(get(detail, "orgCode", ""))}
+                      {get(detail, "locationId", "")}                    
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "locationType", "")}
-                      {""}
-                      {getLocationTypeData(get(detail, "locationType", ""))}
+                      {moment(get(detail, "applyOpenDate", "")).format("DD/MM/yyyy")}
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "locationDetail", "")}
+                      {get(detail, "roundId", "")}
                     </TableCell>
                     <TableCell key={index}>
                       <Button
@@ -229,7 +249,7 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={examLocationList.length}
+        count={examScheduleList.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -238,12 +258,12 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
     </div>
   );
 };
-LocationTable.defaultProps = {
+ScheduleTable.defaultProps = {
   provinceCode: "",
   examOrganizerCode: "",
   onClick: () => {},
 };
-LocationTable.propTypes = {
+ScheduleTable.propTypes = {
   provinceCode: PropTypes.string,
   examOrganizerCode: PropTypes.string,
   onClick: PropTypes.func,
