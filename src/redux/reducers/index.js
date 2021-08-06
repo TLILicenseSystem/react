@@ -1,8 +1,10 @@
 import { combineReducers } from "redux";
-import searchPopup from "./searchPopup.reducer";
+import searchLocationPopup from "./searchLocationPopup.reducer";
 import searchSchedulePopup from "./searchSchedulePopup.reducer";
+import searchPopup from "./searchPopup.reducer";
 
 export default combineReducers({
-  searchPopup,
+  searchLocationPopup,
   searchSchedulePopup,
+  searchPopup,
 });

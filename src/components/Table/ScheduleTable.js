@@ -17,8 +17,13 @@ import TableRow from "@material-ui/core/TableRow";
 import PropTypes from "prop-types";
 import moment from "moment";
 
-
-export const ScheduleTable = ({ provinceCode, examOrganizerCode, onClick }) => {
+export const ScheduleTable = ({
+  provinceCode,
+  examOrganizerCode,
+  roundId,
+  examDate,
+  onClick,
+}) => {
   //จังหวะที่ subscribe isShow /state.spinner สามารถดึง state ได้ทั้งหมด
   //const { isShow } = useSelector((state) => state.spinner);
   const [examLocationList, setExamLocationList] = useState([]);
@@ -28,7 +33,7 @@ export const ScheduleTable = ({ provinceCode, examOrganizerCode, onClick }) => {
   const [examLocationTypeList, setExamLocationTypeList] = useState([]);
   const [examScheduleList, setExamScheduleList] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(8);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const fetchData = async () => {
     const responseLocation = await getExamLocation("A");
     setExamLocationList(get(responseLocation, "data", []));
@@ -40,9 +45,8 @@ export const ScheduleTable = ({ provinceCode, examOrganizerCode, onClick }) => {
     setExamOrganizerList(get(responseOrganizer, "data", []));
     const responseLocationType = await getExamType();
     setExamLocationTypeList(responseLocationType);
-    const responseSchedule = await getExamSchedule("A");
+    const responseSchedule = await getExamSchedule();
     setExamScheduleList(get(responseSchedule, "data", []));
-
   };
 
   useEffect(() => {
@@ -115,18 +119,58 @@ export const ScheduleTable = ({ provinceCode, examOrganizerCode, onClick }) => {
     }
   };
 
+  const getLocationDetail = (key, value) => {
+    if (value === "") {
+      return "";
+    }
+    console.log(
+      "getLocationDetail ",
+      examLocationList.filter((zone) => zone.locationId === value)[0]
+    );
+    const locationDetail = examLocationList.filter(
+      (zone) => zone.locationId === value
+    )[0];
+
+    if (key === "provinceName") {
+      return getProvinceData(get(locationDetail, "provinceCode", ""));
+    } else if (key === "locationTypeName") {
+      return getLocationTypeData(get(locationDetail, "locationType", ""));
+    } else if (key === "locationDetail") {
+      return get(locationDetail, "locationDetail", "");
+    } else if (key === "organizerName") {
+      return getOrganizerData(get(locationDetail, "organizerCode", ""));
+    } else {
+      return "";
+    }
+  };
+
   const columns = [
     { id: "examDate", label: "วันที่สอบ", minWidth: 50 },
     { id: "roundId", label: "เวลาสอบ", minWidth: 50 },
-    { id: "maxApplicant", label: "จำนวนผู้สมัครสอบ", align: "left", minWidth: 50,},
+    {
+      id: "maxApplicant",
+      label: "จำนวนผู้สมัครสอบ",
+      align: "left",
+      minWidth: 50,
+    },
     {
       id: "applyCloseDate",
       label: "วันที่ปิดรับสมัคร",
       minWidth: 50,
       align: "left",
     },
-    { id: "examLocation.provinceName", label: "สนามสอบ", minWidth: 50, align: "left" },
-    { id: "examLocation.locationType", label: "ประเภท", minWidth: 50, align: "left" },
+    {
+      id: "examLocation.provinceName",
+      label: "สนามสอบ",
+      minWidth: 50,
+      align: "left",
+    },
+    {
+      id: "examLocation.locationType",
+      label: "ประเภท",
+      minWidth: 50,
+      align: "left",
+    },
     {
       id: "examLocation.locationDetail",
       label: "สถานที่ตั้งสอบ",
@@ -198,42 +242,97 @@ export const ScheduleTable = ({ provinceCode, examOrganizerCode, onClick }) => {
                       {get(detail, "maxApplicant", "")}{" "}
                     </TableCell>
                     <TableCell key={index}>
-                      {moment(get(detail, "applyCloseDate", "")).format("DD/MM/yyyy")}
+                      {moment(get(detail, "applyCloseDate", "")).format(
+                        "DD/MM/yyyy"
+                      )}
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "locationId", "")}
+                      {getLocationDetail(
+                        "provinceName",
+                        get(detail, "locationId", "")
+                      )}
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "locationId", "")}
+                      {getLocationDetail(
+                        "locationTypeName",
+                        get(detail, "locationId", "")
+                      )}
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "locationId", "")}                    
+                      {getLocationDetail(
+                        "locationDetail",
+                        get(detail, "locationId", "")
+                      )}
                     </TableCell>
                     <TableCell key={index}>
-                      {moment(get(detail, "applyOpenDate", "")).format("DD/MM/yyyy")}
+                      {get(detail, "receiveDate", "") === null
+                        ? ""
+                        : moment(get(detail, "receiveDate", null)).format(
+                            "DD/MM/yyyy"
+                          )}
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "roundId", "")}
+                      {get(detail, "receiveTime", "")}
                     </TableCell>
                     <TableCell key={index}>
                       <Button
                         size="sm"
                         onClick={() =>
                           onClick({
-                            locationId: get(detail, "locationId", ""),
-                            provinceCode: get(detail, "provinceCode", ""),
-                            provinceName: getProvinceData(
-                              get(detail, "provinceCode", "")
-                            ),
-                            organizerCode: get(detail, "orgCode", ""),
-                            organizerName: getOrganizerData(
-                              get(detail, "orgCode", "")
-                            ),
-                            locationTypeCode: get(detail, "locationType", ""),
-                            locationTypeName: getLocationTypeData(
-                              get(detail, "locationType", "")
-                            ),
-                            locationDetail: get(detail, "locationDetail", ""),
+                            scheduleId: get(detail, "scheduleId", ""),
+                            examDate: moment(
+                              get(detail, "examDate", "")
+                            ).format("DD/MM/yyyy"),
+                            applyCloseDate: moment(
+                              get(detail, "applyCloseDate", "")
+                            ).format("DD/MM/yyyy"),
+                            roundId: get(detail, "roundId", ""),
+                            receiveDate:
+                              get(detail, "receiveDate", "") === null
+                                ? ""
+                                : moment(
+                                    get(detail, "receiveDate", null)
+                                  ).format("DD/MM/yyyy"),
+                            receiveTime: get(detail, "receiveTime", ""),
+                            maxApplicant: get(detail, "maxApplicant", ""),
+                            locationDetail: {
+                              locationId: get(detail, "locationId", ""),
+                              organizerName: getLocationDetail(
+                                "organizerName",
+                                get(detail, "locationId", "")
+                              ),
+                              provinceName: getLocationDetail(
+                                "provinceName",
+                                get(detail, "locationId", "")
+                              ),
+                              locationTypeName: getLocationDetail(
+                                "locationTypeName",
+                                get(detail, "locationId", "")
+                              ),
+                              locationDetail: getLocationDetail(
+                                "locationDetail",
+                                get(detail, "locationId", "")
+                              ),
+                            },
+                            alteredLocationDetail: {
+                              locationId: get(detail, "alteredLocationId", ""),
+                              organizerName: getLocationDetail(
+                                "organizerName",
+                                get(detail, "locationId", "")
+                              ),
+                              provinceName: getLocationDetail(
+                                "provinceName",
+                                get(detail, "alteredLocationId", "")
+                              ),
+                              locationTypeName: getLocationDetail(
+                                "locationTypeName",
+                                get(detail, "alteredLocationId", "")
+                              ),
+                              locationDetail: getLocationDetail(
+                                "locationDetail",
+                                get(detail, "alteredLocationId", "")
+                              ),
+                            },
                           })
                         }
                       >
@@ -261,10 +360,14 @@ export const ScheduleTable = ({ provinceCode, examOrganizerCode, onClick }) => {
 ScheduleTable.defaultProps = {
   provinceCode: "",
   examOrganizerCode: "",
+  roundId: "",
+  examDate: "",
   onClick: () => {},
 };
 ScheduleTable.propTypes = {
   provinceCode: PropTypes.string,
   examOrganizerCode: PropTypes.string,
+  roundId: PropTypes.string,
+  examDate: PropTypes.string,
   onClick: PropTypes.func,
 };

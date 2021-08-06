@@ -8,45 +8,45 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import { Alert } from "react-bootstrap";
-import { DropdownExamRegion, DropdownExamOrganizer } from "../shared";
+import { DropdownExamRegion, DropdownExamOrganizer, LocationTable } from "../shared";
 import { useSelector, useDispatch } from "react-redux";
-import { hideSearchPopup } from "../../redux/actions";
+import { hideSearchLocationPopup } from "../../redux/actions";
 import { getProvinceCode } from "../../api/apiGetProvinceCode";
 import { getOrganizer } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone } from "../../api/apiGetConfig";
 import { get } from "lodash";
 import PropTypes from "prop-types";
 
-export const SearchPopup = ({onChange}) => {
+export const SearchLocationPopup = ({onChange}) => {
   const [region, setRegion] = useState("");
   const [regionName, setRegionName] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
   const [provinceName, setProvinceName] = useState("");
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [examOrganizerName, setExamOrganizerName] = useState("");
+  const [searchProvince, setSearchProvince] = useState({});
 
   const examZoneResonse = getExamLocationZone();
   const dispatch = useDispatch();
   const { isShow, title, description, action } = useSelector(
-    (state) => state.searchPopup
+    (state) => state.searchLocationPopup
   );
-  const handleAction = () => {
+  const handleAction = (e) => {
     //call back function
-    action();
-    dispatch(hideSearchPopup());
-    onChange({provinceCode, examOrganizerCode});
+    dispatch(hideSearchLocationPopup());
+    onChange(e);
   };
   const onClickProvinceButton = (e) => {
     setProvinceCode(get(e, "provinceCode", ""));
     fetchProvinceData(get(e, "provinceCode", ""));
   };
   const onClickExamOrganizerButton = (e) => {
-    setExamOrganizerCode(e);
-    fetchExamOrganizer(e);
+    setExamOrganizerCode(get(e,"orgCode",""));
+    fetchExamOrganizer(get(e,"orgCode",""));
+    setSearchProvince({"provinceCode":provinceCode,"examOrganizerCode":examOrganizerCode});
   };
 
-  const toggle = () => dispatch(hideSearchPopup());
+  const toggle = () => dispatch(hideSearchLocationPopup());
 
   const fetchProvinceData = async (e) => {
     const response = await getProvinceCode(e);
@@ -69,12 +69,15 @@ export const SearchPopup = ({onChange}) => {
     );
   };
   const fetchExamOrganizer = async (e) => {
-    const response = await getOrganizer(e);
-    setExamOrganizerName(get(response[0], "orgName", ""));
+    console.log("fetchExamOrganizer " , e);
+    if (e !== ""){
+      const response = await getOrganizer(e);
+      setExamOrganizerName(get(response[0], "orgName", ""));
+    }
   };
 
   return (
-    <Modal isOpen={isShow}>
+    <Modal isOpen={isShow} size="lg" toggle={toggle}> 
       <ModalHeader toggle={toggle}>{title}</ModalHeader>
       <ModalBody>
         <DropdownExamRegion
@@ -86,26 +89,24 @@ export const SearchPopup = ({onChange}) => {
         />
         <DropdownExamOrganizer
           label="สถานที่สอบ"
-          value={examOrganizerCode + examOrganizerName}
+          value={examOrganizerCode}
           onClick={(e) => {
             onClickExamOrganizerButton(e);
           }}
         />
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={handleAction}>
-          เลือก
-        </Button>
-        <Button color="secondary" onClick={toggle}>
-          ยกเลิก
-        </Button>
+          <LocationTable 
+            provinceCode={provinceCode}
+            examOrganizerCode={examOrganizerCode}
+            onClick={handleAction}/>
       </ModalFooter>
     </Modal>
   );
 };
-SearchPopup.defaultProps = {
+SearchLocationPopup.defaultProps = {
   onChange: () => {},
 };
-SearchPopup.propTypes = {
+SearchLocationPopup.propTypes = {
   onChange: PropTypes.func,
 };

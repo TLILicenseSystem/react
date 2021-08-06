@@ -1,7 +1,6 @@
 import "date-fns";
 import React, { useState, useEffect } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Col, Row, } from "reactstrap";
-import { DropdownButton, Dropdown } from "react-bootstrap";
 import Grid from "@material-ui/core/Grid";
 import DateFnsUtils from "@date-io/date-fns";
 import Box from "@material-ui/core/Box";
@@ -25,6 +24,7 @@ import { getExamRoundAll } from "../../api/apiGetExamRound";
 
 import { get } from "lodash";
 import PropTypes from "prop-types";
+import moment from "moment";
 
 export const SearchSchedulePopup = ({ onChange }) => {
   const dispatch = useDispatch();
@@ -33,18 +33,21 @@ export const SearchSchedulePopup = ({ onChange }) => {
   );
   const handleAction = (e) => {
     //call back function
-    dispatch(hideSearchSchedulePopup());
+    dispatch(hideSearchSchedulePopup());    
     onChange(e);
   };
 
   const onClickProvinceButton = (e) => {
     setProvinceCode(get(e, "provinceCode", ""));
-    fetchProvinceData(get(e, "provinceCode", ""));
+    //fetchProvinceData(get(e, "provinceCode", ""));
   };
   const onClickExamOrganizerButton = (e) => {
-    setExamOrganizerCode(e);
-    fetchExamOrganizer(e);
+    setExamOrganizerCode(get(e, "orgCode", ""));
+    //fetchExamOrganizer(get(e, "orgCode", ""));
   };
+  const onClickExamRoundButton = (e) => {
+
+  }
 
   const [region, setRegion] = useState("");
   const [regionName, setRegionName] = useState("");
@@ -54,13 +57,14 @@ export const SearchSchedulePopup = ({ onChange }) => {
   const [examOrganizerName, setExamOrganizerName] = useState("");
   const [examRoundList, setExamRoundList] = useState([]);
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [examRound, setExamRound] = useState("");
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
-  const handleTimeChange = (date) => {
-    setSelectedTime(date);
+  const handleExamRound = (date) => {
+    console.log("handleExamRound ", date);
+    setExamRound(get(date, "roundId", ""));
   };
   const toggle = () => dispatch(hideSearchSchedulePopup());
   const examZoneResonse = getExamLocationZone();
@@ -105,8 +109,8 @@ export const SearchSchedulePopup = ({ onChange }) => {
   }
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Modal isOpen={isShow} size="lg" toggle={toggle}>
+      <Modal isOpen={isShow} size="xl" toggle={toggle}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <ModalHeader toggle={toggle}>{title}</ModalHeader>
         <ModalBody>
           <Grid container spacing={2}>
@@ -114,9 +118,10 @@ export const SearchSchedulePopup = ({ onChange }) => {
               <Box>วันที่สอบ</Box>
               <Box>
                 <KeyboardDatePicker
+                  autoOk
                   disableToolbar
                   variant="inline"
-                  format="MM/dd/yyyy"
+                  format="dd/MM/yyyy"
                   margin="small"
                   id="date-picker-inline"
                   value={selectedDate}
@@ -131,20 +136,22 @@ export const SearchSchedulePopup = ({ onChange }) => {
               <Box>เวลาสอบ</Box>
               <Box>
                 <Select
-                  isClearable={false}
+                  isClearable={true}
                   isSearchable={false}
                   name="examTime"
                   options={examRoundList}                
                   getOptionLabel={(option) => `${option.timeStr}`}
                   getOptionValue={(option) => `${option.roundId}`}
-                  onChange={{}}
+                  onChange={(e)=> handleExamRound(e)}
+                  value={examRoundList.filter(option => option.roundId === examRound)}
                 />                 
-              </Box>    
+              </Box>
             </Grid>
             <Grid item xs={4}>
                 <DropdownExamOrganizer
                   label="สถานที่สอบ"
-                  value={examOrganizerCode + examOrganizerName}
+                  value={examOrganizerCode}
+                  isClearable={true}
                   onClick={(e) => {
                     onClickExamOrganizerButton(e);
                   }}
@@ -155,6 +162,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
                 <DropdownExamRegion
                   label="สนามสอบ"
                   value={provinceCode}
+                  isClearable={true}
                   onClick={(e) => {
                     onClickProvinceButton(e);
                   }}
@@ -173,10 +181,12 @@ export const SearchSchedulePopup = ({ onChange }) => {
           <ScheduleTable 
             provinceCode={provinceCode}
             examOrganizerCode={examOrganizerCode}
+            roundId={examRound}
+            examDate={selectedDate}
             onClick={handleAction}/>
         </ModalBody>
-      </Modal>
-    </MuiPickersUtilsProvider>
+        </MuiPickersUtilsProvider>
+      </Modal>   
   );
 };
 SearchSchedulePopup.defaultProps = {

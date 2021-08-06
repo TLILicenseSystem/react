@@ -22,6 +22,7 @@ export const DropdownExamOrganizer = ({
   type,
   value,
   onClick,
+  isClearable,
   requiredField,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -45,7 +46,7 @@ export const DropdownExamOrganizer = ({
         <label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label>      
         <Select
           className={styles.input}
-          isClearable={false}
+          isClearable={isClearable}
           isSearchable={false}
           name="examOrganizer"
           options={userData}
@@ -68,6 +69,7 @@ DropdownExamOrganizer.defaultProps = {
   value: "",
   //กรณีไม่ได้ส่ง onChange เข้ามาก็จะไม่พัง
   onClick: () => {},
+  isClearable: false,
   requiredField: false,
 };
 
@@ -76,5 +78,6 @@ DropdownExamOrganizer.propTypes = {
   type: PropTypes.string,
   value: PropTypes.string,
   onClick: PropTypes.func,
+  isClearable: PropTypes.bool,
   requiredField: PropTypes.bool,
 };
