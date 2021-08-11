@@ -5,7 +5,7 @@ import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 import { get } from "lodash";
 import { getProvinceCodeAll } from "../../api/apiGetProvinceCode";
-import Select from 'react-select';
+import Select from "react-select";
 
 // 4 props เพิ้อคุยกับ componant ชื่อ InputWithLabel
 // label
@@ -35,24 +35,42 @@ export const DropdownExamRegion = ({
     fetchData();
   }, []);
 
+  const customStyle =  {
+    option: (provided, state) => ({
+      ...provided,
+      fontFamily: "Prompt-Regular",
+    }),
+    singleValue: (provided, state) => ({
+      ...provided,
+      fontFamily: "Prompt-Regular",
+    }),
+  };
+
   return (
     <div>
       <Form>
         <FormGroup row>
-            <label>{label} :</label>
-            <label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label>
-            <Select
-                className={styles.input}
-                isClearable={true}
-                isSearchable={true}
-                name="provinceCodeSelected"
-                options={userData}                
-                getOptionLabel={(option) => `${option.provinceCode} ${option.provinceName}`}
-                getOptionValue={(option) => `${option.provinceCode}`}
-                onChange={onClick}
-                isDisabled={disabled}
-                value={userData.filter(option => option.provinceCode === value)}
-              />    
+          <label className={styles.labelDropdown}>
+            {label}
+            <label className={styles.required}>
+              {value === "" && requiredField ? "*" : ""}
+            </label>
+          </label>
+          <Select
+            styles={customStyle}
+            className={styles.inputDropdown}
+            isClearable={true}
+            isSearchable={true}
+            name="provinceCodeSelected"
+            options={userData}
+            getOptionLabel={(option) =>
+              `${option.provinceCode} ${option.provinceName}`
+            }
+            getOptionValue={(option) => `${option.provinceCode}`}
+            onChange={onClick}
+            isDisabled={disabled}
+            value={userData.filter((option) => option.provinceCode === value)}
+          />
         </FormGroup>
       </Form>
     </div>

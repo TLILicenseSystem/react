@@ -3,32 +3,37 @@ import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import ExamRoundPage from "./pages/ExamRound/ExamRound";
 import ExamOrganizerPage from "./pages/ExamOrganizer/ExamOrganizer";
 import ExamSchedulePage from "./pages/ExamSchedule/ExamSchedule";
+import FormExamLocation from "./pages/ExamLocation/FormExamLocation";
 import "./App.css";
 //import {Spinner, Popup} from "./components/shared";
 
 const App = () => {
   return (
     <BrowserRouter>
-     
-     
       <Switch>
-
-      { <Route path="/examSchedule" render={(props) => <ExamSchedulePage {...props} />} /> }
-        { <Route path="/examOrganizer" render={(props) => <ExamOrganizerPage {...props} />} /> }
-        { <Route path="/examRound" render={(props) => <ExamRoundPage {...props} />} /> }
-       
-       {/* { <Redirect from="*" to="/examSchedule" /> } */}
-       { <Redirect from="*" to="/examSchedule" /> }
+        <Route
+          path="/examSchedule"
+          render={(props) => <ExamSchedulePage {...props} />}
+        />
+        <Route
+          path="/examOrganizer"
+          render={(props) => <ExamOrganizerPage {...props} />}
+        />
+        <Route
+          path="/examRound"
+          render={(props) => <ExamRoundPage {...props} />}
+        />
+        <Route
+          path="/examLocation"
+          render={(props) => <FormExamLocation {...props} />}
+        />
+        <Redirect from="*" to="/examLocation" />
       </Switch>
     </BrowserRouter>
   );
 };
 
 export default App;
-
-
-
-
 
 // import React from "react";
 // import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
@@ -47,11 +52,10 @@ export default App;
 //       <Spinner />
 //       <Popup />
 //       <Switch>
-        
-//       <Route path="/covid" render={(props) => <CovidPage {...props} />} /> 
-       
-//         { <Redirect from="*" to="/covid" /> }
 
+//       <Route path="/covid" render={(props) => <CovidPage {...props} />} />
+
+//         { <Redirect from="*" to="/covid" /> }
 
 //       </Switch>
 //     </BrowserRouter>
@@ -59,11 +63,6 @@ export default App;
 // };
 
 // export default App;
-
-
-
-
-
 
 // import Header from './components/Header/Header'
 
@@ -76,9 +75,6 @@ export default App;
 // }
 
 // export default App;
-
-
-
 
 //---------------------------HAVE SIDEBAR----------------------------
 // import ExamRoundPage from "./pages/ExamRound/ExamRound";
@@ -102,17 +98,13 @@ export default App;
 //         <Route path='/setting/examRegion' exact component={ExamRegion} />
 //         <Route path='/setting/examLocation' exact component={ExamLocation} />
 //         <Route path='/setting/examSchedule' exact component={ExamSchedule} />
-  
+
 //       </Switch>
 //     </BrowserRouter>
 //   );
 // }
 
 // export default App;
-
-
-
-
 
 // import React from 'react';
 // // import logo from './logo.svg';
@@ -130,7 +122,7 @@ export default App;
 //         <Router>
 //               <HeaderComponent />
 //                 <div className="container">
-//                     <Switch> 
+//                     <Switch>
 //                           <Route path = "/" exact component = {ListExamroundComponent}></Route>
 //                           <Route path = "/employees" component = {ListExamroundComponent}></Route>
 //                           <Route path = "/add-employee/:id" component = {CreateExamroundComponent}></Route>
@@ -141,11 +133,8 @@ export default App;
 //               <FooterComponent />
 //         </Router>
 //     </div>
-    
+
 //   );
 // }
 
 // export default App;
-
-
-

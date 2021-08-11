@@ -19,12 +19,18 @@
     border:1px solid;
     background-color: #ced2d8;
     border-radius:5px;
-    
 }
 .buttonChangeSchedule {
     display: flex;
     justify-content: flex-end; 
     padding-bottom: 5px;
+}
+
+.div .head {
+    font-family: "Prompt-Regular";
+}
+.button {
+    font-family: "Prompt-Regular";
 }
 
 

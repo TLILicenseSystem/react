@@ -13,7 +13,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import { useStyles } from "./table.style";
+import { useStyles, StyleTableCell, StyledTableRow, StyledTablePagination } from "./table.style";
 import PropTypes from "prop-types";
 
 export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
@@ -26,7 +26,7 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
   const [examOrganizerList, setExamOrganizerList] = useState([]);
   const [examLocationTypeList, setExamLocationTypeList] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(8);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const fetchData = async () => {
     const responseLocation = await getExamLocation("A");
     setExamLocationList(get(responseLocation, "data", []));
@@ -110,10 +110,8 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
     }
   };
 
-  //examOrganizerList
-
   const columns = [
-    { id: "locationId", label: "รหัสที่ตั้ง", minWidth: 80 },
+    { id: "locationId", label: "รหัสที่ตั้ง", minWidth: 80, className:classes },
     { id: "provinceCode", label: "สนามสอบ", minWidth: 100 },
     {
       id: "orgCode",
@@ -146,21 +144,21 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
       style={{
         maxHeight: "600px",
         overflowY: "auto",
-        margin: "auto",
+        margin: "auto", 
       }}
     >
-      <TableContainer>
-        <Table aria-label="sticky table">
+      <TableContainer component="div">
+        <Table classname={classes.container}>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell
+                <StyleTableCell
                   key={column.id}
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
                 >
                   {column.label}
-                </TableCell>
+                </StyleTableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -170,32 +168,34 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
                 (zone) =>
                   (zone.provinceCode === provinceCode &&
                     zone.orgCode === examOrganizerCode) ||
-                  provinceCode === ""
+                  (zone.provinceCode === provinceCode &&
+                    examOrganizerCode === "") ||
+                  (zone.orgCode === examOrganizerCode &&
+                    provinceCode === "") || (examOrganizerCode === "" && provinceCode === "")
               )
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((detail, index) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                    <TableCell key={index}>
+                  <StyledTableRow hover role="checkbox" key={index}>
+                    <StyleTableCell >
                       {get(detail, "locationId", "")}
-                    </TableCell>
-                    <TableCell key={index}>
+                    </StyleTableCell>
+                    <StyleTableCell>
                       {get(detail, "provinceCode", "")}{" "}
                       {getProvinceData(get(detail, "provinceCode", ""))}
-                    </TableCell>
-                    <TableCell key={index}>
+                    </StyleTableCell>
+                    <StyleTableCell>
                       {get(detail, "orgCode", "")}{" "}
                       {getOrganizerData(get(detail, "orgCode", ""))}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {get(detail, "locationType", "")}
-                      {""}
+                    </StyleTableCell>
+                    <StyleTableCell>
+                      {get(detail, "locationType", "")}{" "}                      
                       {getLocationTypeData(get(detail, "locationType", ""))}
-                    </TableCell>
-                    <TableCell key={index}>
+                    </StyleTableCell>
+                    <StyleTableCell>
                       {get(detail, "locationDetail", "")}
-                    </TableCell>
-                    <TableCell key={index}>
+                    </StyleTableCell>
+                    <StyleTableCell>
                       <Button
                         size="sm"
                         onClick={() =>
@@ -217,23 +217,32 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
                           })
                         }
                       >
-                        เลือก
+                        แก้ไข
                       </Button>
-                    </TableCell>
-                  </TableRow>
+                    </StyleTableCell>
+                  </StyledTableRow>
                 );
               })}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
+      <StyledTablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={examLocationList.length}
+        count={examLocationList.filter(
+          (zone) =>
+            (zone.provinceCode === provinceCode &&
+              zone.orgCode === examOrganizerCode) ||
+            (zone.provinceCode === provinceCode &&
+              examOrganizerCode === "") ||
+            (zone.orgCode === examOrganizerCode &&
+              provinceCode === "") || (examOrganizerCode === "" && provinceCode === "")
+        ).length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage="จำนวนแถวต่อหน้า:"
       />
     </div>
   );

@@ -23,6 +23,7 @@ export const addExamSchedule = async (examSchedule) => {
 export const updateExamSchedule = async (examSchedule) => {
     try {
         const inputPut = examSchedule;
+        console.log("inputPut",inputPut);
         const response = await api.put(`/examschedule/update`, inputPut);
         if (response.status === 200) {
             console.log('updateExamLocation response ', response.data);

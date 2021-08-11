@@ -12,9 +12,9 @@ import {
 import BoxScheduleFirst from "./BoxScheduleFirst";
 import BoxSchedule from "./BoxSchedule";
 import BoxUserModify from "./BoxUserModify";
-import styles from "./ExamSchedule.module.css";
+import { FontAwesomeIcon } from "@fortawesome/fontawesome-free";
 import { cond, get } from "lodash";
-import { addExamSchedule } from "../../api/apiAddExamSchedule";
+import { addExamSchedule, updateExamSchedule } from "../../api/apiAddExamSchedule";
 import {
   ButtonGroup,
   Button,
@@ -92,13 +92,13 @@ const ExamSchedule = (props) => {
       setAlterLocation(get(e, "alteredLocationDetail", {}));
     }
     setIsShowMainLocation(true);
-    console.log("examDate ", get(e, "examDate", ""));
+    console.log("receiveTime ", get(e, "receiveTime", ""));
     setScheduleId(get(e, "scheduleId", ""));
     setExamDate(get(e, "examDate", ""));
-    setCloseDate(get(e, "applyCloseDate", ""));
+    setCloseDate(moment(get(e, "applyCloseDate", ""),"DD/MM/yyyy"));
     setExamTime(get(e, "roundId", ""));
-    setReceiveDate(get(e, "receiveDate", ""));
-    setReceiveTime(get(e, "receiveTime", ""));
+    setReceiveDate(moment(get(e, "receiveDate", "")),"DD/MM/yyyy");
+    setReceiveTime(moment(get(e, "receiveTime", ""),"HH:mm "));
     setNum(get(e, "maxApplicant", ""));
     setRadioValue("2");
   };
@@ -148,7 +148,6 @@ const ExamSchedule = (props) => {
       return;
     } else {
       if (radioValue === "1") {
-        console.log("moment ", moment(closeDate).format("yyyy-MM-DD"));
         let examSchedule = {
           locationId: get(mainLocation, "locationId", ""),
           alteredLocationId: get(mainLocation, "locationId", ""),
@@ -161,9 +160,9 @@ const ExamSchedule = (props) => {
           receiveDate: moment(receiveDate).format("yyyy-MM-DD"),
           receiveTime: moment(receiveTime).format("HH:mm"),
           createUserCode: userModify,
-          createTime: moment(modifyDate).format("yyyy-MM-DD"),
+          createTime: moment(modifyDate).format("yyyy-MM-DD HH:mm"),
           updateUserCode: userModify,
-          lastUpdate: moment(modifyDate).format("yyyy-MM-DD"),
+          lastUpdate: moment(modifyDate).format("yyyy-MM-DD HH:mm"),
         };
         let response = await addExamSchedule(examSchedule);
         if (response !== "error") {
@@ -181,6 +180,34 @@ const ExamSchedule = (props) => {
             icon: "error",
             title: "เกิดข้อผิดพลาด",
             text: "กรุณาค้นหาตารางสอบก่อนบันทึกแก้ไข",
+          });
+          return;
+        }
+        console.log("receiveTime " ,receiveTime);
+        console.log("receiveTime " , moment(receiveTime,"HH:mm").format("HH:mm"));
+        let examSchedule = {
+          scheduleId: scheduleId,
+          locationId: get(mainLocation, "locationId", ""),
+          alteredLocationId: get(mainLocation, "locationId", ""),
+          examDate: moment(examDate).format("yyyy-MM-DD"),
+          roundId: examTime,
+          maxApplicant: num,
+          applyOpenDate: moment().format("yyyy-MM-DD"),
+          applyCloseDate: moment(closeDate).format("yyyy-MM-DD"),
+          openStatus: "N",
+          receiveDate: moment(receiveDate).format("yyyy-MM-DD"),
+          receiveTime: moment(receiveTime,"HH:mm").format("HH:mm"),
+          updateUserCode: userModify,
+          lastUpdate: moment(modifyDate).format("yyyy-MM-DD"),
+        };
+        let response = await updateExamSchedule(examSchedule);
+        if (response !== "error") {
+          Swal.fire("Updated!", "ปรับปรุงข้อมูลแล้ว", "success");
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถแก้ไขข้อมูลได้",
           });
         }
       }
@@ -261,14 +288,14 @@ const ExamSchedule = (props) => {
                 setCloseDate(moment(e).format("MM/DD/YYYY"))
               }
               InRoundTime={examTime}
-              onClickInRoundTime={(e) => setExamTime("01")}
+              onClickInRoundTime={(e) => setExamTime(get(e,"roundId",""))}
               InReceiveDate={receiveDate}
               onClickInReceiveDate={(e) =>
                 setReceiveDate(moment(e).format("MM/DD/YYYY"))
               }
               InReceiveTime={receiveTime}
               onClickInReceiveTime={(e) =>
-                setReceiveTime(moment(e).format("DD/MM/YYYY HH:mm"))
+                setReceiveTime(moment(e).format("HH:mm"))
               }
               InNum={num}
               onChangeInNum={(e) => setNum(e.target.value)}
@@ -279,8 +306,8 @@ const ExamSchedule = (props) => {
           ""
         ) : (
           <Card>
-            <CardHeader style={{ textAlign: "center" }}>
-              ข้อมูลสถานที่สอบหลัก
+            <CardHeader style={{ textAlign: "left" }}>
+              ข้อมูลสถานที่สอบหลัก <i class="far fa-edit" type="button" onClick={{}}></i>
             </CardHeader>
             <CardBody>
               <BoxSchedule
@@ -318,7 +345,7 @@ const ExamSchedule = (props) => {
           ""
         ) : (
           <Card>
-            <CardHeader style={{ textAlign: "center" }}>
+            <CardHeader style={{ textAlign: "left" }}>
               ข้อมูลสถานที่สอบอื่นๆ
             </CardHeader>
             <CardBody>

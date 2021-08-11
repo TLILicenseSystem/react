@@ -83,12 +83,13 @@ const BoxSchedule = ({
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Grid container spacing={2}>
           <Grid item xs={4}>
-            <Box>{lExamDate}</Box>
+            <Box pb={1}>{lExamDate}</Box>
             <Box>
               <KeyboardDatePicker
                 autoOk
                 disableToolbar
                 variant="inline"
+                inputVariant="outlined"
                 format="dd/MM/yyyy"
                 margin="small"
                 id="date-picker-inline"
@@ -97,16 +98,24 @@ const BoxSchedule = ({
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
+                InputProps={{
+                  style: {
+                      fontSize: 16,
+                      height: 35
+                  }
+              }}
+               style={{width:"246px",height:"50px"}}
               />
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box>{lCloseDate}</Box>
+            <Box pb={1}>{lCloseDate}</Box>
             <Box>
               <KeyboardDatePicker
                   autoOk
                   disableToolbar
                   variant="inline"
+                  inputVariant="outlined"
                   format="dd/MM/yyyy"
                   margin="small"
                   id="date-picker-inline"
@@ -115,11 +124,18 @@ const BoxSchedule = ({
                   KeyboardButtonProps={{
                     "aria-label": "change date",
                   }}
+                  InputProps={{
+                    style: {
+                        fontSize: 16,
+                        height: 35
+                    }
+                }}
+                 style={{width:"246px",height:"50px"}}
                 />               
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box>{lRoundTime}</Box>
+            <Box >{lRoundTime}</Box>
             <Box>
               <Select
                 isClearable={false}
@@ -129,17 +145,18 @@ const BoxSchedule = ({
                 getOptionLabel={(option) => `${option.timeStr}`}
                 getOptionValue={(option) => `${option.roundId}`}
                 onChange={onClickInRoundTime}
-                value={examRoundList.filter(option => option.roundId === examRound)}
+                value={examRoundList.filter(option => option.roundId === InRoundTime)}
               />                   
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box>{lReceiveDate}</Box>
+            <Box pb={1}>{lReceiveDate}</Box>
             <Box>
               <KeyboardDatePicker
                 autoOk
                 disableToolbar
                 variant="inline"
+                inputVariant="outlined"
                 format="dd/MM/yyyy"
                 margin="small"
                 id="date-picker-inline"
@@ -148,25 +165,40 @@ const BoxSchedule = ({
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
+                InputProps={{
+                  style: {
+                      fontSize: 16,
+                      height: 35
+                  }
+              }}
+               style={{width:"246px",height:"50px"}}
               />
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box>{lReceiveTime}</Box>
+            <Box pb={1}>{lReceiveTime}</Box>
             <Box>
               <TimePicker
                 autoOk 
                 variant="inline"
+                inputVariant="outlined"
                 ampm={false}
                 mask="__:__"
-                value={InReceiveTime}
+                value={"2000-01-01 " + InReceiveTime}
                 minutesStep={15}
                 onChange={onClickInReceiveTime}
+                InputProps={{
+                  style: {
+                      fontSize: 16,
+                      height: 35
+                  }
+              }}
+               style={{width:"246px",height:"50px"}}
               />
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box>{lNum}</Box>
+            <Box pb={1}>{lNum}</Box>
             <Box>
               <Input value={InNum} onChange={onChangeInNum}/>
             </Box>

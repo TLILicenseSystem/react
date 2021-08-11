@@ -6,6 +6,7 @@ import { getProvinceCodeAll } from "../../api/apiGetProvinceCode";
 import { getOrganizerAll } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone, getExamType } from "../../api/apiGetConfig";
 import { getExamSchedule } from "../../api/apiAddExamSchedule";
+import { getExamRoundAll } from "../../api/apiGetExamRound";
 import { Button } from "reactstrap";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -32,6 +33,7 @@ export const ScheduleTable = ({
   const [examOrganizerList, setExamOrganizerList] = useState([]);
   const [examLocationTypeList, setExamLocationTypeList] = useState([]);
   const [examScheduleList, setExamScheduleList] = useState([]);
+  const [examRoundList, setExamRoundList] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const fetchData = async () => {
@@ -47,6 +49,8 @@ export const ScheduleTable = ({
     setExamLocationTypeList(responseLocationType);
     const responseSchedule = await getExamSchedule();
     setExamScheduleList(get(responseSchedule, "data", []));
+    const responseRound = await getExamRoundAll();
+    setExamRoundList(get(responseRound, "data", []));
   };
 
   useEffect(() => {
@@ -118,7 +122,6 @@ export const ScheduleTable = ({
       return "";
     }
   };
-
   const getLocationDetail = (key, value) => {
     if (value === "") {
       return "";
@@ -139,6 +142,19 @@ export const ScheduleTable = ({
       return get(locationDetail, "locationDetail", "");
     } else if (key === "organizerName") {
       return getOrganizerData(get(locationDetail, "organizerCode", ""));
+    } else {
+      return "";
+    }
+  };
+  const getExamRoundDetail = (roundId) => {
+    console.log("getExamRoundDetail " , roundId);
+    if (roundId !== "" || roundId !== null) {
+      const roundTime = get(
+        examRoundList.filter((zone) => zone.roundId === roundId)[0],
+        "timeStr",
+        ""
+      );
+      return roundTime;
     } else {
       return "";
     }
@@ -236,7 +252,7 @@ export const ScheduleTable = ({
                       {moment(get(detail, "examDate", "")).format("DD/MM/yyyy")}
                     </TableCell>
                     <TableCell key={index}>
-                      {get(detail, "roundId", "")}
+                      {getExamRoundDetail(get(detail, "roundId", ""))}
                     </TableCell>
                     <TableCell key={index}>
                       {get(detail, "maxApplicant", "")}{" "}

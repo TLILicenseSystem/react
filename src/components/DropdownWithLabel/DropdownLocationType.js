@@ -5,6 +5,7 @@ import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 import { get } from "lodash";
 import { getExamType } from "../../api/apiGetConfig";
+import Select from 'react-select';
 
 // 4 props เพิ้อคุยกับ componant ชื่อ InputWithLabel
 // label
@@ -34,35 +35,18 @@ export const DropdownLocationType = ({ label, type, value, onClick, requiredFiel
       {/* ใส่ colon ที่ label เพื่อไม่ต้องใส่ที่หน้า login */}
       <Form>
         <FormGroup row>
-          <Col xs={3}>
-            <label className={styles.label}>{label} :</label>
-            <label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label>
-          </Col>
-          <Col xs={9}>
-            <DropdownButton
-              className={styles.input}
-              id="dropdown-basic-button"
-              title={
-                value === "" || value === null || value === "null"
-                  ? "กรุณาเลือก"
-                  : value
-              }
-              onSelect={onClick}
-            >
-              {userData.map((detail, index) => {
-                return (
-                  <Dropdown.Item
-                    key={index}
-                    eventKey={get(detail, "examTypeId", "")}
-                    href="#"
-                  >
-                    {get(detail, "examTypeId", "")}{" "}
-                    {get(detail, "examTypeName", "")}
-                  </Dropdown.Item>
-                );
-              })}
-            </DropdownButton>
-          </Col>
+          <label className={styles.labelDropdown}>{label}<label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label> :</label>
+            <Select
+                  className={styles.inputDropdown}
+                  isClearable={false}
+                  isSearchable={false}
+                  name="locationType"
+                  options={userData}                
+                  getOptionLabel={(option) => `${option.examTypeId} ${option.examTypeName}`}
+                  getOptionValue={(option) => `${option.examTypeId}`}
+                  onChange={onClick}
+                  value={userData.filter(option => option.examTypeId === value)}
+                />    
         </FormGroup>
       </Form>
     </div>

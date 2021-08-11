@@ -41,6 +41,7 @@ export const SearchLocationPopup = ({onChange}) => {
     fetchProvinceData(get(e, "provinceCode", ""));
   };
   const onClickExamOrganizerButton = (e) => {
+    console.log("onClickExamOrganizerButton ", e);
     setExamOrganizerCode(get(e,"orgCode",""));
     fetchExamOrganizer(get(e,"orgCode",""));
     setSearchProvince({"provinceCode":provinceCode,"examOrganizerCode":examOrganizerCode});

@@ -42,15 +42,15 @@ export const DropdownExamOrganizer = ({
   return (
     <Form>
         <FormGroup row>
-        <label >{label} :</label>
-        <label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label>      
+        <label className={styles.labelDropdown}>{label}<label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label> :</label>    
         <Select
-          className={styles.input}
+          styles={{ option: (provided, state) => ({ ...provided, fontFamily: "Prompt-Regular" })}}
+          className={styles.inputDropdown}
           isClearable={isClearable}
           isSearchable={false}
           name="examOrganizer"
           options={userData}
-          getOptionLabel={(option) => `${option.orgCode}${option.orgName}`}
+          getOptionLabel={(option) => `${option.orgCode} ${option.orgName}`}
           getOptionValue={(option) => `${option.orgCode}`}
           onChange={onClick}
           isDisabled={requiredField}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -17,6 +17,7 @@ import {
   TabContent,
   TabPane,
   ButtonGroup,
+  Media,
 } from "reactstrap";
 //import {  } from "react-bootstrap";
 import {
@@ -24,21 +25,36 @@ import {
   DropdownExamRegion,
   DropdownExamOrganizer,
   DropdownLocationType,
-  searchPopup,
-  AlertPopup,
+  SearchPopup,
+  Container,
+  Wrapper,
+  InputWithLabelRow,
+  EditLocationPopup,
+  LocationTable,
 } from "../../components/shared";
 import { get } from "lodash";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { getProvinceCode } from "../../api/apiGetProvinceCode";
-import { getOrganizer } from "../../api/apiGetExamOrganizer";
+import {
+  getProvinceCode,
+  getProvinceCodeAll,
+} from "../../api/apiGetProvinceCode";
+import { getOrganizer, getOrganizerAll } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone, getExamType } from "../../api/apiGetConfig";
-import { getExamLocationAll } from "../../api/apiGetExamLocation";
+import {
+  getExamLocation,
+  getExamLocationAll,
+} from "../../api/apiGetExamLocation";
+import { showSearchPopup, showEditLocationPopup } from "../../redux/actions";
+import {
+  addExamLocation,
+  updateExamLocation,
+  deleteExamLocation,
+} from "../../api/apiAddExamLocation";
 import useFetchLocationList from "../../hooks/useFetchLocationList.js";
-import { showSearchPopup, showAlertPopup } from "../redux/actions";
-import { addExamLocation, updateExamLocation, deleteExamLocation } from "../../api/apiAddExamLocation";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import classnames from "classnames";
+import styles from "../pageStyles.css";
 
 const FormExamLocation = () => {
   const [provinceCode, setProvinceCode] = useState("");
@@ -49,7 +65,6 @@ const FormExamLocation = () => {
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [examOrganizerName, setExamOrganizerName] = useState("");
   const [examTypeCode, setExamTypeCode] = useState("");
-  const [examTypeName, setExamTypeName] = useState("");
   const [locationDetail, setLocationDetail] = useState("");
   const [examLocationStateList, setExamLocationStateList] = useState([]);
 
@@ -63,6 +78,8 @@ const FormExamLocation = () => {
   const [editExamOrganizerName, setEditExamOrganizerName] = useState("");
   const [editLocationDetail, setEditLocationDetail] = useState("");
 
+  const dispatch = useDispatch();
+
   const initEditExamForm = () => {
     setEditProvinceName("");
     setEditRegionName("");
@@ -72,7 +89,7 @@ const FormExamLocation = () => {
     setEditLocationDetail("");
   };
   const onClickProvinceButton = (e) => {
-    setProvinceCode(get(e, "provinceCode", "") + "");
+    setProvinceCode(get(e, "provinceCode", ""));
     fetchProvinceData(get(e, "provinceCode", ""));
   };
   const onClickEditProvinceButton = (e) => {
@@ -80,24 +97,17 @@ const FormExamLocation = () => {
     setEditProvinceName(getProvinceData(e));
   };
   const onClickExamOrganizerButton = (e) => {
-    setExamOrganizerCode(e + "");
-    fetchExamOrganizer(e);
+    setExamOrganizerCode(get(e, "orgCode", ""));
   };
   const onClickEditExamOrganizerButton = (e) => {
     setEditExamOrganizerCode(e + "");
-    fetchEditExamOrganizer(e);
   };
   const onClickExamType = (e) => {
-    setExamTypeCode(e + "");
-    setExamTypeName(
-      get(
-        examType.filter((type) => type.examTypeId === e)[0],
-        "examTypeName",
-        ""
-      )
-    );
+    setExamTypeCode(get(e, "examTypeId", "1"));
   };
-  const onClickEditExamType = (e) => {
+  const onClickEditExamLocation = (e) => {
+    console.log("onClickEditExamLocation ",e);
+    onClickEditLocationPopup("edit", e);
     setEditExamTypeCode(e + "");
     setEditExamTypeName(
       get(
@@ -114,8 +124,21 @@ const FormExamLocation = () => {
         description: "",
         action: () => {
           //คำสั่งในการเปลี่ยนหน้า (หน้าที่ต้องการไป, state หรือ parametter ที่ parse ไปอีกหน้า ซึ่งส่งได้ตัวเดียว)
-          history.push("/FormExamLocation", "");
-          setExamLocationStateList(examLocationList);
+          //setExamLocationStateList(examLocationList);
+        },
+      })
+    );
+  };
+  const onClickEditLocationPopup = (mode, e) => {
+    let popupTitle = mode === "edit" ? "แก้ไขสถานที่สอบ" : "เพิ่มสถานที่สอบ";
+    dispatch(
+      showEditLocationPopup({
+        title: popupTitle,
+        description: mode,
+        locationEditDetail: e,
+        action: () => {
+          //คำสั่งในการเปลี่ยนหน้า (หน้าที่ต้องการไป, state หรือ parametter ที่ parse ไปอีกหน้า ซึ่งส่งได้ตัวเดียว)
+          //setExamLocationStateList(examLocationList);
         },
       })
     );
@@ -125,15 +148,19 @@ const FormExamLocation = () => {
     if (activeTab !== tab) setActiveTab(tab);
   };
   const onClickAddExamLocation = async () => {
-
-    if (examOrganizerCode === "" || provinceCode === "" || locationDetail === "" || examTypeCode === ""){
+    if (
+      examOrganizerCode === "" ||
+      provinceCode === "" ||
+      locationDetail === "" ||
+      examTypeCode === ""
+    ) {
       Swal.fire({
-        icon: 'error',
-        title: 'เกิดข้อผิดพลาด',
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
         text: "กรุณาระบุข้อมูลที่มี * ให้ครบถ้วน",
       });
       return;
-    };
+    }
 
     let examlocation = {
       orgCode: examOrganizerCode,
@@ -143,50 +170,39 @@ const FormExamLocation = () => {
       createUserCode: "2901133",
     };
     let response = await addExamLocation(examlocation);
-    if (response !== "error"){
-      Swal.fire(
-        'Added!',
-        'อัพโหลดข้อมูลแล้ว',
-        'success'
-      );
+    if (response !== "error") {
+      Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
       reloadLocationList();
     } else {
       Swal.fire({
-        icon: 'error',
-        title: 'เกิดข้อผิดพลาด',
-        text: 'ไม่สามารถแก้ไขข้อมูลได้',
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถแก้ไขข้อมูลได้",
       });
-    };    
+    }
   };
   const onClickSearchAll = () => {
     setSearchValue();
     setExamLocationStateList(examLocationList);
   };
   const reloadLocationList = async () => {
-    let response = await getExamLocationAll();    
-    setExamLocationStateList(get(response,"data",[]));
+    let response = await getExamLocationAll();
+    setExamLocationStateList(get(response, "data", []));
   };
-  const onClickEditLocation = (detail) => {
-    window.scrollTo({top: 0, behavior: 'smooth'});
-    toggleTab("2");
-    initEditExamForm();
-    console.log("onClickEditLocation ", detail);
-    setEditLocationId(get(detail,"locationId",""));
-    onClickEditProvinceButton(get(detail,"provinceCode",""));
-    setEditRegionName(getRegionData(get(detail,"provinceCode","")));
-    onClickEditExamOrganizerButton(get(detail,"orgCode",""));
-    onClickEditExamType(get(detail,"locationType",""));
-    setEditLocationDetail(get(detail,"locationDetail",""));
-  };
+
   const onClickEditLocationData = async () => {
-    if (editExamOrganizerCode === "" || editLocationDetail === "" || editExamTypeCode === ""){
+    if (
+      editExamOrganizerCode === "" ||
+      editLocationDetail === "" ||
+      editExamTypeCode === ""
+    ) {
       Swal.fire({
-        icon: 'error',
-        title: 'เกิดข้อผิดพลาด',
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
         text: "กรุณาระบุข้อมูลที่มี * ให้ครบถ้วน",
       });
       return;
-    };
+    }
 
     let examlocation = {
       locationId: editLocationId,
@@ -199,52 +215,45 @@ const FormExamLocation = () => {
 
     let response = await updateExamLocation(examlocation);
 
-    if (response !== "error"){
-      Swal.fire(
-        'Updated!',
-        'แก้ไขข้อมูลแล้ว',
-        'success'
-      );
+    if (response !== "error") {
+      Swal.fire("Updated!", "แก้ไขข้อมูลแล้ว", "success");
       reloadLocationList();
     } else {
       Swal.fire({
-        icon: 'error',
-        title: 'เกิดข้อผิดพลาด',
-        text: 'ไม่สามารถแก้ไขข้อมูลได้',
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถแก้ไขข้อมูลได้",
       });
-    };     
+    }
   };
   const onClickDeleteLocation = async (detail) => {
-
     const { value: check } = await Swal.fire({
-      text: `ต้องการลบรหัสที่ตั้ง ${get(detail, "locationId", "")} จังหวัด${getProvinceData(get(detail, "provinceCode", ""))} ใช่หรือไม่`,
-      icon: 'warning',
+      text: `ต้องการลบรหัสที่ตั้ง ${get(
+        detail,
+        "locationId",
+        ""
+      )} จังหวัด${getProvinceData(get(detail, "provinceCode", ""))} ใช่หรือไม่`,
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes'
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
     });
 
     if (check) {
-
       let locationId = get(detail, "locationId", "");
       let response = await deleteExamLocation(locationId);
-      console.log("onClickDeleteLocation " , response);
-      if (response === "success"){
-        Swal.fire(
-          'Deleted!',
-          'ลบข้อมูลแล้ว',
-          'success'
-        );
+      console.log("onClickDeleteLocation ", response);
+      if (response === "success") {
+        Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: 'ไม่สามารถลบข้อมูลได้',
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถลบข้อมูลได้",
         });
-      };      
+      }
     }
-
   };
 
   const examZoneResonse = getExamLocationZone();
@@ -255,9 +264,6 @@ const FormExamLocation = () => {
     examZoneList,
     examOrganizerList,
   } = useFetchLocationList();
-
-  const history = useHistory();
-  const dispatch = useDispatch();
 
   const fetchProvinceData = async (e) => {
     const response = await getProvinceCode(e);
@@ -347,253 +353,60 @@ const FormExamLocation = () => {
   };
 
   return (
-    <Card>
-      <SearchPopup onChange={getSearchValue} />
-      <AlertPopup />
-      <CardHeader>
-        ตั้งค่าสถานที่สอบ{"   "}
-        <ButtonGroup>
-          <Button onClick={onClickSearchExam} color="primary">Search🔎</Button>
-          <Button onClick={onClickSearchAll} color="secondary">Show All</Button>
-        </ButtonGroup>
-      </CardHeader>
-      <CardBody>
-        <ListGroup>
-          <ListGroupItem>
-            <Nav tabs>
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === "1" })}
-                  onClick={() => {
-                    toggleTab("1");
-                  }}
-                >
-                  เพิ่มสถานที่ตั้งสอบ
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === "2" })}
-                  onClick={() => {
-                    toggleTab("2");
-                  }}
-                  disabled={true}
-                >
-                  แก้ไขสถานที่ตั้งสอบ
-                </NavLink>
-              </NavItem>
-            </Nav>
-            <TabContent activeTab={activeTab}>
-              <TabPane tabId="1">
-                <Row xs="1">
-                  <Col xs="6">
-                  <InputWithLabel
-                    label="รหัสที่ตั้ง"
-                    value=""
-                    textboxSize={4}
-                    disabled={true}
-                  />
-                  </Col>
-                  <Col xs="6"></Col>
-                </Row>
-                <Row xs="1" sm="3">
-                  <Col xs="6">
-                    <DropdownExamRegion
-                      label="สนามสอบ"
-                      value={provinceCode}
-                      requiredField={true}
-                      onClick={(e) => {
-                        onClickProvinceButton(e);
-                      }}
-                    />
-                  </Col>
+    <Container>
+      {/* <SearchPopup onChange={getSearchValue} /> */}
+      <EditLocationPopup />
+      <div style={{ marginTop: "20px" }} className="div">
+        <h2 className="head">ตั้งค่าสถานที่สอบ</h2>
+        <Wrapper>
+          <Card>
+            <CardBody>
+              <h3 className="head">ตัวกรองข้อมูล</h3>
 
-                  <Col xs="6">
-                    <InputWithLabel
-                      label="โซน"
-                      value={regionName}
-                      disabled={false}
-                    />
-                  </Col>
-                </Row>
-                <Row xs="1" sm="2">
+              <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
+                <Col xs="5">
+                  <DropdownExamRegion
+                    label="สนามสอบ"
+                    value={provinceCode}
+                    onClick={(e) => {
+                      onClickProvinceButton(e);
+                    }}
+                  />
+                </Col>
+                <Col xs="5">
                   <DropdownExamOrganizer
                     label="สถานที่สอบ"
-                    value={examOrganizerCode + examOrganizerName}
-                    requiredField={true}
+                    value={examOrganizerCode}
+                    isClearable={true}
                     onClick={(e) => {
                       onClickExamOrganizerButton(e);
                     }}
                   />
-                  <DropdownLocationType
-                    label="ประเภท"
-                    value={examTypeCode + examTypeName}
-                    requiredField={true}
-                    onClick={(e) => {
-                      onClickExamType(e);
-                    }}
-                  />
-                </Row>
-                <Row xs="1">
-                  <InputWithLabel
-                    label="สถานที่ตั้งสอบ"
-                    labelSize={2}
-                    textboxSize={9}
-                    value={locationDetail}
-                    requiredField={true}
-                    onChange={(e) => {
-                      setLocationDetail(e.target.value);
-                    }}
-                  />
-                </Row>
-                <Row>
-                  <Button onClick={onClickAddExamLocation} color="primary">
-                    อัพโหลดข้อมูล
+                </Col>
+                <Col xs="2">
+                  <Button
+                    onClick={() => onClickEditLocationPopup("add")}
+                    color="success"
+                    style={{ marginLeft: 0, marginTop: 33, fontFamily: "Prompt-Regular"}}
+                  >
+                    เพิ่มสถานที่สอบ
                   </Button>
-                </Row>
-              </TabPane>
-
-
-              <TabPane tabId="2">
-                <Row xs="1">
-                  <Col xs="6">
-                  <InputWithLabel
-                    label="รหัสที่ตั้ง"
-                    value={editLocationId}
-                    labelSize={4}
-                    textboxSize={4}
-                    disabled={true}
-                    onChange={(e) => {
-                      //setUsername(e.target.value);
-                    }}
-                  />
-                  <Col xs="6"></Col>
-                  </Col>
-                </Row>
-                <Row xs="1" sm="3">
-                  <Col xs="6">
-                    <DropdownExamRegion
-                      label="สนามสอบ"
-                      value={editProvinceCode}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col xs="6">
-                    <InputWithLabel
-                      label="โซน"
-                      value={editRegionName}
-                      disabled={true}
-                    />
-                  </Col>
-                </Row>
-                <Row xs="1" sm="2">
-                  <DropdownExamOrganizer
-                    label="สถานที่สอบ"
-                    value={editExamOrganizerCode + editExamOrganizerName}
-                    requiredField={true}
-                    onClick={(e) => {
-                      onClickEditExamOrganizerButton(e);
-                    }}
-                  />
-                  <DropdownLocationType
-                    label="ประเภท"
-                    value={editExamTypeCode + editExamTypeName}
-                    requiredField={true}
-                    onClick={(e) => {
-                      onClickEditExamType(e);
-                    }}
-                  />
-                </Row>
-                <Row xs="1">
-                  <InputWithLabel
-                    labelSize={2}
-                    textboxSize={10}
-                    label="สถานที่ตั้งสอบ"
-                    value={editLocationDetail}
-                    requiredField={true}
-                    onChange={(e) => {
-                      setEditLocationDetail(e.target.value);
-                    }}
-                  />
-                </Row>
-                <Row>
-                  <Button onClick={onClickEditLocationData} color="warning">
-                    แก้ไขข้อมูล
-                  </Button>
-                </Row>
-              </TabPane>
-            </TabContent>
-          </ListGroupItem>
-
-          <ListGroupItem>
-            <div
-              style={{
-                maxHeight: "700px",
-                overflowY: "auto",
-              }}
-            >
-              <Table hover striped responsive bordered>
-                <thead>
-                  <tr>
-                    <th>รหัสที่ตั้ง</th>
-                    <th>สนามสอบ</th>
-                    <th>โซน</th>
-                    <th>สถานที่สอบ</th>
-                    <th>ประเภท</th>
-                    <th>สถานที่ตั้งสอบ</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-
-                <tbody>                  
-                  {examLocationStateList
-                    .filter(
-                      (zone) =>
-                        (zone.provinceCode ===
-                          get(searchValue, "provinceCode", "") &&
-                          zone.orgCode ===
-                            get(searchValue, "examOrganizerCode", "")) ||
-                        get(searchValue, "provinceCode", "") === ""
-                    )
-                    .map((detail, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{get(detail, "locationId", "")}</td>
-                          <td>
-                            {get(detail, "provinceCode", "")}{" "}
-                            {getProvinceData(get(detail, "provinceCode", ""))}
-                          </td>
-                          <td>
-                            {get(detail, "zone", "")}{" "}
-                            {getRegionData(get(detail, "provinceCode", ""))}
-                          </td>
-                          <td>
-                            {get(detail, "orgCode", "")}{" "}
-                            {getOrganizerData(get(detail, "orgCode", ""))}
-                          </td>
-                          <td>
-                            {get(detail, "locationType", "")}{" "}
-                            {getlocationDetailData(
-                              get(detail, "locationType", "")
-                            )}
-                          </td>
-                          <td>{get(detail, "locationDetail", "")}</td>
-                          <td>
-                          <ButtonGroup>
-                            <Button onClick={() => {onClickEditLocation(detail)}} color="warning" size="sm">Edit</Button>
-                            <Button onClick={() => {onClickDeleteLocation(detail)}} color="danger" size="sm">x</Button>
-                          </ButtonGroup>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </Table>
-            </div>
-          </ListGroupItem>
-        </ListGroup>
-      </CardBody>
-    </Card>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+          <Card style={{ marginTop: "20px" }}>
+            <CardBody>
+              <LocationTable
+                provinceCode={provinceCode}
+                examOrganizerCode={examOrganizerCode}
+                onClick={onClickEditExamLocation}
+              />
+            </CardBody>
+          </Card>
+        </Wrapper>
+      </div>
+    </Container>
   );
 };
 

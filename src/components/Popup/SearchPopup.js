@@ -42,8 +42,8 @@ export const SearchPopup = ({onChange}) => {
     fetchProvinceData(get(e, "provinceCode", ""));
   };
   const onClickExamOrganizerButton = (e) => {
-    setExamOrganizerCode(e);
-    fetchExamOrganizer(e);
+    setExamOrganizerCode(get(e, "orgCode", ""));
+    fetchExamOrganizer(get(e, "orgCode", ""));
   };
 
   const toggle = () => dispatch(hideSearchPopup());
@@ -86,7 +86,7 @@ export const SearchPopup = ({onChange}) => {
         />
         <DropdownExamOrganizer
           label="สถานที่สอบ"
-          value={examOrganizerCode + examOrganizerName}
+          value={examOrganizerCode}
           onClick={(e) => {
             onClickExamOrganizerButton(e);
           }}

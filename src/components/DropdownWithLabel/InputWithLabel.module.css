@@ -1,18 +1,27 @@
 .label {
+    margin-top: 0px;
+    margin-bottom: 10px;   
+    font-family: "Prompt-Regular"; 
+}
+.labelDropdown {
     margin-top: 10px;
     margin-bottom: 10px;
+    font-family: "Prompt-Regular";
 }
-
 .input {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-family: "Prompt-Regular";
 }
-.scrollable {
-    
+.inputDropdown {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    font-family: "Prompt-Regular";
+}
+.scrollable {    
     max-height: 240px;
     overflow-y: scroll;
 }
 .required {
     color: red;
-    font-weight: bold;
 }
