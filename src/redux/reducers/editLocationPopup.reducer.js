@@ -5,6 +5,14 @@ const initalState = {
   title: "",
   description: "",
   locationEditDetail: {},
+  locationDetail: "",
+  locationId: "",
+  locationTypeCode: "",
+  locationTypeName: "",
+  organizerCode: "",
+  organizerName: "",
+  provinceCode: "",
+  provinceName: "",
   action: () => {},
 };
 

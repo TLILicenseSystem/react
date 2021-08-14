@@ -23,6 +23,7 @@ export const DropdownExamOrganizer = ({
   value,
   onClick,
   isClearable,
+  disabled,
   requiredField,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -39,21 +40,32 @@ export const DropdownExamOrganizer = ({
     fetchData();
   }, []);
 
+  const customStyle =  {
+    option: (provided, state) => ({
+      ...provided,
+      fontFamily: "Prompt-Regular",
+    }),
+    singleValue: (provided, state) => ({
+      ...provided,
+      fontFamily: "Prompt-Regular",
+    }),
+  };
+
   return (
     <Form>
         <FormGroup row>
         <label className={styles.labelDropdown}>{label}<label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label> :</label>    
         <Select
-          styles={{ option: (provided, state) => ({ ...provided, fontFamily: "Prompt-Regular" })}}
+          styles={customStyle}
           className={styles.inputDropdown}
           isClearable={isClearable}
           isSearchable={false}
           name="examOrganizer"
           options={userData}
+          isDisabled={disabled}
           getOptionLabel={(option) => `${option.orgCode} ${option.orgName}`}
           getOptionValue={(option) => `${option.orgCode}`}
           onChange={onClick}
-          isDisabled={requiredField}
           value={userData.filter((option) => option.orgCode === value)}
         />
 
@@ -70,6 +82,7 @@ DropdownExamOrganizer.defaultProps = {
   //กรณีไม่ได้ส่ง onChange เข้ามาก็จะไม่พัง
   onClick: () => {},
   isClearable: false,
+  disabled: false,
   requiredField: false,
 };
 
@@ -79,5 +92,6 @@ DropdownExamOrganizer.propTypes = {
   value: PropTypes.string,
   onClick: PropTypes.func,
   isClearable: PropTypes.bool,
+  disabled: PropTypes.bool,
   requiredField: PropTypes.bool,
 };

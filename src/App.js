@@ -5,11 +5,14 @@ import ExamOrganizerPage from "./pages/ExamOrganizer/ExamOrganizer";
 import ExamSchedulePage from "./pages/ExamSchedule/ExamSchedule";
 import FormExamLocation from "./pages/ExamLocation/FormExamLocation";
 import "./App.css";
-//import {Spinner, Popup} from "./components/shared";
-
+import MuiAlert from '@material-ui/lab/Alert';
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const App = () => {
   return (
     <BrowserRouter>
+      {/* <Alert severity="success">This is a success message!</Alert> */}
       <Switch>
         <Route
           path="/examSchedule"

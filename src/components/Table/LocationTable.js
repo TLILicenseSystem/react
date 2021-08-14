@@ -13,6 +13,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
+import { DataGrid } from '@material-ui/data-grid';
 import { useStyles, StyleTableCell, StyledTableRow, StyledTablePagination } from "./table.style";
 import PropTypes from "prop-types";
 
@@ -141,12 +142,28 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
 
   return (
     <div
-      style={{
-        maxHeight: "600px",
-        overflowY: "auto",
-        margin: "auto", 
-      }}
+      style={{ marginLeft:"-15px",  height: 480, width: "103%" }}
     >
+
+      {/* <DataGrid
+        rows={examLocationList
+          .filter(
+            (zone) =>
+              (zone.provinceCode === provinceCode &&
+                zone.orgCode === examOrganizerCode) ||
+              (zone.provinceCode === provinceCode &&
+                examOrganizerCode === "") ||
+              (zone.orgCode === examOrganizerCode &&
+                provinceCode === "") || (examOrganizerCode === "" && provinceCode === "")
+          )
+        }
+        columns={columns}
+        pageSize={7}
+        rowsPerPageOptions={[5]}
+        getRowId={(row) => row.locationId}
+        //checkboxSelection
+        disableSelectionOnClick
+      /> */}
       <TableContainer component="div">
         <Table classname={classes.container}>
           <TableHead>

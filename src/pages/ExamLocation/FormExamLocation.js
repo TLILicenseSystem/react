@@ -52,8 +52,6 @@ import {
   deleteExamLocation,
 } from "../../api/apiAddExamLocation";
 import useFetchLocationList from "../../hooks/useFetchLocationList.js";
-import Swal from "sweetalert2";
-import classnames from "classnames";
 import styles from "../pageStyles.css";
 
 const FormExamLocation = () => {
@@ -71,10 +69,10 @@ const FormExamLocation = () => {
   const [editLocationId, setEditLocationId] = useState("");
   const [editProvinceCode, setEditProvinceCode] = useState("");
   const [editProvinceName, setEditProvinceName] = useState("");
+  const [editLocationTypeCode, setEditLocationTypeCode] = useState("");
+  const [editLocationTypeName, setEditLocationTypeName] = useState("");
   const [editRegionName, setEditRegionName] = useState("");
   const [editExamOrganizerCode, setEditExamOrganizerCode] = useState("");
-  const [editExamTypeCode, setEditExamTypeCode] = useState("");
-  const [editExamTypeName, setEditExamTypeName] = useState("");
   const [editExamOrganizerName, setEditExamOrganizerName] = useState("");
   const [editLocationDetail, setEditLocationDetail] = useState("");
 
@@ -83,14 +81,14 @@ const FormExamLocation = () => {
   const initEditExamForm = () => {
     setEditProvinceName("");
     setEditRegionName("");
-    setEditExamTypeName("");
+    setEditLocationTypeName("");
     setEditExamOrganizerName("");
-    setEditExamTypeCode("");
+    setEditLocationTypeCode("");
     setEditLocationDetail("");
   };
   const onClickProvinceButton = (e) => {
     setProvinceCode(get(e, "provinceCode", ""));
-    fetchProvinceData(get(e, "provinceCode", ""));
+    //fetchProvinceData(get(e, "provinceCode", ""));
   };
   const onClickEditProvinceButton = (e) => {
     setEditProvinceCode(e + "");
@@ -105,155 +103,56 @@ const FormExamLocation = () => {
   const onClickExamType = (e) => {
     setExamTypeCode(get(e, "examTypeId", "1"));
   };
-  const onClickEditExamLocation = (e) => {
+  const onClickEditExamLocation = async (e) => {
     console.log("onClickEditExamLocation ",e);
+    setEditLocationId(get(e,"locationId",""));
+    setEditLocationTypeCode(get(e,"locationTypeCode",""));
+    setEditLocationTypeName(get(e,"locationTypeName",""));
+    setEditExamOrganizerCode(get(e,"organizerCode",""));
+    setEditExamOrganizerName(get(e,"organizerName",""));
+    setEditProvinceCode(get(e,"provinceCode",""));
+    setEditProvinceName(get(e,"provinceName",""));
+    let regionId, regionName = getRegionData(get(e,"provinceCode",""));
+    setRegion(regionId);
+    setRegionName(regionName);
+    setEditLocationDetail(get(e,"locationDetail",""));
+
     onClickEditLocationPopup("edit", e);
-    setEditExamTypeCode(e + "");
-    setEditExamTypeName(
-      get(
-        examType.filter((type) => type.examTypeId === e)[0],
-        "examTypeName",
-        ""
-      )
-    );
+    // setEditLocationTypeCode(e + "");
+    // setEditLocationTypeName(
+    //   get(
+    //     examType.filter((type) => type.examTypeId === e)[0],
+    //     "examTypeName",
+    //     ""
+    //   )
+    // );    
   };
-  const onClickSearchExam = () => {
-    dispatch(
-      showSearchPopup({
-        title: "DlgListLocation",
-        description: "",
-        action: () => {
-          //คำสั่งในการเปลี่ยนหน้า (หน้าที่ต้องการไป, state หรือ parametter ที่ parse ไปอีกหน้า ซึ่งส่งได้ตัวเดียว)
-          //setExamLocationStateList(examLocationList);
-        },
-      })
-    );
+  const onClickAddExamLocation = (mode) => {
+    setEditLocationId("");
+    setEditLocationTypeCode("");
+    setEditLocationTypeName("");
+    setEditExamOrganizerCode("");
+    setEditExamOrganizerName("");
+    setEditProvinceCode("");
+    setEditProvinceName("");
+    setEditLocationDetail("");
+
+    onClickEditLocationPopup(mode);
+
   };
   const onClickEditLocationPopup = (mode, e) => {
-    let popupTitle = mode === "edit" ? "แก้ไขสถานที่สอบ" : "เพิ่มสถานที่สอบ";
+    let popupTitle = (mode === "edit" ? "แก้ไขสถานที่สอบ" : "เพิ่มสถานที่สอบ");
     dispatch(
       showEditLocationPopup({
         title: popupTitle,
         description: mode,
-        locationEditDetail: e,
+        locationEditDetail: e,        
         action: () => {
           //คำสั่งในการเปลี่ยนหน้า (หน้าที่ต้องการไป, state หรือ parametter ที่ parse ไปอีกหน้า ซึ่งส่งได้ตัวเดียว)
           //setExamLocationStateList(examLocationList);
         },
       })
     );
-  };
-  const [activeTab, setActiveTab] = useState("1");
-  const toggleTab = (tab) => {
-    if (activeTab !== tab) setActiveTab(tab);
-  };
-  const onClickAddExamLocation = async () => {
-    if (
-      examOrganizerCode === "" ||
-      provinceCode === "" ||
-      locationDetail === "" ||
-      examTypeCode === ""
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "กรุณาระบุข้อมูลที่มี * ให้ครบถ้วน",
-      });
-      return;
-    }
-
-    let examlocation = {
-      orgCode: examOrganizerCode,
-      provinceCode: provinceCode,
-      locationDetail: locationDetail,
-      locationType: examTypeCode,
-      createUserCode: "2901133",
-    };
-    let response = await addExamLocation(examlocation);
-    if (response !== "error") {
-      Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
-      reloadLocationList();
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "ไม่สามารถแก้ไขข้อมูลได้",
-      });
-    }
-  };
-  const onClickSearchAll = () => {
-    setSearchValue();
-    setExamLocationStateList(examLocationList);
-  };
-  const reloadLocationList = async () => {
-    let response = await getExamLocationAll();
-    setExamLocationStateList(get(response, "data", []));
-  };
-
-  const onClickEditLocationData = async () => {
-    if (
-      editExamOrganizerCode === "" ||
-      editLocationDetail === "" ||
-      editExamTypeCode === ""
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "กรุณาระบุข้อมูลที่มี * ให้ครบถ้วน",
-      });
-      return;
-    }
-
-    let examlocation = {
-      locationId: editLocationId,
-      orgCode: editExamOrganizerCode,
-      provinceCode: editProvinceCode,
-      locationDetail: editLocationDetail,
-      locationType: editExamTypeCode,
-      createUserCode: "2901133",
-    };
-
-    let response = await updateExamLocation(examlocation);
-
-    if (response !== "error") {
-      Swal.fire("Updated!", "แก้ไขข้อมูลแล้ว", "success");
-      reloadLocationList();
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "ไม่สามารถแก้ไขข้อมูลได้",
-      });
-    }
-  };
-  const onClickDeleteLocation = async (detail) => {
-    const { value: check } = await Swal.fire({
-      text: `ต้องการลบรหัสที่ตั้ง ${get(
-        detail,
-        "locationId",
-        ""
-      )} จังหวัด${getProvinceData(get(detail, "provinceCode", ""))} ใช่หรือไม่`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes",
-    });
-
-    if (check) {
-      let locationId = get(detail, "locationId", "");
-      let response = await deleteExamLocation(locationId);
-      console.log("onClickDeleteLocation ", response);
-      if (response === "success") {
-        Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่สามารถลบข้อมูลได้",
-        });
-      }
-    }
   };
 
   const examZoneResonse = getExamLocationZone();
@@ -264,38 +163,6 @@ const FormExamLocation = () => {
     examZoneList,
     examOrganizerList,
   } = useFetchLocationList();
-
-  const fetchProvinceData = async (e) => {
-    const response = await getProvinceCode(e);
-    setRegion(get(response[0], "region", ""));
-    setRegionName(
-      get(
-        examZoneResonse.filter(
-          (zone) => zone.regionCode === get(response[0], "region", "")
-        )[0],
-        "regionName",
-        ""
-      )
-    );
-    setProvinceName(
-      get(
-        response.filter((zone) => zone.provinceCode === e)[0],
-        "provinceName",
-        ""
-      )
-    );
-  };
-  const fetchExamOrganizer = async (e) => {
-    const response = await getOrganizer(e);
-    setExamOrganizerName(get(response[0], "orgName", ""));
-  };
-  const fetchEditExamOrganizer = async (e) => {
-    const response = await getOrganizer(e);
-    setEditExamOrganizerName(get(response[0], "orgName", ""));
-  };
-  const getSearchValue = (e) => {
-    setSearchValue(e);
-  };
   const getProvinceData = (e) => {
     if (e !== "" || e !== null) {
       const provinceName = get(
@@ -308,54 +175,41 @@ const FormExamLocation = () => {
       return "";
     }
   };
-  const getRegionData = (e) => {
-    if (e !== "" || e !== null) {
-      const region = get(
-        examProvinceList.filter((zone) => zone.provinceCode === e)[0],
-        "region",
-        ""
-      );
-
-      if (region !== "") {
-        const regionName = get(
-          examZoneList.filter((zone) => zone.regionCode === region)[0],
-          "regionName",
-          ""
-        );
-        return regionName;
-      }
-    }
-    return "";
-  };
-  const getOrganizerData = (e) => {
-    if (e !== "" || e !== null) {
-      const organizerName = get(
-        examOrganizerList.filter((zone) => zone.orgCode === e)[0],
-        "orgName",
-        ""
-      );
-      return organizerName;
+  const getRegionData = async (e) => {
+    if (e === "") {
+      return ("","");
     } else {
-      return "";
-    }
-  };
-  const getlocationDetailData = (e) => {
-    if (e !== "" || e !== null) {
-      const locationDetail = get(
-        examType.filter((zone) => zone.examTypeId === e)[0],
-        "examTypeName",
+      const response = await getProvinceCode(e);
+      let tmpRegionCode = get(response[0], "region", "");
+      setRegion(tmpRegionCode);      
+      let tmpRegionName = get(
+        examZoneResonse.filter(
+          (zone) => zone.regionCode === get(response[0], "region", "")
+        )[0],
+        "regionName",
         ""
       );
-      return locationDetail;
-    } else {
-      return "";
+      console.log(tmpRegionName);
+      setRegionName(tmpRegionName);
     }
   };
 
   return (
     <Container>
+      
       {/* <SearchPopup onChange={getSearchValue} /> */}
-      <EditLocationPopup />
+      <EditLocationPopup locationId={editLocationId}
+                        locationTypeCode={editLocationTypeCode}
+                        locationTypeName={editLocationTypeName}
+                        region={region}
+                        regionName={regionName}                        
+                        organizerCode={editExamOrganizerCode}
+                        organizerName={editExamOrganizerName}
+                        provinceCode={editProvinceCode}
+                        provinceName={editProvinceName}
+                        locationDetail={editLocationDetail}
+                        onChangeLocationDetail={(e) => setEditLocationDetail(e)}
+                        onChangeExamType={(e) => setEditLocationTypeCode(get(e,"examTypeId",""))}/>
       <div style={{ marginTop: "20px" }} className="div">
         <h2 className="head">ตั้งค่าสถานที่สอบ</h2>
         <Wrapper>
@@ -385,7 +239,7 @@ const FormExamLocation = () => {
                 </Col>
                 <Col xs="2">
                   <Button
-                    onClick={() => onClickEditLocationPopup("add")}
+                    onClick={() => onClickAddExamLocation("add", null)}
                     color="success"
                     style={{ marginLeft: 0, marginTop: 33, fontFamily: "Prompt-Regular"}}
                   >
@@ -395,7 +249,7 @@ const FormExamLocation = () => {
               </Row>
             </CardBody>
           </Card>
-          <Card style={{ marginTop: "20px" }}>
+          {/* <Card style={{ marginTop: "20px" }}> */}
             <CardBody>
               <LocationTable
                 provinceCode={provinceCode}
@@ -403,7 +257,7 @@ const FormExamLocation = () => {
                 onClick={onClickEditExamLocation}
               />
             </CardBody>
-          </Card>
+          {/* </Card> */}
         </Wrapper>
       </div>
     </Container>
