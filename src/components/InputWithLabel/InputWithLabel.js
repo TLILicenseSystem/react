@@ -3,6 +3,9 @@ import { Input } from "reactstrap";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 import TimeInput from 'react-time-input';
+import { useForm, FieldErrors } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
+
 // 4 props
 // label
 // type
@@ -40,21 +43,47 @@ InputTimeWithLabel.propTypes = {
 };
 
 
+
 //--------------------------ฟิลด์ textfield --------------------
-export const InputWithLabel = ({ label, type, value, width, height,maxLength, onChange ,showTime}) => {
-  
+export const InputWithLabel = ({ label, type, value, width, height,maxLength, onChange ,showTime,star,err}) => {
+
+  const { register, formState: { errors }, handleSubmit } = useForm();
+  const onSubmit = data => console.log(data);
+console.log(err);
   return (
    
-    <div className={styles.div}>
-      <label className={styles.label}>{label} :</label>
-      <Input  disabled={showTime} maxLength = {maxLength}
-        className={styles.input} style={{ width: width ,height :height}}
-        type={type}
-        value={value}
-        onChange={onChange}
-
+//<form onSubmit={handleSubmit(onSubmit)}>
+    <div >
+      <tr> 
+        <td><label className={styles.label}>{label}</label><label className={styles.lableStar}>{star}</label></td>
+        <td>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</td>
+      </tr>
+    
+      <tr>
+        <td>
+          <Input  disabled={showTime} maxLength = {maxLength}
+         className={styles.input} style={{ width: width ,height :height}}
+         type={type}
+         value={value}
+         onChange={onChange}
       />
+      <p>{err}</p>
+   <ErrorMessage
+        errors={errors}
+        name="singleErrorInput"
+        render={({ message }) => <p>{err}</p>}
+      /> 
+
+      </td>
+      </tr>
+
     </div>
+
+
+    //</form>
+
+
+
   );
 };
 
@@ -62,11 +91,12 @@ InputWithLabel.defaultProps = {
   label: "",
   type: "text",
   value: "",
-  width: "100px",
+  width: "160px",
   height:"30px",
   maxLength:"",
   onChange: () => {},
   showTime:true,
+  star : "",
 };
 
 InputWithLabel.propTypes = {
@@ -77,6 +107,7 @@ InputWithLabel.propTypes = {
   maxLength: PropTypes.string,
   onChange: PropTypes.func,
   showTime:PropTypes.bool,
+  star: PropTypes.string,
 };
 
 
