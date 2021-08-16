@@ -45,7 +45,7 @@ import {
   getExamLocation,
   getExamLocationAll,
 } from "../../api/apiGetExamLocation";
-import { showSearchPopup, showEditLocationPopup } from "../../redux/actions";
+import { showSearchPopup, showEditLocationPopup, showSnackBar } from "../../redux/actions";
 import {
   addExamLocation,
   updateExamLocation,

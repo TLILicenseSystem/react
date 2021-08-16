@@ -46,7 +46,6 @@ export const EditLocationPopup = ({
   onChangeLocationDetail,
   onChangeExamType,
 }) => {
-  const _ = require("lodash");
 
   const [addRegion, setAddRegion] = useState("");
   const [addRegionName, setAddRegionName] = useState("");

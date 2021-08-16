@@ -4,15 +4,13 @@ import ExamRoundPage from "./pages/ExamRound/ExamRound";
 import ExamOrganizerPage from "./pages/ExamOrganizer/ExamOrganizer";
 import ExamSchedulePage from "./pages/ExamSchedule/ExamSchedule";
 import FormExamLocation from "./pages/ExamLocation/FormExamLocation";
+import {SnackBar} from "./components/SnackBar/SnackBar";
 import "./App.css";
-import MuiAlert from '@material-ui/lab/Alert';
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+
 const App = () => {
   return (
     <BrowserRouter>
-      {/* <Alert severity="success">This is a success message!</Alert> */}
+      <SnackBar/>
       <Switch>
         <Route
           path="/examSchedule"

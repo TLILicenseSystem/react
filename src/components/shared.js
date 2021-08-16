@@ -11,3 +11,4 @@ export {LocationTable} from "./Table/LocationTable";
 export {ScheduleTable} from "./Table/ScheduleTable";
 export {SearchPopup} from "./Popup/SearchPopup";
 export {EditLocationPopup} from "./Popup/EditLocationPopup";
+export {SnackBar} from "./SnackBar/SnackBar";
