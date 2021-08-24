@@ -5,7 +5,6 @@ import { getExamLocation } from "../../api/apiGetExamLocation";
 import { getProvinceCodeAll } from "../../api/apiGetProvinceCode";
 import { getOrganizerAll } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone, getExamType } from "../../api/apiGetConfig";
-import { getExamSchedule } from "../../api/apiAddExamSchedule";
 import { getExamRoundAll } from "../../api/apiGetExamRound";
 import { Button } from "reactstrap";
 import Table from "@material-ui/core/Table";
@@ -19,10 +18,7 @@ import PropTypes from "prop-types";
 import moment from "moment";
 
 export const ScheduleTable = ({
-  provinceCode,
-  examOrganizerCode,
-  roundId,
-  examDate,
+  examScheduleList,
   onClick,
 }) => {
   //จังหวะที่ subscribe isShow /state.spinner สามารถดึง state ได้ทั้งหมด
@@ -32,7 +28,6 @@ export const ScheduleTable = ({
   const [examZoneList, setExamZoneList] = useState([]);
   const [examOrganizerList, setExamOrganizerList] = useState([]);
   const [examLocationTypeList, setExamLocationTypeList] = useState([]);
-  const [examScheduleList, setExamScheduleList] = useState([]);
   const [examRoundList, setExamRoundList] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -46,9 +41,7 @@ export const ScheduleTable = ({
     const responseOrganizer = await getOrganizerAll();
     setExamOrganizerList(get(responseOrganizer, "data", []));
     const responseLocationType = await getExamType();
-    setExamLocationTypeList(responseLocationType);
-    const responseSchedule = await getExamSchedule();
-    setExamScheduleList(get(responseSchedule, "data", []));
+    setExamLocationTypeList(responseLocationType);    
     const responseRound = await getExamRoundAll();
     setExamRoundList(get(responseRound, "data", []));
   };
@@ -207,7 +200,7 @@ export const ScheduleTable = ({
     },
     {
       id: "edit",
-      label: "เลือก",
+      label: "แก้ไข",
       minWidth: 50,
       align: "left",
     },
@@ -216,7 +209,7 @@ export const ScheduleTable = ({
   return (
     <div
       style={{
-        maxHeight: "600px",
+        maxHeight: "550px",
         overflowY: "auto",
         margin: "auto",
       }}
@@ -237,13 +230,8 @@ export const ScheduleTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
+            {/* {provinceCode}{examOrganizerCode}{roundId}{moment(examDate).format("DD/MM/yyyy")} */}
             {examScheduleList
-              // .filter(
-              //   (zone) =>
-              //     (zone.provinceCode === provinceCode &&
-              //       zone.orgCode === examOrganizerCode) ||
-              //     provinceCode === ""
-              // )
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((detail, index) => {
                 return (
@@ -309,7 +297,7 @@ export const ScheduleTable = ({
                                 : moment(
                                     get(detail, "receiveDate", null)
                                   ).format("DD/MM/yyyy"),
-                            receiveTime: get(detail, "receiveTime", ""),
+                            receiveTime: (get(detail, "receiveTime", "") + "").trim(),
                             maxApplicant: get(detail, "maxApplicant", ""),
                             locationDetail: {
                               locationId: get(detail, "locationId", ""),
@@ -352,7 +340,7 @@ export const ScheduleTable = ({
                           })
                         }
                       >
-                        เลือก
+                        แก้ไข
                       </Button>
                     </TableCell>
                   </TableRow>

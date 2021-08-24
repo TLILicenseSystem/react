@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Modal,
@@ -14,6 +14,7 @@ import { hideSearchLocationPopup } from "../../redux/actions";
 import { getProvinceCode } from "../../api/apiGetProvinceCode";
 import { getOrganizer } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone } from "../../api/apiGetConfig";
+import { getExamLocation } from "../../api/apiGetExamLocation";
 import { get } from "lodash";
 import PropTypes from "prop-types";
 
@@ -25,6 +26,7 @@ export const SearchLocationPopup = ({onChange}) => {
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [examOrganizerName, setExamOrganizerName] = useState("");
   const [searchProvince, setSearchProvince] = useState({});
+  const [examLocationList, setExamLocationList] = useState([]);
 
   const examZoneResonse = getExamLocationZone();
   const dispatch = useDispatch();
@@ -46,6 +48,14 @@ export const SearchLocationPopup = ({onChange}) => {
     fetchExamOrganizer(get(e,"orgCode",""));
     setSearchProvince({"provinceCode":provinceCode,"examOrganizerCode":examOrganizerCode});
   };
+  const fetchData = async () => {
+    const responseLocation = await getExamLocation("A");
+    setExamLocationList(get(responseLocation, "data", []));
+  };
+  useEffect(() => {
+    console.log("LocationTable inital ");
+    fetchData();
+  }, []);
 
   const toggle = () => dispatch(hideSearchLocationPopup());
 
@@ -100,6 +110,7 @@ export const SearchLocationPopup = ({onChange}) => {
           <LocationTable 
             provinceCode={provinceCode}
             examOrganizerCode={examOrganizerCode}
+            examLocationList={examLocationList}
             onClick={handleAction}/>
       </ModalFooter>
     </Modal>

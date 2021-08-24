@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "reactstrap";
+import { Button, Card, CardBody, Row, Col } from "reactstrap";
+
 import { get } from "lodash";
 //import styles from "./ExamRound.module.css";
 import styles from "../../components/LicenseStyle/LicenseExamStlye.module.css";
-import {Container,InputWithLabel,Wrapper,BoxSearch,BoxCriteria, RoundTable,} from "../../components/shared";
+import {
+  Container,
+  InputWithLabel,
+  Wrapper,
+  BoxSearch,
+  BoxCriteria,
+  RoundTable,
+} from "../../components/shared";
 //import { MDBTable, MDBTableBody, MDBTableHead, MDBDataTable } from "mdbreact";
 import { confirm } from "../../components/Container/Comfirmation";
 import apiSpring from "../../api/apiSpring";
@@ -37,7 +45,6 @@ const ExamRound = (props) => {
     const { roundId, ...rest } = row;
     return { id: roundId, roundId, ...rest };
   });
-
 
   // //----------------------------for SearchAll spring boot------------------------
   const fetchData = async () => {
@@ -134,7 +141,7 @@ const ExamRound = (props) => {
 
   const examRoundSave = () => {
     if (start === "") {
-     // setErr("กรุณากรอกเวลาเริ่มต้น!");
+      // setErr("กรุณากรอกเวลาเริ่มต้น!");
       alert("กรุณากรอกเวลาเริ่มต้น!");
     } else if (end === "") {
       alert("กรุณากรอกเวลาสิ้นสุด!");
@@ -151,8 +158,6 @@ const ExamRound = (props) => {
     }
     //setErr("");
   };
-
-
 
   const getListRoundID = (roundTime, index) => {
     return roundTime.roundId;
@@ -221,9 +226,7 @@ const ExamRound = (props) => {
       console.log("action sel===", action.selected);
 
       editData(action.selected);
-    } 
-    else if (get(action, "action", "") === "delete") {
-
+    } else if (get(action, "action", "") === "delete") {
       removeData(action.selected);
     }
   };
@@ -233,129 +236,76 @@ const ExamRound = (props) => {
   console.log("init ====", init);
   return (
     <Container>
-      <Wrapper>
-        <div>
-          <div>
-            <tr>
-              <h2>ตั้งค่าเวลาสอบ</h2>
-            </tr>
-          </div>
-          <br></br>
-          <div className={styles.bor}>
-            <tr>
-              <div>
-                <BoxSearch>
-                  <table>
-                    <div className={styles.criteria}>
-                      <tr>
-                        <h2>ตัวกรองข้อมูล</h2>
-                      </tr>
-                    </div>
-
-                    <tr>
-                      <td>
-                        <InputWithLabel
-                          label="รหัส"
-                          value={id}
-                          onChange={(e) => {
-                            setId(e.target.value);
-                          }}
-                          showTime={true}
-                          err
-                        />
-                        
-
-
-
-                      </td>
-                      &nbsp;
-                      <td>
-                        <InputWithLabel
-                          label="เวลาสอบเริ่มต้น"
-                          value={start}
-                          maxLength="5"
-                          star = "*"
-                          onChange={(e) => {
-                            setStart(e.target.value);
-                          }}
-                          showTime={disableTime}
-                          err
-                        />
-                       
-
-
-
-                      </td>
-                      &nbsp;
-                      <td>
-                        <InputWithLabel
-                          label="เวลาสอบสิ้นสุด"
-                          type="end"
-                          star = "*"
-                          value={end}
-                          maxLength="5"
-                          onChange={(e) => {
-                            setEnd(e.target.value);
-                          }}
-                          showTime={disableTime}
-                          err={err}
-                        />
-
-
-                      </td>
-                      
-
-                      <td>
-                        <div className={styles.flexend}>
-                          <tr>
-                            <td>
-                              <Button
-                                color="primary"
-                                type="button"
-                                onClick={examRoundAdd}
-                              >
-                                เพิ่มรอบใหม่
-                              </Button>
-                              &nbsp;
-                            </td>
-                          </tr>
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
-                </BoxSearch>
-              </div>
-              <br></br>
-
+      <div style={{ marginTop: "20px" }} className="div">
+        <h2 className="head">ตั้งค่าเวลาสอบ</h2>
+        <Wrapper>
+          <Card>
+            <CardBody>
+              <h3 className="head">ตัวกรองข้อมูล</h3>
+              <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
+                <Col xs="3">
+                  <InputWithLabel
+                    label="รหัส"
+                    value={id}
+                    onChange={(e) => {
+                      setId(e.target.value);
+                    }}
+                    showTime={true}
+                    err
+                  />
+                </Col>
+                <Col xs="3">
+                  <InputWithLabel
+                    label="เวลาสอบเริ่มต้น"
+                    value={start}
+                    maxLength="5"
+                    star="*"
+                    onChange={(e) => {
+                      setStart(e.target.value);
+                    }}
+                    showTime={disableTime}
+                    err
+                  />
+                </Col>
+                <Col xs="3">
+                  <InputWithLabel
+                    label="เวลาสอบสิ้นสุด"
+                    type="end"
+                    star="*"
+                    value={end}
+                    maxLength="5"
+                    onChange={(e) => {
+                      setEnd(e.target.value);
+                    }}
+                    showTime={disableTime}
+                    err={err}
+                  />
+                </Col>
+                <Col xs="3">
+                  <Button color="primary" type="button" onClick={examRoundAdd} style={{marginTop:"26px"}}>
+                    เพิ่มรอบใหม่
+                  </Button>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+          <Card style={{ marginTop: "20px" }}>
+            <CardBody>
               <RoundTable onClick={doAction} rows={rows} />
-
-              <div className={styles.right}>
-                <tr>
-                  <td>
-                    <Button
-                      color="success"
-                      type="button"
-                      onClick={examRoundSave}
-                    >
-                      บันทึก
-                    </Button>
-                    &nbsp;&nbsp;&nbsp;
-                  </td>
-                  <td>
-                    <Button
-                      color="secondary"
-                      type="button"
-                      onClick={examRoundClear}
-                    >
-                      เคลียร์ข้อมูล
-                    </Button>
-                  </td>
-                </tr>
-              </div>
-            </tr>
-          </div>
-        </div>
-      </Wrapper>
+            </CardBody>
+          </Card>
+          <CardBody >
+            <Col xs="12" style={{ textAlign: "right"}}>
+              <Button color="success" type="button" onClick={examRoundSave} style={{marginRight:"10px"}}>
+                บันทึก
+              </Button>
+              <Button color="secondary" type="button" onClick={examRoundClear}>
+                เคลียร์ข้อมูล
+              </Button>
+            </Col>
+          </CardBody>
+        </Wrapper>
+      </div>
     </Container>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "reactstrap";
+import { Button, Card, CardBody, Row, Col} from "reactstrap";
 //import styles from "./ExamOrganizer.module.css";
 import styles from "../../components/LicenseStyle/LicenseExamStlye.module.css";
 import {Container,InputWithLabel,Wrapper,} from "../../components/shared";
@@ -25,14 +25,10 @@ const ExamOrganizer = (props) => {
   // let messageId = "028840ec147510517da2b23c8b0b6707";
   let create_user_code = "9009998";
   let update_user_code = "9009999";
-
-
   
   useEffect(() => {
     fetchData();
   }, []);
-
-
 
 //----------------------------for SearchAll spring boot------------------------
     const fetchData = async () => {
@@ -238,67 +234,55 @@ const ExamOrganizer = (props) => {
   };
   return (
     <Container>
+      <div style={{ marginTop: "20px" }} className="div">
+      <h2 className="head">ตั้งค่าสถานที่สอบ</h2>
       <Wrapper>
-        <br></br>
-        <h2 className={styles.title}>ตั้งค่าสถานที่สอบ</h2>
-        <br></br>
-        <div>
-          <table>
-            <tr>
-              <td>
-                <InputWithLabel label="รหัส" value={id} onChange={(e) => {setId(e.target.value); }} showTime={true} />
-              </td>
-              &nbsp;
-              <td>
-                <InputWithLabel label="ชื่อสถานที่สอบ" value={orgName}  width="300px" onChange={(e) => { setOrgName(e.target.value); }} showTime={disableTime}/>
-              </td>
-              &nbsp;
-            </tr>
-          </table>
-        </div>
-
-        <div className={styles.flexend}>
-          <tr>
-            <td>
+      <Card>
+        <CardBody>
+          <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
+            <Col xs="5">
+              <InputWithLabel label="รหัส" value={id} onChange={(e) => {setId(e.target.value); }} showTime={true} />
+            </Col>
+            <Col xs="5">
+            <InputWithLabel label="ชื่อสถานที่สอบ" value={orgName}  width="300px" onChange={(e) => { setOrgName(e.target.value); }} showTime={disableTime}/>
+            </Col>
+            <Col xs="2">
               <Button color="success" type="button" onClick={ExamOrganizerAdd}>
                 เพิ่มรอบใหม่
               </Button>
-              &nbsp;
-            </td>
-          </tr>
-        </div>
+            </Col>
+          </Row>          
+        </CardBody>
+      </Card>
+      <Card>
+        <CardBody>
+          <MDBTable striped bordered scrollY hover size="sm">
+            <MDBTableHead>
+              <tr className={styles.head}>
+                <th>รหัสสถานที่สอบ</th>
+                <th>ชื่อสถานที่สอบ</th>
+                <th>แก้ไข</th>
+                <th>ลบ</th>
+              </tr>
+            </MDBTableHead>
+            <MDBTableBody>{result.map(renderOrganizer)}</MDBTableBody>
+          </MDBTable>
+        </CardBody>
+      </Card>
+      <CardBody>
 
-        <MDBTable striped bordered scrollY hover size="sm">
-          <MDBTableHead>
-            <tr className={styles.head}>
-              <th>รหัสสถานที่สอบ</th>
-              <th>ชื่อสถานที่สอบ</th>
-              <th>แก้ไข</th>
-              <th>ลบ</th>
-            </tr>
-          </MDBTableHead>
-          {/* <MDBTableBody rows={data.rows} /> */}
-          <MDBTableBody>{result.map(renderOrganizer)}</MDBTableBody>
-        </MDBTable>
+      <Button color="primary" type="button" onClick={ExamOrganizerSave}>
+        บันทึก
+      </Button>
+      <Button color="secondary" type="button" onClick={ExamOrganizerClear}>
+        เคลียร์ข้อมูล
+      </Button>
 
-        <br></br>
-        <div className={styles.center}>
-          <tr>
-            <td>
-              <Button color="primary" type="button" onClick={ExamOrganizerSave}>
-                บันทึก
-              </Button>
-              &nbsp;&nbsp;&nbsp;
-            </td>
-            <td>
-              <Button color="secondary" type="button" onClick={ExamOrganizerClear}>
-                เคลียร์ข้อมูล
-              </Button>
-            </td>
-          </tr>
-        </div>
+      </CardBody>
       </Wrapper>
+      </div>
     </Container>
+      
   );
 };
 

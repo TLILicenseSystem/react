@@ -17,11 +17,9 @@ import { DataGrid } from '@material-ui/data-grid';
 import { useStyles, StyleTableCell, StyledTableRow, StyledTablePagination } from "./table.style";
 import PropTypes from "prop-types";
 
-export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
-  //จังหวะที่ subscribe isShow /state.spinner สามารถดึง state ได้ทั้งหมด
-  //const { isShow } = useSelector((state) => state.spinner);
+export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLocationList }) => {
+
   const classes = useStyles();
-  const [examLocationList, setExamLocationList] = useState([]);
   const [examProvinceList, setExamProvinceList] = useState([]);
   const [examZoneList, setExamZoneList] = useState([]);
   const [examOrganizerList, setExamOrganizerList] = useState([]);
@@ -29,8 +27,8 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const fetchData = async () => {
-    const responseLocation = await getExamLocation("A");
-    setExamLocationList(get(responseLocation, "data", []));
+    // const responseLocation = await getExamLocation("A");
+    // setExamLocationList(get(responseLocation, "data", []));
     const responseProvince = await getProvinceCodeAll();
     setExamProvinceList(get(responseProvince, "data", []));
     const responseExamZone = getExamLocationZone();
@@ -113,13 +111,13 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
 
   const columns = [
     { id: "locationId", label: "รหัสที่ตั้ง", minWidth: 80, className:classes },
-    { id: "provinceCode", label: "สนามสอบ", minWidth: 100 },
     {
       id: "orgCode",
-      label: "สถานที่สอบ",
+      label: "สนามสอบ",
       minWidth: 150,
       align: "left",
     },
+    { id: "provinceCode", label: "สถานที่สอบ", minWidth: 100 },
     {
       id: "locationType",
       label: "ประเภท",
@@ -142,7 +140,7 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
 
   return (
     <div
-      style={{ marginLeft:"-15px",  height: 480, width: "103%" }}
+      style={{ marginLeft:"0px",  height: 480, width: "100%" }}
     >
 
       {/* <DataGrid
@@ -173,6 +171,7 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
                   key={column.id}
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
+                  //sortDirection={{}}
                 >
                   {column.label}
                 </StyleTableCell>
@@ -196,14 +195,14 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
                   <StyledTableRow hover role="checkbox" key={index}>
                     <StyleTableCell >
                       {get(detail, "locationId", "")}
+                    </StyleTableCell>                    
+                    <StyleTableCell>
+                      {get(detail, "orgCode", "")}{" "}
+                      {getOrganizerData(get(detail, "orgCode", ""))}
                     </StyleTableCell>
                     <StyleTableCell>
                       {get(detail, "provinceCode", "")}{" "}
                       {getProvinceData(get(detail, "provinceCode", ""))}
-                    </StyleTableCell>
-                    <StyleTableCell>
-                      {get(detail, "orgCode", "")}{" "}
-                      {getOrganizerData(get(detail, "orgCode", ""))}
                     </StyleTableCell>
                     <StyleTableCell>
                       {get(detail, "locationType", "")}{" "}                      
@@ -234,7 +233,7 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick }) => {
                           })
                         }
                       >
-                        แก้ไข
+                        เลือก
                       </Button>
                     </StyleTableCell>
                   </StyledTableRow>
@@ -268,9 +267,11 @@ LocationTable.defaultProps = {
   provinceCode: "",
   examOrganizerCode: "",
   onClick: () => {},
+  examLocationList: [],
 };
 LocationTable.propTypes = {
   provinceCode: PropTypes.string,
   examOrganizerCode: PropTypes.string,
   onClick: PropTypes.func,
+  examLocationList: PropTypes.array,
 };

@@ -4,6 +4,7 @@ import ExamRoundPage from "./pages/ExamRound/ExamRound";
 import ExamOrganizerPage from "./pages/ExamOrganizer/ExamOrganizer";
 import ExamSchedulePage from "./pages/ExamSchedule/ExamSchedule";
 import FormExamLocation from "./pages/ExamLocation/FormExamLocation";
+import EditSchedulePage from "./pages/ExamSchedule/EditSchedule";
 import {SnackBar} from "./components/SnackBar/SnackBar";
 import "./App.css";
 
@@ -16,6 +17,10 @@ const App = () => {
           path="/examSchedule"
           render={(props) => <ExamSchedulePage {...props} />}
         />
+        <Route
+          path="/examSchedule-edit"
+          render={(props) => <EditSchedulePage {...props} />}
+        />        
         <Route
           path="/examOrganizer"
           render={(props) => <ExamOrganizerPage {...props} />}

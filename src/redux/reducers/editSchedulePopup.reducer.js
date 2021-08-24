@@ -1,4 +1,4 @@
-import { HIDE_SEARCH_SCHEDULE_POPUP, SHOW_SEARCH_SCHEDULE_POPUP } from "../constants";
+import { HIDE_EDIT_SCHEDULE_POPUP, SHOW_EDIT_SCHEDULE_POPUP } from "../constants";
 
 const initalState = {
   isShow: false,
@@ -9,10 +9,10 @@ const initalState = {
 
 const reducer = (state = initalState, { type, payload }) => {
   switch (type) {
-    case SHOW_SEARCH_SCHEDULE_POPUP:
+    case SHOW_EDIT_SCHEDULE_POPUP:
       return { ...state, ...payload, isShow: true };
 
-    case HIDE_SEARCH_SCHEDULE_POPUP:
+    case HIDE_EDIT_SCHEDULE_POPUP:
       return initalState;
 
     default:

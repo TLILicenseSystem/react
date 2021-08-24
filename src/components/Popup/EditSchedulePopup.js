@@ -1,6 +1,6 @@
 import "date-fns";
 import React, { useState, useEffect } from "react";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Col, Row, } from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Col, Row, Card, CardBody, CardHeader} from "reactstrap";
 import Grid from "@material-ui/core/Grid";
 import DateFnsUtils from "@date-io/date-fns";
 import Box from "@material-ui/core/Box";
@@ -15,8 +15,11 @@ import {
   DropdownExamOrganizer,
   ScheduleTable,
 } from "../shared";
+import BoxScheduleFirst from "../../pages/ExamSchedule/BoxScheduleFirst";
+import BoxSchedule from "../../pages/ExamSchedule/BoxSchedule";
+
 import { useSelector, useDispatch } from "react-redux";
-import { hideSearchSchedulePopup } from "../../redux/actions";
+import { hideEditSchedulePopup } from "../../redux/actions";
 import { getProvinceCode } from "../../api/apiGetProvinceCode";
 import { getOrganizer } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone } from "../../api/apiGetConfig";
@@ -25,15 +28,16 @@ import { getExamRoundAll } from "../../api/apiGetExamRound";
 import { get } from "lodash";
 import PropTypes from "prop-types";
 import moment from "moment";
+import styles from "../../pages/pageStyles.css";
 
-export const SearchSchedulePopup = ({ onChange }) => {
+export const EditSchedulePopup = ({ onChange }) => {
   const dispatch = useDispatch();
-  const { isShow, title, description, action } = useSelector(
-    (state) => state.searchSchedulePopup
+  const { isShow, title, description, scheduleDetail, action } = useSelector(
+    (state) => state.editSchedulePopup
   );
   const handleAction = (e) => {
     //call back function
-    dispatch(hideSearchSchedulePopup());    
+    dispatch(hideEditSchedulePopup());    
     onChange(e);
   };
 
@@ -57,6 +61,15 @@ export const SearchSchedulePopup = ({ onChange }) => {
   const [examOrganizerName, setExamOrganizerName] = useState("");
   const [examRoundList, setExamRoundList] = useState([]);
 
+  const [examDate, setExamDate] = useState("");
+  const [closeDate, setCloseDate] = useState("");
+  const [examTime, setExamTime] = useState("");
+  const [receiveDate, setReceiveDate] = useState("");
+  const [receiveTime, setReceiveTime] = useState("");
+  const [num, setNum] = useState(0);
+  const [isShowMainLocation, setIsShowMainLocation] = useState(true);
+  const [isShowAlterLocation, setIsShowAlterLocation] = useState(false);
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [examRound, setExamRound] = useState("");
   const handleDateChange = (date) => {
@@ -66,12 +79,13 @@ export const SearchSchedulePopup = ({ onChange }) => {
     console.log("handleExamRound ", date);
     setExamRound(get(date, "roundId", ""));
   };
-  const toggle = () => dispatch(hideSearchSchedulePopup());
+  const toggle = () => dispatch(hideEditSchedulePopup());
   const examZoneResonse = getExamLocationZone();
 
   const fetchData = async() => {
     const response = await getExamRoundAll();
     setExamRoundList(get(response, "data", []));
+    setExamDate(get(scheduleDetail, "examDate", ""));
   };
 
   useEffect(() => {
@@ -110,10 +124,70 @@ export const SearchSchedulePopup = ({ onChange }) => {
 
   return (
       <Modal isOpen={isShow} size="xl" toggle={toggle}>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <ModalHeader toggle={toggle}>{title}</ModalHeader>
+        <MuiPickersUtilsProvider utils={DateFnsUtils} >
+        <ModalHeader toggle={toggle}><h4 className="div">{title}</h4></ModalHeader>
         <ModalBody>
-          <Grid container spacing={2}>
+
+        <CardBody>
+            <BoxScheduleFirst
+              lExamDate="วันที่สอบ"
+              lCloseDate="วันที่ปิดรับสมัคร"
+              lRoundTime="เวลาสอบ"
+              lReceiveDate="วันที่ได้รับหนังสือ"
+              lReceiveTime="เวลาที่ได้รับหนังสือ"
+              lNum="จำนวนผู้สมัคร(คน)"
+              InExamDate={get(scheduleDetail,"examDate","")}
+              //InExamDate={examDate}
+              onClickInExamDate={(e) =>
+                setExamDate(moment(e).format("MM/DD/yyyy"))
+              }
+              InCloseDate={closeDate}
+              onClickInCloseDate={(e) =>
+                setCloseDate(moment(e).format("MM/DD/YYYY"))
+              }
+              InRoundTime={examTime}
+              onClickInRoundTime={(e) => setExamTime(get(e,"roundId",""))}
+              InReceiveDate={receiveDate}
+              onClickInReceiveDate={(e) =>
+                setReceiveDate(moment(e).format("MM/DD/YYYY"))
+              }
+              InReceiveTime={receiveTime}
+              onClickInReceiveTime={(e) =>
+                setReceiveTime(moment(e).format("HH:mm"))
+              }
+              InNum={num}
+              onChangeInNum={(e) => setNum(e.target.value)}
+            />
+          </CardBody>
+
+
+            {/* {!isShowMainLocation ? (
+            ""
+          ) : (
+            <Card>
+              <CardHeader style={{ textAlign: "left" }}>
+                ข้อมูลสถานที่สอบหลัก{" "}
+                <i class="far fa-edit" type="button" onClick={{}}></i>
+              </CardHeader>
+              <CardBody>
+                <BoxSchedule
+                  lLocationID="รหัสสถานที่ตั้งสอบ"
+                  lOrg="สถานที่สอบ"
+                  lProvince="สนามสอบ"
+                  lType="ประเภทสถานที่ตั้ง"
+                  lLocation="สถานที่ตั้งสอบ"
+                  InLocationID={get(scheduleDetail.mainLocation, "locationId", "")}
+                  InOrg={get(scheduleDetail.mainLocation, "organizerName", "")}
+                  InProvince={get(scheduleDetail.mainLocation, "provinceCode", "")}
+                  InProvinceName={get(scheduleDetail.mainLocation, "provinceName", "")}
+                  InType={get(scheduleDetail.mainLocation, "locationTypeName", "")}
+                  InLocation={get(scheduleDetail.mainLocation, "locationDetail", "")}
+                />
+              </CardBody>
+            </Card>
+          )} */}
+
+          {/* <Grid container spacing={2}>
             <Grid item xs={4}>
               <Box>วันที่สอบ</Box>
               <Box>
@@ -175,23 +249,23 @@ export const SearchSchedulePopup = ({ onChange }) => {
                   <Button color="secondary">ยกเลิก</Button>
 
             </Grid>
-          </Grid>
+          </Grid> */}
         </ModalBody>
-        <ModalBody>
+        {/* <ModalBody>
           <ScheduleTable 
             provinceCode={provinceCode}
             examOrganizerCode={examOrganizerCode}
             roundId={examRound}
             examDate={selectedDate}
             onClick={handleAction}/>
-        </ModalBody>
+        </ModalBody> */}
         </MuiPickersUtilsProvider>
       </Modal>   
   );
 };
-SearchSchedulePopup.defaultProps = {
+EditSchedulePopup.defaultProps = {
   onChange: () => {},
 };
-SearchSchedulePopup.propTypes = {
+EditSchedulePopup.propTypes = {
   onChange: PropTypes.func,
 };

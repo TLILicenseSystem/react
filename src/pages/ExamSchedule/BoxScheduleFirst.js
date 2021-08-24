@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Input,} from "reactstrap";
-import DatePicker from "react-datepicker";
+import { Input, Card, CardBody, Row, Col } from "reactstrap";
+import { DatePicker } from "../../components/shared";
 import "react-datepicker/dist/react-datepicker.css";
-import { DropdownButton, Dropdown } from "react-bootstrap";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
+import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from "@date-io/date-fns";
-import Select from 'react-select';
+import Select from "react-select";
+import { get } from "lodash";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
   TimePicker,
 } from "@material-ui/pickers";
-import "./customDatePickerWidth.css";
-import { get } from "lodash";
-import { getExamRoundAll } from "../../api/apiGetExamRound";
 import moment from "moment";
+import "./customDatePickerWidth.css";
+import { DropdownExamTime } from "../../components/DropdownWithLabel/DropdownExamTime";
+import styles from "../pageStyles.css";
 
 const Container = styled.div`
   background-color: ${({ color }) => color};
@@ -47,164 +46,107 @@ const BoxSchedule = ({
   onClickInReceiveDate,
   InReceiveTime,
   onClickInReceiveTime,
-  InNum,
+  InNum,  
   onChangeInNum,
+  eExamDate,
+  eCloseDate,
+  eRoundTime,
+  eReceiveDate,
+  eReceiveTime,
+  eNum,
   width,
   height,
 }) => {
-  const [examDate, setExamDate] = useState("");
-  const [closeDate, setCloseDate] = useState("");
-  const [receiveDate, setReceiveDate] = useState("");
-  const [examRound, setExamRound] = useState("");
-  const [examRoundList, setExamRoundList] = useState([]);
 
-  const fetchData = async () => {
-    const response = await getExamRoundAll();
-    setExamRoundList(get(response, "data", []));
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleExamRound = (date) => {
-    console.log("handleExamRound ", date);
-    setExamRound(get(date, "roundId", ""));
-  };
-
-  const getRoundTime = (e) => {
-    let roundTime = examRoundList.filter((item) => item.roundId === e);
-    console.log("roundTime ", roundTime);
-    return get(roundTime[0], "timeStr", "");
-  };
+  const onChangeApplicant = (e) => {
+    const re = /^[0-9\b]+$/;
+    if (e.target.value === '' || re.test(e.target.value)) {
+      onChangeInNum(e);
+   }
+  } 
 
   return (
     <div>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <Box pb={1}>{lExamDate}</Box>
-            <Box>
-              <KeyboardDatePicker
-                autoOk
-                disableToolbar
-                variant="inline"
-                inputVariant="outlined"
-                format="dd/MM/yyyy"
-                margin="small"
-                id="date-picker-inline"
-                value={InExamDate}
-                onChange={onClickInExamDate}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-                InputProps={{
-                  style: {
-                      fontSize: 16,
-                      height: 35
-                  }
-              }}
-               style={{width:"246px",height:"50px"}}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box pb={1}>{lCloseDate}</Box>
-            <Box>
-              <KeyboardDatePicker
-                  autoOk
-                  disableToolbar
-                  variant="inline"
-                  inputVariant="outlined"
-                  format="dd/MM/yyyy"
-                  margin="small"
-                  id="date-picker-inline"
+      <Card>
+        <CardBody>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Row>
+              <Col xs="4">
+                <DatePicker
+                  label={lExamDate}
+                  value={InExamDate}
+                  onChange={onClickInExamDate}
+                  showError={eExamDate}
+                />
+              </Col>
+              <Col xs="4">
+                <DatePicker
+                  label={lCloseDate}
                   value={InCloseDate}
                   onChange={onClickInCloseDate}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                  }}
-                  InputProps={{
-                    style: {
+                  showError={eCloseDate}
+                />
+              </Col>
+              <Col xs="4">
+                <DropdownExamTime
+                  label={lRoundTime}
+                  value={InRoundTime}
+                  isClearable={false}
+                  showError={eRoundTime}
+                  onClick={onClickInRoundTime}
+                />
+              </Col>
+            </Row>
+
+            <Row style={{paddingTop: "20px", paddingBottom: "20px"}}>
+              <Col xs="4">
+                <DatePicker
+                  label={lReceiveDate}
+                  value={InReceiveDate}
+                  onChange={onClickInReceiveDate}
+                  showError={eReceiveDate}
+                />
+              </Col>
+              <Col xs="4">
+                <label className="label">{lReceiveTime}</label>
+                <form noValidate>
+                  <TextField
+                    error={eReceiveTime}
+                    id="time"
+                    type="time"
+                    value={InReceiveTime}
+                    onChange={onClickInReceiveTime}
+                    variant="outlined"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    inputProps={{
+                      step: 300, // 5 min
+                      style: {
                         fontSize: 16,
-                        height: 35
+                        height: 0,
+                        fontFamily:"Prompt-Regular"
                     }
-                }}
-                 style={{width:"246px",height:"50px"}}
-                />               
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box >{lRoundTime}</Box>
-            <Box>
-              <Select
-                isClearable={false}
-                isSearchable={false}
-                name="examTime"
-                options={examRoundList}                
-                getOptionLabel={(option) => `${option.timeStr}`}
-                getOptionValue={(option) => `${option.roundId}`}
-                onChange={onClickInRoundTime}
-                value={examRoundList.filter(option => option.roundId === InRoundTime)}
-              />                   
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box pb={1}>{lReceiveDate}</Box>
-            <Box>
-              <KeyboardDatePicker
-                autoOk
-                disableToolbar
-                variant="inline"
-                inputVariant="outlined"
-                format="dd/MM/yyyy"
-                margin="small"
-                id="date-picker-inline"
-                value={InReceiveDate}
-                onChange={onClickInReceiveDate}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-                InputProps={{
-                  style: {
-                      fontSize: 16,
-                      height: 35
-                  }
-              }}
-               style={{width:"246px",height:"50px"}}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box pb={1}>{lReceiveTime}</Box>
-            <Box>
-              <TimePicker
-                autoOk 
-                variant="inline"
-                inputVariant="outlined"
-                ampm={false}
-                mask="__:__"
-                value={"2000-01-01 " + InReceiveTime}
-                minutesStep={15}
-                onChange={onClickInReceiveTime}
-                InputProps={{
-                  style: {
-                      fontSize: 16,
-                      height: 35
-                  }
-              }}
-               style={{width:"246px",height:"50px"}}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box pb={1}>{lNum}</Box>
-            <Box>
-              <Input value={InNum} onChange={onChangeInNum}/>
-            </Box>
-          </Grid>
-        </Grid>
-      </MuiPickersUtilsProvider>
+                    }}
+                   style={{marginLeft:"0px",marginTop:"11px",width:"100%",height:"0px"}}
+                  />
+                </form>
+              </Col>
+              <Col xs="4">
+                <label className="label">{lNum}</label>
+                <Input value={InNum} onChange={onChangeApplicant} invalid={eNum} style={{
+                    marginLeft: "0px",
+                    marginTop: "8px",
+                    width: "100%",
+                    height: "40px",
+                    fontFamily:"Prompt-Regular",
+                    
+                  }}/>
+              </Col>
+            </Row>
+          </MuiPickersUtilsProvider>
+        </CardBody>
+      </Card>
     </div>
   );
 };

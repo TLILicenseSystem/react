@@ -42,7 +42,7 @@ export const DropdownLocationType = ({ label, type, value, onClick, requiredFiel
                   isSearchable={false}
                   name="locationType"
                   options={userData}                
-                  getOptionLabel={(option) => `${option.examTypeId} ${option.examTypeName}`}
+                  getOptionLabel={(option) => `${option.examTypeName}`}
                   getOptionValue={(option) => `${option.examTypeId}`}
                   onChange={onClick}
                   value={userData.filter(option => option.examTypeId === value)}

@@ -2,38 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Input, Row, Col } from "reactstrap";
+import TextField from "@material-ui/core/TextField";
+import styles from "../pageStyles.css";
 
-const Container = styled.div`
-  background-color: ${({ color }) => color};
-  padding: 10px;
-  margin: 10px;
-  //  border-radius: 0px;
-  flex: 1;
-  border: 1px solid;
-  font-size: 15px;
-  // h5, h1, p {
-  //     text-align: center;
-  //     margin: 0px;
-  //     color: #fffff;
-  // }
-
-  // h1 {
-  //     font-size: 30px;
-  // }
-
-  // p {
-  //     font-size: 20px;
-  // }
-`;
-
-const Head = styled.div`
-  background-color: #ced2d8;
-  padding: 10px;
-  margin: 10px;
-  flex: 1;
-  border: 1px solid;
-  font-size: 15px;
-`;
 const BoxSchedule = ({
   color,
   lLocationID,
@@ -58,53 +29,24 @@ const BoxSchedule = ({
   return (
     <div>
       <Row>
-        <Col xs="2">{lLocationID}</Col>
-        <Col xs="3">
-          <Input
-            style={{ width: wLocationID, height: height }}
-            value={InLocationID}
-            onChange={{}}
-          />
-        </Col>
-        <Col xs="2">{lOrg}</Col>
-        <Col xs="5">
-          <Input
-            style={{ height: height }}
-            value={InOrg}
-            onChange={{}}
-          />
-        </Col>
-      </Row>
-
-      <Row>
-        <Col xs="2">{lProvince}</Col>
-        <Col xs="3">
-          <Input
-            style={{ width: wType, height: height }}
-            value={InProvinceName}
-            onChange={{}}
-          />
-        </Col>
-        <Col xs="2">{lType}</Col>
-        <Col xs="3">
-          <Input
-            style={{ width: wType, height: height }}
-            value={InType}
-            onChange={{}}
-          />
-        </Col>
-        
+        <Col xs="5" className="div">{lLocationID}</Col>
+        <Col xs="7" className="div">{InLocationID}</Col>
       </Row>
       <Row>
-        <Col xs="2">{lLocation}</Col>
-        <Col xs="6">
-          <Input
-            style={{ width: wLocation, height: "100px" }}
-            type="textarea"
-            value={InLocation}
-            onChange={{}}
-          />
-        </Col>
+        <Col xs="5" className="div">{lOrg}</Col>
+        <Col xs="7" className="div">{InOrg}</Col>
+      </Row>
+      <Row>
+        <Col xs="5" className="div">{lProvince}</Col>
+        <Col xs="7" className="div">{InProvinceName}</Col>
+      </Row>
+      <Row>
+        <Col xs="5" className="div">{lType}</Col>
+        <Col xs="7" className="div">{InType}</Col>
+      </Row>
+      <Row>
+        <Col xs="5" className="div">{lLocation}</Col>
+        <Col xs="7" className="div">{InLocation}</Col>
       </Row>
     </div>
   );

@@ -52,7 +52,7 @@ export const EditLocationPopup = ({
   const [addProvinceCode, setAddProvinceCode] = useState("");
   // const [provinceName, setProvinceName] = useState("");
   const [addExamOrganizerCode, setAddExamOrganizerCode] = useState("");
-  // const [examOrganizerName, setExamOrganizerName] = useState("");
+  const [addExamOrganizerName, setAddExamOrganizerName] = useState("");
   // const [locationDetail, setLocationDetail] = useState("");
   const [addExamTypeCode, setAddExamTypeCode] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -71,20 +71,14 @@ export const EditLocationPopup = ({
     }
     setSnackbarOpen(false);
   };
-  // const handleAction = () => {
-  //   //call back function
-  //   action();
-  //   dispatch(hideSearchPopup());
-  //   onChange({ provinceCode, examOrganizerCode });
-  // };
   const onClickProvinceButton = (e) => {
     setAddProvinceCode(get(e, "provinceCode", ""));
     fetchProvinceData(get(e, "provinceCode", ""));
   };
-  // const onClickExamOrganizerButton = (e) => {
-  //   setExamOrganizerCode(get(e, "orgCode", ""));
-  //   fetchExamOrganizer(get(e, "orgCode", ""));
-  // };
+  const onClickExamOrganizerButton = (e) => {
+    setAddExamOrganizerCode(get(e, "orgCode", ""));
+    //fetchExamOrganizer(get(e, "orgCode", ""));
+  };
   // const onClickExamType = (e) => {
   //   setExamTypeCode(get(e, "examTypeId", "1"));
   // };
@@ -110,44 +104,41 @@ export const EditLocationPopup = ({
       setAddRegionName(tmpRegionCode + " " + tmpRegionName);
     }
   };
-  // const fetchExamOrganizer = async (e) => {
-  //   const response = await getOrganizer(e);
-  //   setExamOrganizerName(get(response[0], "orgName", ""));
-  // };
   const onClickAddExamLocation = async () => {
+    console.log("addExamOrganizerCode ",addExamOrganizerCode);
+    console.log("addProvinceCode ",addProvinceCode);
+    console.log("locationDetail ",locationDetail);
+    console.log("locationTypeCode ",locationTypeCode);
     if (
-      organizerCode === "" ||
-      provinceCode === "" ||
+      addExamOrganizerCode === "" ||
+      addProvinceCode === "" ||
       locationDetail === "" ||
       locationTypeCode === ""
     ) {
-      alert("error data null");
-      // Swal.fire({
-      //   icon: "error",
-      //   title: "เกิดข้อผิดพลาด",
-      //   text: "กรุณาระบุข้อมูลที่มี * ให้ครบถ้วน",
-      // });
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาระบุข้อมูลที่มี * ให้ครบถ้วน",
+      });
       return;
     }
     let examlocation = {
-      orgCode: organizerCode,
-      provinceCode: provinceCode,
+      orgCode: addExamOrganizerCode,
+      provinceCode: addProvinceCode,
       locationDetail: locationDetail,
       locationType: locationTypeCode,
       createUserCode: "2901133",
     };
     let response = await addExamLocation(examlocation);
     if (response !== "error") {
-      // Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
-      //reloadLocationList();
-      alert("ok");
+      Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
+      action();
     } else {
-      alert("error");
-      // Swal.fire({
-      //   icon: "error",
-      //   title: "เกิดข้อผิดพลาด",
-      //   text: "ไม่สามารถแก้ไขข้อมูลได้",
-      // });
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถแก้ไขข้อมูลได้",
+      });
     }
     toggle();
   };
@@ -158,12 +149,11 @@ export const EditLocationPopup = ({
       locationTypeCode === "" ||
       locationTypeCode === ""
     ) {
-      alert("error null data");
-      // Swal.fire({
-      //   icon: "error",
-      //   title: "เกิดข้อผิดพลาด",
-      //   text: "กรุณาระบุข้อมูลที่มี * ให้ครบถ้วน",
-      // });
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาระบุข้อมูลที่มี * ให้ครบถ้วน",
+      });
       return;
     }
 
@@ -179,26 +169,25 @@ export const EditLocationPopup = ({
     let response = await updateExamLocation(examlocation);
 
     if (response !== "error") {
-      // Swal.fire("Updated!", "แก้ไขข้อมูลแล้ว", "success");
-      //reloadLocationList();
-      alert("ok");
+      Swal.fire("Updated!", "แก้ไขข้อมูลแล้ว", "success");
+      action();
     } else {
-      // Swal.fire({
-      //   icon: "error",
-      //   title: "เกิดข้อผิดพลาด",
-      //   text: "ไม่สามารถแก้ไขข้อมูลได้",
-      // });
-      alert("error");
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถแก้ไขข้อมูลได้",
+      });
     }
     toggle();
+
   };
   const onClickDeleteLocation = async () => {
     const { value: check } = await Swal.fire({
       text: `ต้องการลบรหัสที่ตั้ง ${locationId} จังหวัด${provinceName} ใช่หรือไม่`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d9534f",
-      cancelButtonColor: "#0275d8",
+      cancelButtonColor: "#d9534f",
+      confirmButtonColor: "#0275d8",
       confirmButtonText: "ใช่",
       cancelButtonText: "ยกเลิก",
     });
@@ -207,17 +196,17 @@ export const EditLocationPopup = ({
       let response = await deleteExamLocation(locationId);
       console.log("onClickDeleteLocation ", response);
       if (response === "success") {
-        // Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
-        alert("OK");
+        Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
+        action();
+        toggle();
       } else {
-        // Swal.fire({
-        //   icon: "error",
-        //   title: "เกิดข้อผิดพลาด",
-        //   text: "ไม่สามารถลบข้อมูลได้",
-        // });
-        alert("error");
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถลบข้อมูลได้",
+        });
       }
-      toggle();
+      
     }
     
   };
@@ -225,15 +214,6 @@ export const EditLocationPopup = ({
   return (
     <div>
     <Modal isOpen={isShow} className="div">
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert onClose={handleSnackbarClose} severity="success">
-          This is a success message!
-        </Alert>
-      </Snackbar>
       <ModalBody>
         <h4 className="head">{title}</h4>
       </ModalBody>
@@ -265,7 +245,7 @@ export const EditLocationPopup = ({
           <Col xs="6">
             <InputWithLabelRow
               label="โซน"
-              value={description === "edit" ? region + " " + regionName : addRegionName}
+              value={description === "edit" ? regionName : addRegionName}
               disabled={description === "edit" ? true : false}
               textboxSize={12}
             />
@@ -274,12 +254,12 @@ export const EditLocationPopup = ({
         <Row xs="1" sm="2">
           <DropdownExamOrganizer
             label="สถานที่สอบ"
-            value={organizerCode}
+            value={description === "edit" ? organizerCode : addExamOrganizerCode}
             requiredField={true}
             disabled={description === "edit" ? true : false}
-            // onClick={(e) => {
-            //   onClickExamOrganizerButton(e);
-            // }}
+            onClick={(e) => {
+              onClickExamOrganizerButton(e);
+            }}
           />
           <DropdownLocationType
             label="ประเภท"

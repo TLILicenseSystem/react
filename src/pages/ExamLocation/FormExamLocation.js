@@ -45,7 +45,11 @@ import {
   getExamLocation,
   getExamLocationAll,
 } from "../../api/apiGetExamLocation";
-import { showSearchPopup, showEditLocationPopup, showSnackBar } from "../../redux/actions";
+import {
+  showSearchPopup,
+  showEditLocationPopup,
+  showSnackBar,
+} from "../../redux/actions";
 import {
   addExamLocation,
   updateExamLocation,
@@ -54,7 +58,7 @@ import {
 import useFetchLocationList from "../../hooks/useFetchLocationList.js";
 import styles from "../pageStyles.css";
 
-const FormExamLocation = () => {
+const FormExamLocation = (props) => {
   const [provinceCode, setProvinceCode] = useState("");
   const [provinceName, setProvinceName] = useState("");
   const [searchValue, setSearchValue] = useState({});
@@ -76,7 +80,17 @@ const FormExamLocation = () => {
   const [editExamOrganizerName, setEditExamOrganizerName] = useState("");
   const [editLocationDetail, setEditLocationDetail] = useState("");
 
+  const [examLocationList, setExamLocationList] = useState([]);
   const dispatch = useDispatch();
+
+  const fetchData = async () => {
+    const responseLocation = await getExamLocation("A");
+    setExamLocationList(get(responseLocation, "data", []));
+  };
+  useEffect(() => {
+    console.log("LocationTable inital ");
+    fetchData();
+  }, []);
 
   const initEditExamForm = () => {
     setEditProvinceName("");
@@ -90,10 +104,10 @@ const FormExamLocation = () => {
     setProvinceCode(get(e, "provinceCode", ""));
     //fetchProvinceData(get(e, "provinceCode", ""));
   };
-  const onClickEditProvinceButton = (e) => {
-    setEditProvinceCode(e + "");
-    setEditProvinceName(getProvinceData(e));
-  };
+  // const onClickEditProvinceButton = (e) => {
+  //   setEditProvinceCode(e + "");
+  //   setEditProvinceName(getProvinceData(e));
+  // };
   const onClickExamOrganizerButton = (e) => {
     setExamOrganizerCode(get(e, "orgCode", ""));
   };
@@ -104,28 +118,21 @@ const FormExamLocation = () => {
     setExamTypeCode(get(e, "examTypeId", "1"));
   };
   const onClickEditExamLocation = async (e) => {
-    console.log("onClickEditExamLocation ",e);
-    setEditLocationId(get(e,"locationId",""));
-    setEditLocationTypeCode(get(e,"locationTypeCode",""));
-    setEditLocationTypeName(get(e,"locationTypeName",""));
-    setEditExamOrganizerCode(get(e,"organizerCode",""));
-    setEditExamOrganizerName(get(e,"organizerName",""));
-    setEditProvinceCode(get(e,"provinceCode",""));
-    setEditProvinceName(get(e,"provinceName",""));
-    let regionId, regionName = getRegionData(get(e,"provinceCode",""));
+    console.log("onClickEditExamLocation ", e);
+    setEditLocationId(get(e, "locationId", ""));
+    setEditLocationTypeCode(get(e, "locationTypeCode", ""));
+    setEditLocationTypeName(get(e, "locationTypeName", ""));
+    setEditExamOrganizerCode(get(e, "organizerCode", ""));
+    setEditExamOrganizerName(get(e, "organizerName", ""));
+    setEditProvinceCode(get(e, "provinceCode", ""));
+    setEditProvinceName(get(e, "provinceName", ""));
+    let regionId,
+      regionName = getRegionData(get(e, "provinceCode", ""));
     setRegion(regionId);
     setRegionName(regionName);
-    setEditLocationDetail(get(e,"locationDetail",""));
+    setEditLocationDetail(get(e, "locationDetail", ""));
 
     onClickEditLocationPopup("edit", e);
-    // setEditLocationTypeCode(e + "");
-    // setEditLocationTypeName(
-    //   get(
-    //     examType.filter((type) => type.examTypeId === e)[0],
-    //     "examTypeName",
-    //     ""
-    //   )
-    // );    
   };
   const onClickAddExamLocation = (mode) => {
     setEditLocationId("");
@@ -138,18 +145,17 @@ const FormExamLocation = () => {
     setEditLocationDetail("");
 
     onClickEditLocationPopup(mode);
-
   };
   const onClickEditLocationPopup = (mode, e) => {
-    let popupTitle = (mode === "edit" ? "แก้ไขสถานที่สอบ" : "เพิ่มสถานที่สอบ");
+    let popupTitle = mode === "edit" ? "แก้ไขสถานที่สอบ" : "เพิ่มสถานที่สอบ";
     dispatch(
       showEditLocationPopup({
         title: popupTitle,
         description: mode,
-        locationEditDetail: e,        
-        action: () => {
-          //คำสั่งในการเปลี่ยนหน้า (หน้าที่ต้องการไป, state หรือ parametter ที่ parse ไปอีกหน้า ซึ่งส่งได้ตัวเดียว)
-          //setExamLocationStateList(examLocationList);
+        locationEditDetail: e,
+        action: async () => {
+          const responseLocation = await getExamLocationAll();
+          setExamLocationList(get(responseLocation, "data", []));
         },
       })
     );
@@ -157,31 +163,14 @@ const FormExamLocation = () => {
 
   const examZoneResonse = getExamLocationZone();
   const examType = getExamType();
-  const {
-    examLocationList,
-    examProvinceList,
-    examZoneList,
-    examOrganizerList,
-  } = useFetchLocationList();
-  const getProvinceData = (e) => {
-    if (e !== "" || e !== null) {
-      const provinceName = get(
-        examProvinceList.filter((zone) => zone.provinceCode === e)[0],
-        "provinceName",
-        ""
-      );
-      return provinceName;
-    } else {
-      return "";
-    }
-  };
+
   const getRegionData = async (e) => {
     if (e === "") {
-      return ("","");
+      return "", "";
     } else {
       const response = await getProvinceCode(e);
       let tmpRegionCode = get(response[0], "region", "");
-      setRegion(tmpRegionCode);      
+      setRegion(tmpRegionCode);
       let tmpRegionName = get(
         examZoneResonse.filter(
           (zone) => zone.regionCode === get(response[0], "region", "")
@@ -196,20 +185,22 @@ const FormExamLocation = () => {
 
   return (
     <Container>
-      
-      {/* <SearchPopup onChange={getSearchValue} /> */}
-      <EditLocationPopup locationId={editLocationId}
-                        locationTypeCode={editLocationTypeCode}
-                        locationTypeName={editLocationTypeName}
-                        region={region}
-                        regionName={regionName}                        
-                        organizerCode={editExamOrganizerCode}
-                        organizerName={editExamOrganizerName}
-                        provinceCode={editProvinceCode}
-                        provinceName={editProvinceName}
-                        locationDetail={editLocationDetail}
-                        onChangeLocationDetail={(e) => setEditLocationDetail(e)}
-                        onChangeExamType={(e) => setEditLocationTypeCode(get(e,"examTypeId",""))}/>
+      <EditLocationPopup
+        locationId={editLocationId}
+        locationTypeCode={editLocationTypeCode}
+        locationTypeName={editLocationTypeName}
+        region={region}
+        regionName={regionName}
+        organizerCode={editExamOrganizerCode}
+        organizerName={editExamOrganizerName}
+        provinceCode={editProvinceCode}
+        provinceName={editProvinceName}
+        locationDetail={editLocationDetail}
+        onChangeLocationDetail={(e) => setEditLocationDetail(e)}
+        onChangeExamType={(e) =>
+          setEditLocationTypeCode(get(e, "examTypeId", ""))
+        }
+      />
       <div style={{ marginTop: "20px" }} className="div">
         <h2 className="head">ตั้งค่าสถานที่สอบ</h2>
         <Wrapper>
@@ -219,17 +210,8 @@ const FormExamLocation = () => {
 
               <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
                 <Col xs="5">
-                  <DropdownExamRegion
-                    label="สนามสอบ"
-                    value={provinceCode}
-                    onClick={(e) => {
-                      onClickProvinceButton(e);
-                    }}
-                  />
-                </Col>
-                <Col xs="5">
                   <DropdownExamOrganizer
-                    label="สถานที่สอบ"
+                    label="สนามสอบ"
                     value={examOrganizerCode}
                     isClearable={true}
                     onClick={(e) => {
@@ -237,27 +219,40 @@ const FormExamLocation = () => {
                     }}
                   />
                 </Col>
+                <Col xs="5">
+                  <DropdownExamRegion
+                    label="สถานที่สอบ"
+                    value={provinceCode}
+                    onClick={(e) => {
+                      onClickProvinceButton(e);
+                    }}
+                  />
+                </Col>
                 <Col xs="2">
                   <Button
                     onClick={() => onClickAddExamLocation("add", null)}
                     color="success"
-                    style={{ marginLeft: 0, marginTop: 33, fontFamily: "Prompt-Regular"}}
+                    style={{
+                      marginLeft: 0,
+                      marginTop: 34,
+                      fontFamily: "Prompt-Regular",
+                    }}
                   >
                     เพิ่มสถานที่สอบ
                   </Button>
                 </Col>
               </Row>
             </CardBody>
-          </Card>
-          {/* <Card style={{ marginTop: "20px" }}> */}
+
             <CardBody>
               <LocationTable
                 provinceCode={provinceCode}
                 examOrganizerCode={examOrganizerCode}
                 onClick={onClickEditExamLocation}
+                examLocationList={examLocationList}
               />
             </CardBody>
-          {/* </Card> */}
+          </Card>
         </Wrapper>
       </div>
     </Container>

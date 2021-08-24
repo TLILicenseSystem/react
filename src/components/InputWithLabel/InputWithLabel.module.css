@@ -1,17 +1,22 @@
 .div {
     display: flex;
     flex-direction: row;
+    font-family: "Prompt-Regular";
 }
 
 .label {
-    margin-bottom: 6px;
+    margin-bottom: 10px;
+    font-family: "Prompt-Regular";
 }
 
 .lableStar {
     margin-bottom: 6px;
     color: red;
 }
+.required {
+    color: red;
+}
 .input {
      margin-bottom: 20px; 
-     
+     font-family: "Prompt-Regular";
 }

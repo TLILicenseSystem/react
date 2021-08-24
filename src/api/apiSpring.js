@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //const baseURL = "http://localhost:8080/wsLicenseAgent/ws/rest/request/";
-const baseURL = "http://localhost:8080/wsLicenseAgentSpring/licenseexam/";
+const baseURL = "http://localhost:8080/licenseexam/";
 
 const defaultOptions = {
   baseURL,
