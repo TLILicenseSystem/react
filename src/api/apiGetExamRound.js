@@ -2,10 +2,10 @@ import api from "./api2";
 
 export const getExamRoundAll = async () => {
     try {
-        const response = await api.get(`/examround/searchGET`);
+        const response = await api.get(`examround/searchGET`);
         console.log("getExamRoundAll " ,response);
         if (response.status === 200) {
-            console.log('getExamroundAll response ', response.data);
+            //console.log('getExamroundAll response ', response.data);
             return response;
         }
         else {

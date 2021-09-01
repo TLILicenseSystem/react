@@ -29,7 +29,6 @@ import { getOrganizer } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone } from "../../api/apiGetConfig";
 import { get } from "lodash";
 import PropTypes from "prop-types";
-import MuiAlert from '@material-ui/lab/Alert';
 import Swal from "sweetalert2";
 
 export const EditLocationPopup = ({
@@ -101,7 +100,7 @@ export const EditLocationPopup = ({
         ""
       );
       console.log(tmpRegionName);
-      setAddRegionName(tmpRegionCode + " " + tmpRegionName);
+      setAddRegionName(tmpRegionName);
     }
   };
   const onClickAddExamLocation = async () => {
@@ -181,35 +180,6 @@ export const EditLocationPopup = ({
     toggle();
 
   };
-  const onClickDeleteLocation = async () => {
-    const { value: check } = await Swal.fire({
-      text: `ต้องการลบรหัสที่ตั้ง ${locationId} จังหวัด${provinceName} ใช่หรือไม่`,
-      icon: "warning",
-      showCancelButton: true,
-      cancelButtonColor: "#d9534f",
-      confirmButtonColor: "#0275d8",
-      confirmButtonText: "ใช่",
-      cancelButtonText: "ยกเลิก",
-    });
-
-    if (check) {
-      let response = await deleteExamLocation(locationId);
-      console.log("onClickDeleteLocation ", response);
-      if (response === "success") {
-        Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
-        action();
-        toggle();
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่สามารถลบข้อมูลได้",
-        });
-      }
-      
-    }
-    
-  };
 
   return (
     <div>
@@ -223,7 +193,7 @@ export const EditLocationPopup = ({
             <InputWithLabelRow
               label="รหัสที่ตั้ง"
               value={locationId}
-              textboxSize={4}
+              textboxSize={6}
               disabled={true}
             />
           </Col>
@@ -284,20 +254,13 @@ export const EditLocationPopup = ({
           />
         </Row>
       </ModalBody>
-      <ModalFooter>
-        {description === "edit" ? <Button
-          style={{ fontFamily: "Prompt-Regular" }}
-          onClick={onClickDeleteLocation}
-          color="danger"
-        >
-          ลบ
-        </Button> : ""}      
+      <ModalFooter>  
         <Button
           style={{ fontFamily: "Prompt-Regular" }}
           onClick={description === "edit" ? onClickEditLocationData : onClickAddExamLocation}
           color="primary"
         >
-          อัพโหลดข้อมูล
+          บันทึก
         </Button>
         <Button
           style={{ fontFamily: "Prompt-Regular" }}

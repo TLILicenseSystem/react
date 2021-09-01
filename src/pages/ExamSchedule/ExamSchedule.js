@@ -20,10 +20,7 @@ import BoxSchedule from "./BoxSchedule";
 import BoxUserModify from "./BoxUserModify";
 import { FontAwesomeIcon } from "@fortawesome/fontawesome-free";
 import { cond, get } from "lodash";
-import {
-  addExamSchedule,
-  updateExamSchedule,
-} from "../../api/apiAddExamSchedule";
+import { deleteExamSchedule } from "../../api/apiAddExamSchedule";
 import {
   ButtonGroup,
   Button,
@@ -88,7 +85,12 @@ const ExamSchedule = () => {
   };
 
   const fetchData = async () => {
-    const responseSchedule = await getExamScheduleByDetails(selectedDate, examRound, examOrganizerCode , provinceCode);
+    const responseSchedule = await getExamScheduleByDetails(
+      selectedDate,
+      examRound,
+      examOrganizerCode,
+      provinceCode
+    );
     setExamScheduleList(get(responseSchedule, "data", []));
   };
 
@@ -96,21 +98,72 @@ const ExamSchedule = () => {
     fetchData();
   }, []);
 
+  const rows = examScheduleList.map((row) => {
+    const { scheduleId, ...rest } = row;
+    return { id: scheduleId, scheduleId, ...rest };
+  });
+
   const onClickEditSchedule = (schduleDetail) => {
     console.log("onClickEditSchedule ", schduleDetail);
-    history.push("/examSchedule-edit", schduleDetail);
+    if (get(schduleDetail, "event", "") === "edit") {
+      history.push("/examSchedule-edit", schduleDetail);
+    } else {
+      onClickDeleteSchedule(schduleDetail.selected);
+    }
   };
   const handleExamRound = (date) => {
     console.log("handleExamRound ", date);
     setExamRound(get(date, "roundId", ""));
   };
   const onClickSearchSchedule = async () => {
-    console.log("onClickSearchSchedule " , selectedDate);
+    console.log("onClickSearchSchedule ", selectedDate);
     const responseSchedule = await getExamScheduleByDetails(
-              (selectedDate === null )? "" : moment(selectedDate).format("DD/MM/yyyy"),
-              examRound, examOrganizerCode , provinceCode);
+      selectedDate === null ? "" : moment(selectedDate).format("DD/MM/yyyy"),
+      examRound,
+      examOrganizerCode,
+      provinceCode
+    );
     setExamScheduleList(get(responseSchedule, "data", []));
-  }
+  };
+
+  const onClickDeleteSchedule = async (selected) => {
+    let scheduleId = get(selected, "scheduleId", "");
+    console.log(scheduleId);
+    if (scheduleId === "") {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถลบรายการตารางสอบนี้ได้",
+      });
+      return;
+    }
+
+    const { value: check } = await Swal.fire({
+      text: `ต้องการลบตารางสอบวันที่ ${moment(
+        get(selected, "examDate", "")
+      ).format("DD/MM/yyyy")} เวลา ${get(selected, "roundId", "")} ใช่หรือไม่`,
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonColor: "#d9534f",
+      confirmButtonColor: "#0275d8",
+      confirmButtonText: "ใช่",
+      cancelButtonText: "ยกเลิก",
+    });
+    if (check) {
+      let response = await deleteExamSchedule(scheduleId);
+
+      if (response === "error") {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "พบข้อผิดพลาดในการลบข้อมูล!",
+        });
+      } else {
+        //rows = (rows.filter((item) => item.roundId !== roundId));
+        Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
+      }
+    }
+  };
 
   return (
     <Container>
@@ -171,9 +224,12 @@ const ExamSchedule = () => {
                       <Button
                         color="outline-success"
                         type="button"
-                        style={{marginLeft:"10px", fontFamily: "Prompt-Regular"}}
+                        style={{
+                          marginLeft: "10px",
+                          fontFamily: "Prompt-Regular",
+                        }}
                         active={true}
-                        onClick={() => onClickEditSchedule({"mode":"add"})}
+                        onClick={() => onClickEditSchedule({ mode: "add" })}
                       >
                         เพิ่ม
                       </Button>
@@ -184,12 +240,11 @@ const ExamSchedule = () => {
             </CardBody>
             <CardBody>
               <ScheduleTable
-                examScheduleList={examScheduleList}
+                examScheduleList={rows}
                 onClick={onClickEditSchedule}
               />
             </CardBody>
           </Card>
-          
         </Wrapper>
       </div>
     </Container>

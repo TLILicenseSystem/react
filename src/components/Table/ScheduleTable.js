@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { get } from "lodash";
 import { getExamLocation } from "../../api/apiGetExamLocation";
 import { getProvinceCodeAll } from "../../api/apiGetProvinceCode";
@@ -7,20 +6,20 @@ import { getOrganizerAll } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone, getExamType } from "../../api/apiGetConfig";
 import { getExamRoundAll } from "../../api/apiGetExamRound";
 import { Button } from "reactstrap";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
-import TableRow from "@material-ui/core/TableRow";
+import { DataGrid } from "@material-ui/data-grid";
+
+// import Table from "@material-ui/core/Table";
+// import TableBody from "@material-ui/core/TableBody";
+// import TableCell from "@material-ui/core/TableCell";
+// import TableContainer from "@material-ui/core/TableContainer";
+// import TableHead from "@material-ui/core/TableHead";
+// import TablePagination from "@material-ui/core/TablePagination";
+// import TableRow from "@material-ui/core/TableRow";
 import PropTypes from "prop-types";
 import moment from "moment";
+import { useStyles , } from "./table.style";
 
-export const ScheduleTable = ({
-  examScheduleList,
-  onClick,
-}) => {
+export const ScheduleTable = ({ examScheduleList, onClick }) => {
   //จังหวะที่ subscribe isShow /state.spinner สามารถดึง state ได้ทั้งหมด
   //const { isShow } = useSelector((state) => state.spinner);
   const [examLocationList, setExamLocationList] = useState([]);
@@ -41,7 +40,7 @@ export const ScheduleTable = ({
     const responseOrganizer = await getOrganizerAll();
     setExamOrganizerList(get(responseOrganizer, "data", []));
     const responseLocationType = await getExamType();
-    setExamLocationTypeList(responseLocationType);    
+    setExamLocationTypeList(responseLocationType);
     const responseRound = await getExamRoundAll();
     setExamRoundList(get(responseRound, "data", []));
   };
@@ -119,10 +118,6 @@ export const ScheduleTable = ({
     if (value === "") {
       return "";
     }
-    console.log(
-      "getLocationDetail ",
-      examLocationList.filter((zone) => zone.locationId === value)[0]
-    );
     const locationDetail = examLocationList.filter(
       (zone) => zone.locationId === value
     )[0];
@@ -134,13 +129,12 @@ export const ScheduleTable = ({
     } else if (key === "locationDetail") {
       return get(locationDetail, "locationDetail", "");
     } else if (key === "organizerName") {
-      return getOrganizerData(get(locationDetail, "organizerCode", ""));
+      return getOrganizerData(get(locationDetail, "orgCode", ""));
     } else {
       return "";
     }
   };
   const getExamRoundDetail = (roundId) => {
-    console.log("getExamRoundDetail " , roundId);
     if (roundId !== "" || roundId !== null) {
       const roundTime = get(
         examRoundList.filter((zone) => zone.roundId === roundId)[0],
@@ -154,209 +148,253 @@ export const ScheduleTable = ({
   };
 
   const columns = [
-    { id: "examDate", label: "วันที่สอบ", minWidth: 50 },
-    { id: "roundId", label: "เวลาสอบ", minWidth: 50 },
     {
-      id: "maxApplicant",
-      label: "จำนวนผู้สมัครสอบ",
-      align: "left",
-      minWidth: 50,
+      field: "examDateFormat",
+      headerName: "วันที่สอบ",
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "examDate")).format(
+          "DD/MM/yyyy"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: 'header',
+      cellClassName:"cellDark",
     },
     {
-      id: "applyCloseDate",
-      label: "วันที่ปิดรับสมัคร",
-      minWidth: 50,
-      align: "left",
+      field: "roundTime",
+      headerName: "เวลาสอบ",
+      minWidth: 110,
+      hideSortIcons: "true",
+      valueGetter: (params) =>
+        `${getExamRoundDetail(params.getValue(params.id, "roundId"))}`,
+      headerClassName: 'header',
     },
     {
-      id: "examLocation.provinceName",
-      label: "สนามสอบ",
-      minWidth: 50,
+      field: "maxApplicant",
+      headerName: "จำนวนผู้สมัครสอบ",
       align: "left",
+      hideSortIcons: "true",
+      headerClassName: 'header',
     },
     {
-      id: "examLocation.locationType",
-      label: "ประเภท",
+      field: "applyCloseDateFormat",
+      headerName: "วันที่ปิดรับสมัคร",
       minWidth: 50,
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "applyCloseDate")).format(
+          "DD/MM/yyyy"
+        )}`,
       align: "left",
+      hideSortIcons: "true",
+      headerClassName: 'header',
     },
     {
-      id: "examLocation.locationDetail",
-      label: "สถานที่ตั้งสอบ",
-      minWidth: 50,
+      field: "provinceName",
+      headerName: "สนามสอบ",
+      width: 115,
       align: "left",
+      valueGetter: (params) =>
+        `${getLocationDetail(
+          "provinceName",
+          params.getValue(params.id, "locationId")
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: 'header',
     },
     {
-      id: "applyOpenDate",
-      label: "วันที่ได้รับหนังสือ",
+      field: "locationTypeName",
+      headerName: "ประเภท",
       minWidth: 50,
       align: "left",
+      valueGetter: (params) =>
+        `${getLocationDetail(
+          "locationTypeName",
+          params.getValue(params.id, "locationId")
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: 'header',
     },
     {
-      id: "roundId",
-      label: "เวลาที่ได้รับหนังสือ",
+      field: "locationDetail",
+      headerName: "สถานที่ตั้งสอบ",
       minWidth: 50,
       align: "left",
+      valueGetter: (params) =>
+        `${getLocationDetail(
+          "locationDetail",
+          params.getValue(params.id, "locationId")
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: 'header',
     },
     {
-      id: "edit",
-      label: "แก้ไข",
+      field: "applyOpenDateFormat",
+      headerName: "วันที่ได้รับหนังสือ",
       minWidth: 50,
       align: "left",
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "applyOpenDate")).format(
+          "DD/MM/yyyy"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: 'header',
+    },
+    {
+      field: "receiveTime",
+      headerName: "เวลาที่ได้รับหนังสือ",
+      minWidth: 50,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: 'header',
+    },
+    {
+      field: "edit",
+      headerName: "แก้ไข",
+      width: 70,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: 'header',
+      renderCell: (cellValues) => {
+        return (
+          <Button
+            size="sm"
+            variant="contained"
+            color="primary"
+            // onClick={(event) => {
+            //   handleClick(event, cellValues);
+            // }}
+
+            onClick={(event) =>
+              onClick({
+                event:"edit",
+                selected: cellValues.row,
+                locationDetail: {
+                  locationId: get(cellValues.row, "locationId", ""),
+                  organizerName: getLocationDetail(
+                    "organizerName",
+                    get(cellValues.row, "locationId", "")
+                  ),
+                  provinceName: getLocationDetail(
+                    "provinceName",
+                    get(cellValues.row, "locationId", "")
+                  ),
+                  locationTypeName: getLocationDetail(
+                    "locationTypeName",
+                    get(cellValues.row, "locationId", "")
+                  ),
+                  locationDetail: getLocationDetail(
+                    "locationDetail",
+                    get(cellValues.row, "locationId", "")
+                  ),
+                },
+                alteredLocationDetail: {
+                  locationId: get(cellValues.row, "alteredLocationId", ""),
+                  organizerName: getLocationDetail(
+                    "organizerName",
+                    get(cellValues.row, "alteredLocationId", "")
+                  ),
+                  provinceName: getLocationDetail(
+                    "provinceName",
+                    get(cellValues.row, "alteredLocationId", "")
+                  ),
+                  locationTypeName: getLocationDetail(
+                    "locationTypeName",
+                    get(cellValues.row, "alteredLocationId", "")
+                  ),
+                  locationDetail: getLocationDetail(
+                    "locationDetail",
+                    get(cellValues.row, "alteredLocationId", "")
+                  ),
+                },
+              })
+            }
+          >
+            แก้ไข
+          </Button>
+        );
+      },
+    },
+    {
+      field: "delete",
+      headerName: "ลบ",
+      width: 70,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: 'header',
+      renderCell: (cellValues) => {
+        return (
+          <Button
+            size="sm"
+            variant="contained"
+            color="danger"
+            // onClick={(event) => {
+            //   handleClick(event, cellValues);
+            // }}
+
+            onClick={(event) =>
+              onClick({
+                event:"delete",
+                selected: cellValues.row,
+                locationDetail: {
+                  locationId: get(cellValues.row, "locationId", ""),
+                  organizerName: getLocationDetail(
+                    "organizerName",
+                    get(cellValues.row, "locationId", "")
+                  ),
+                  provinceName: getLocationDetail(
+                    "provinceName",
+                    get(cellValues.row, "locationId", "")
+                  ),
+                  locationTypeName: getLocationDetail(
+                    "locationTypeName",
+                    get(cellValues.row, "locationId", "")
+                  ),
+                  locationDetail: getLocationDetail(
+                    "locationDetail",
+                    get(cellValues.row, "locationId", "")
+                  ),
+                },
+                alteredLocationDetail: {
+                  locationId: get(cellValues.row, "alteredLocationId", ""),
+                  organizerName: getLocationDetail(
+                    "organizerName",
+                    get(cellValues.row, "alteredLocationId", "")
+                  ),
+                  provinceName: getLocationDetail(
+                    "provinceName",
+                    get(cellValues.row, "alteredLocationId", "")
+                  ),
+                  locationTypeName: getLocationDetail(
+                    "locationTypeName",
+                    get(cellValues.row, "alteredLocationId", "")
+                  ),
+                  locationDetail: getLocationDetail(
+                    "locationDetail",
+                    get(cellValues.row, "alteredLocationId", "")
+                  ),
+                },
+              })
+            }
+          >
+            ลบ
+          </Button>
+        );
+      },
     },
   ];
 
+  const classes = useStyles();
+
   return (
-    <div
-      style={{
-        maxHeight: "550px",
-        overflowY: "auto",
-        margin: "auto",
-      }}
-    >
-      <TableContainer>
-        <Table aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {/* {provinceCode}{examOrganizerCode}{roundId}{moment(examDate).format("DD/MM/yyyy")} */}
-            {examScheduleList
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((detail, index) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                    <TableCell key={index}>
-                      {moment(get(detail, "examDate", "")).format("DD/MM/yyyy")}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {getExamRoundDetail(get(detail, "roundId", ""))}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {get(detail, "maxApplicant", "")}{" "}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {moment(get(detail, "applyCloseDate", "")).format(
-                        "DD/MM/yyyy"
-                      )}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {getLocationDetail(
-                        "provinceName",
-                        get(detail, "locationId", "")
-                      )}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {getLocationDetail(
-                        "locationTypeName",
-                        get(detail, "locationId", "")
-                      )}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {getLocationDetail(
-                        "locationDetail",
-                        get(detail, "locationId", "")
-                      )}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {get(detail, "receiveDate", "") === null
-                        ? ""
-                        : moment(get(detail, "receiveDate", null)).format(
-                            "DD/MM/yyyy"
-                          )}
-                    </TableCell>
-                    <TableCell key={index}>
-                      {get(detail, "receiveTime", "")}
-                    </TableCell>
-                    <TableCell key={index}>
-                      <Button
-                        size="sm"
-                        onClick={() =>
-                          onClick({
-                            scheduleId: get(detail, "scheduleId", ""),
-                            examDate: moment(
-                              get(detail, "examDate", "")
-                            ).format("DD/MM/yyyy"),
-                            applyCloseDate: moment(
-                              get(detail, "applyCloseDate", "")
-                            ).format("DD/MM/yyyy"),
-                            roundId: get(detail, "roundId", ""),
-                            receiveDate:
-                              get(detail, "receiveDate", "") === null
-                                ? ""
-                                : moment(
-                                    get(detail, "receiveDate", null)
-                                  ).format("DD/MM/yyyy"),
-                            receiveTime: (get(detail, "receiveTime", "") + "").trim(),
-                            maxApplicant: get(detail, "maxApplicant", ""),
-                            locationDetail: {
-                              locationId: get(detail, "locationId", ""),
-                              organizerName: getLocationDetail(
-                                "organizerName",
-                                get(detail, "locationId", "")
-                              ),
-                              provinceName: getLocationDetail(
-                                "provinceName",
-                                get(detail, "locationId", "")
-                              ),
-                              locationTypeName: getLocationDetail(
-                                "locationTypeName",
-                                get(detail, "locationId", "")
-                              ),
-                              locationDetail: getLocationDetail(
-                                "locationDetail",
-                                get(detail, "locationId", "")
-                              ),
-                            },
-                            alteredLocationDetail: {
-                              locationId: get(detail, "alteredLocationId", ""),
-                              organizerName: getLocationDetail(
-                                "organizerName",
-                                get(detail, "locationId", "")
-                              ),
-                              provinceName: getLocationDetail(
-                                "provinceName",
-                                get(detail, "alteredLocationId", "")
-                              ),
-                              locationTypeName: getLocationDetail(
-                                "locationTypeName",
-                                get(detail, "alteredLocationId", "")
-                              ),
-                              locationDetail: getLocationDetail(
-                                "locationDetail",
-                                get(detail, "alteredLocationId", "")
-                              ),
-                            },
-                          })
-                        }
-                      >
-                        แก้ไข
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={examScheduleList.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+    <div style={{ height: 300, width: "1000px" }} >
+      <DataGrid
+        //rowHeight={20}
+        className={classes.root}
+        rows={examScheduleList}
+        columns={columns}
+        pageSize={10}
+        id="scheduleId"
+        disableSelectionOnClick
+        disableColumnMenu        
       />
     </div>
   );

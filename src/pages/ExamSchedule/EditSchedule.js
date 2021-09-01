@@ -50,30 +50,37 @@ const EditSchedule = () => {
   const scheduleDetail = get(location, "state", {});
   console.log("user", scheduleDetail);
 
-  const [scheduleId, setScheduleId] = useState(get(scheduleDetail, "scheduleId", ""));
-  const [examDate, setExamDate] = useState(get(scheduleDetail, "examDate", ""));
-  const [closeDate, setCloseDate] = useState(
-    get(scheduleDetail, "applyCloseDate", "")
+  const [scheduleId, setScheduleId] = useState(
+    get(scheduleDetail.selected, "scheduleId", "")
   );
-  const [examTime, setExamTime] = useState(get(scheduleDetail, "roundId", ""));
+  const [examDate, setExamDate] = useState(
+    moment(get(scheduleDetail.selected, "examDate", "")),"DD/MM/yyyy"
+  );
+  const [closeDate, setCloseDate] = useState(
+    moment(get(scheduleDetail.selected, "applyCloseDate", "")),"DD/MM/yyyy"
+  );
+  const [examTime, setExamTime] = useState(
+    get(scheduleDetail.selected, "roundId", "")
+  );
   const [receiveDate, setReceiveDate] = useState(
-    get(scheduleDetail, "receiveDate", "")
+    moment(get(scheduleDetail.selected, "receiveDate", "")).format("DD/MM/yyyy")
   );
   const [receiveTime, setReceiveTime] = useState(
-    get(scheduleDetail, "receiveTime", "")
+    moment(get(scheduleDetail.selected, "receiveTime", ""), "HH:mm ").format(
+      "HH:mm"
+    )
   );
-  const [num, setNum] = useState(get(scheduleDetail, "maxApplicant", "0"));
-  const [mainLocation, setMainLocation] = useState(
-    get(scheduleDetail, "locationDetail", "0")
+  const [num, setNum] = useState(
+    get(scheduleDetail.selected, "maxApplicant", "0")
   );
-  const [alterLocation, setAlterLocation] = useState(
-    get(scheduleDetail, "alteredLocationDetail", "0")
-  );
+  const [mainLocation, setMainLocation] = useState(scheduleDetail.locationDetail);
+  const [alterLocation, setAlterLocation] = useState(scheduleDetail.alteredLocationDetail);
   const [isShowMainLocation, setIsShowMainLocation] = useState(
-    get(mainLocation, "locationId", "") !== "" ? true : false
+    get(scheduleDetail.locationDetail, "locationId", "") !== "" ? true : false
   );
   const [isShowAlterLocation, setIsShowAlterLocation] = useState(
-    get(mainLocation, "locationId", "") !== get(alterLocation, "locationId", "")
+    get(scheduleDetail.locationDetail, "locationId", "") !==
+      get(scheduleDetail.alteredLocationDetail, "locationId", "")
       ? true
       : false
   );
@@ -91,53 +98,53 @@ const EditSchedule = () => {
   const validateForm = () => {
     console.log("examDate ", examDate);
     console.log("closeDate ", closeDate);
-    console.log("examTime ", get(examTime,"roundId",""));
+    console.log("examTime ", examTime);
     console.log("receiveDate ", receiveDate);
     console.log("receiveTime ", receiveTime);
     let validate = true;
     if (examDate === "" || examDate === "Invalid date") {
       setEExamDate(true);
-      validate = false;      
-    } 
-    if (closeDate === "" || closeDate === "Invalid date"){
+      validate = false;
+    }
+    if (closeDate === "" || closeDate === "Invalid date") {
       setECloseDate(true);
       validate = false;
       console.log("setExam");
     }
-    if (get(examTime,"roundId","") === ""){
+    if (examTime === "") {
       setERoundTime(true);
       validate = false;
     }
-    if (receiveDate === "" || examDate === "Invalid date"){
+    if (receiveDate === "" || examDate === "Invalid date") {
       setEReceiveDate(true);
       validate = false;
     }
-    if (receiveTime === "" || receiveTime === null || receiveTime === "null"){
+    if (receiveTime === "" || receiveTime === null || receiveTime === "null") {
       setEReceiveTime(true);
       validate = false;
     }
-    if (num === ""){
+    if (num === "") {
       setENum(true);
       validate = false;
     }
-    if (mainLocation === "0"){
+    if (mainLocation === "0") {
       setDangerCard("danger");
       validate = false;
     }
     if (validate) {
       setECloseDate(false);
     }
-    
+
     return validate;
   };
   const getSearchValue = (e) => {
     if (scheduleId === "") {
       console.log("getSearchValue case new ", e);
-      setMainLocation(e);
+      setMainLocation(e.locationDetail);
       setIsShowMainLocation(true);
     } else if (scheduleId !== "") {
       console.log("getSearchValue case edit ", e);
-      setAlterLocation(e);
+      setAlterLocation(e.locationDetail);
       setIsShowAlterLocation(true);
     } else {
       console.log("other case ", e);
@@ -145,7 +152,7 @@ const EditSchedule = () => {
   };
   const changeToSchedulePage = () => {
     history.push("/examSchedule", null);
-  }
+  };
   const onClickSaveChange = async () => {
     console.log("isShowMainLocation ", isShowMainLocation);
     if (!validateForm()) {
@@ -161,13 +168,13 @@ const EditSchedule = () => {
           locationId: get(mainLocation, "locationId", ""),
           alteredLocationId: get(mainLocation, "locationId", ""),
           examDate: moment(examDate).format("yyyy-MM-DD"),
-          roundId: get(examTime,"roundId",""),
+          roundId: examTime,
           maxApplicant: num,
           applyOpenDate: moment().format("yyyy-MM-DD"),
           applyCloseDate: moment(closeDate).format("yyyy-MM-DD"),
           openStatus: "N",
           receiveDate: moment(receiveDate).format("yyyy-MM-DD"),
-          receiveTime: moment(receiveTime,"HH:mm").format("HH:mm"),
+          receiveTime: moment(receiveTime, "HH:mm").format("HH:mm"),
           createUserCode: userModify,
           createTime: moment().format(),
           updateUserCode: userModify,
@@ -193,19 +200,19 @@ const EditSchedule = () => {
           });
           return;
         }
-        
+
         let examSchedule = {
           scheduleId: scheduleId,
-          locationId: get(mainLocation, "locationId", ""),
+          locationId: get(mainLocation,"locationId",""),
           alteredLocationId: get(alterLocation, "locationId", ""),
           examDate: moment(examDate).format("yyyy-MM-DD"),
-          roundId: get(examTime,"roundId",""),
+          roundId: examTime,
           maxApplicant: num,
           applyOpenDate: moment().format("yyyy-MM-DD"),
           applyCloseDate: moment(closeDate).format("yyyy-MM-DD"),
           openStatus: "N",
-          receiveDate: moment(receiveDate,"DD/MM/yyyy").format("yyyy-MM-DD"),
-          receiveTime: moment(receiveTime,"HH:mm").format("HH:mm"),
+          receiveDate: moment(receiveDate, "DD/MM/yyyy").format("yyyy-MM-DD"),
+          receiveTime: moment(receiveTime, "HH:mm").format("HH:mm"),
           updateUserCode: userModify,
           lastUpdate: moment().format(),
         };
@@ -230,7 +237,7 @@ const EditSchedule = () => {
         description: locationTier,
       })
     );
-  };  
+  };
 
   return (
     <Container>
@@ -240,7 +247,9 @@ const EditSchedule = () => {
         <Wrapper>
           <Card>
             <CardBody>
-              <h3 className="head">{(mode === "") ? "แก้ไขตารางสอบ" : "เพิ่มตารางสอบ"}</h3>
+              <h3 className="head">
+                {mode === "" ? "แก้ไขตารางสอบ" : "เพิ่มตารางสอบ"}
+              </h3>
               <BoxScheduleFirst
                 lExamDate="วันที่สอบ"
                 lCloseDate="วันที่ปิดรับสมัคร"
@@ -249,15 +258,13 @@ const EditSchedule = () => {
                 lReceiveTime="เวลาที่ได้รับหนังสือ"
                 lNum="จำนวนผู้สมัคร(คน)"
                 InExamDate={examDate}
-                onClickInExamDate={(e) =>
-                  setExamDate(e, setEExamDate(false))
-                }
+                onClickInExamDate={(e) => setExamDate(e, setEExamDate(false))}
                 InCloseDate={closeDate}
                 onClickInCloseDate={(e) =>
                   setCloseDate(e, setECloseDate(false))
                 }
-                InRoundTime={get(examTime,"roundId","")}
-                onClickInRoundTime={(e) => setExamTime(e , setERoundTime(false))}
+                InRoundTime={examTime}
+                onClickInRoundTime={(e) => setExamTime(e.roundId, setERoundTime(false))}
                 InReceiveDate={receiveDate}
                 onClickInReceiveDate={(e) =>
                   setReceiveDate(e, setEReceiveDate(false))
@@ -273,7 +280,7 @@ const EditSchedule = () => {
                 eRoundTime={eRoundTime}
                 eReceiveDate={eReceiveDate}
                 eReceiveTime={eReceiveTime}
-                eNum={eNum}                
+                eNum={eNum}
               />
               <Row>
                 <Col xs="6">
@@ -316,7 +323,11 @@ const EditSchedule = () => {
                                 display: "flex",
                               }}
                               type="button"
-                              onClick={() => onClickChangeLocation(scheduleId === "" ? "main" : "alter")}
+                              onClick={() =>
+                                onClickChangeLocation(
+                                  scheduleId === "" ? "main" : "alter"
+                                )
+                              }
                             >
                               {" "}
                               <h6 className="head">เพิ่มสถานที่สอบอื่นๆ</h6>
@@ -332,16 +343,36 @@ const EditSchedule = () => {
                             lProvince="สนามสอบ"
                             lType="ประเภทสถานที่ตั้ง"
                             lLocation="สถานที่ตั้งสอบ"
-                            InLocationID={get(mainLocation, "locationId", "")}
-                            InOrg={get(mainLocation, "organizerName", "")}
-                            InProvince={get(mainLocation, "provinceCode", "")}
+                            InLocationID={get(
+                              mainLocation,
+                              "locationId",
+                              ""
+                            )}
+                            InOrg={get(
+                              mainLocation,
+                              "organizerName",
+                              ""
+                            )}
+                            InProvince={get(
+                              mainLocation,
+                              "provinceCode",
+                              ""
+                            )}
                             InProvinceName={get(
                               mainLocation,
                               "provinceName",
                               ""
                             )}
-                            InType={get(mainLocation, "locationTypeName", "")}
-                            InLocation={get(mainLocation, "locationDetail", "")}
+                            InType={get(
+                              mainLocation,
+                              "locationTypeName",
+                              ""
+                            )}
+                            InLocation={get(
+                              mainLocation,
+                              "locationDetail",
+                              ""
+                            )}
                           />
                         </CardBody>
                       </Card>
@@ -379,15 +410,31 @@ const EditSchedule = () => {
                             lProvince="สนามสอบ"
                             lType="ประเภทสถานที่ตั้ง"
                             lLocation="สถานที่ตั้งสอบ"
-                            InLocationID={get(alterLocation, "locationId", "")}
-                            InOrg={get(alterLocation, "organizerName", "")}
-                            InProvince={get(alterLocation, "provinceCode", "")}
+                            InLocationID={get(
+                              alterLocation,
+                              "locationId",
+                              ""
+                            )}
+                            InOrg={get(
+                              alterLocation,
+                              "organizerName",
+                              ""
+                            )}
+                            InProvince={get(
+                              alterLocation,
+                              "provinceCode",
+                              ""
+                            )}
                             InProvinceName={get(
                               alterLocation,
                               "provinceName",
                               ""
                             )}
-                            InType={get(alterLocation, "locationTypeName", "")}
+                            InType={get(
+                              alterLocation,
+                              "locationTypeName",
+                              ""
+                            )}
                             InLocation={get(
                               alterLocation,
                               "locationDetail",
@@ -410,11 +457,29 @@ const EditSchedule = () => {
                       InModifyDate={modifyDate}
                     />
                   </Col>
-                  <Col xd="4" className="label" style={{ display:"flex",flexDirection: "row", alignItems : "flex-end"}}>
-                    <Button color="primary" type="button" style={{marginRight:"10px"}} onClick={onClickSaveChange}>
+                  <Col
+                    xd="4"
+                    className="label"
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "flex-end",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <Button
+                      color="primary"
+                      type="button"
+                      style={{ marginRight: "10px" }}
+                      onClick={onClickSaveChange}
+                    >
                       บันทึก
                     </Button>
-                    <Button color="secondary" type="button" onClick={changeToSchedulePage}>
+                    <Button
+                      color="secondary"
+                      type="button"
+                      onClick={changeToSchedulePage}
+                    >
                       ยกเลิก
                     </Button>
                   </Col>

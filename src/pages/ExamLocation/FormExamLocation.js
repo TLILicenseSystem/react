@@ -19,7 +19,6 @@ import {
   ButtonGroup,
   Media,
 } from "reactstrap";
-//import {  } from "react-bootstrap";
 import {
   InputWithLabel,
   DropdownExamRegion,
@@ -57,6 +56,8 @@ import {
 } from "../../api/apiAddExamLocation";
 import useFetchLocationList from "../../hooks/useFetchLocationList.js";
 import styles from "../pageStyles.css";
+import Swal from "sweetalert2";
+
 
 const FormExamLocation = (props) => {
   const [provinceCode, setProvinceCode] = useState("");
@@ -118,21 +119,25 @@ const FormExamLocation = (props) => {
     setExamTypeCode(get(e, "examTypeId", "1"));
   };
   const onClickEditExamLocation = async (e) => {
-    console.log("onClickEditExamLocation ", e);
-    setEditLocationId(get(e, "locationId", ""));
-    setEditLocationTypeCode(get(e, "locationTypeCode", ""));
-    setEditLocationTypeName(get(e, "locationTypeName", ""));
-    setEditExamOrganizerCode(get(e, "organizerCode", ""));
-    setEditExamOrganizerName(get(e, "organizerName", ""));
-    setEditProvinceCode(get(e, "provinceCode", ""));
-    setEditProvinceName(get(e, "provinceName", ""));
-    let regionId,
-      regionName = getRegionData(get(e, "provinceCode", ""));
-    setRegion(regionId);
-    setRegionName(regionName);
-    setEditLocationDetail(get(e, "locationDetail", ""));
+    if (get(e,"event","") === "delete"){
+      onClickDeleteLocation(e);
+    } else {
+      console.log("onClickEditExamLocation ", e);
+      console.log("orgCode ", get(e.selected, "orgCode", ""));
+      setEditLocationId(get(e.selected, "locationId", ""));
+      setEditLocationTypeCode(get(e.selected, "locationType", ""));
+      setEditExamOrganizerCode(get(e.selected, "orgCode", ""));
+      setEditExamOrganizerName(get(e.selected, "orgName", ""));
+      setEditProvinceCode(get(e.selected, "provinceCode", ""));
+      setEditProvinceName(get(e.selected, "provinceName", ""));
+      let regionId,
+        regionName = getRegionData(get(e.selected, "provinceCode", ""));
+      setRegion(regionId);
+      setRegionName(regionName);
+      setEditLocationDetail(get(e.selected, "locationDetail", ""));
 
-    onClickEditLocationPopup("edit", e);
+      onClickEditLocationPopup("edit", e);
+    }
   };
   const onClickAddExamLocation = (mode) => {
     setEditLocationId("");
@@ -161,6 +166,39 @@ const FormExamLocation = (props) => {
     );
   };
 
+  const onClickDeleteLocation = async (e) => {
+
+    let locationId = get(e,"locationDetail.locationId","");
+    let organizerName = get(e,"locationDetail.organizerName","");
+    let provinceName = get(e,"locationDetail.provinceName","");
+
+    const { value: check } = await Swal.fire({
+      text: `ต้องการลบสนามสอบ ${organizerName} จังหวัด${provinceName} ใช่หรือไม่`,
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonColor: "#d9534f",
+      confirmButtonColor: "#0275d8",
+      confirmButtonText: "ใช่",
+      cancelButtonText: "ยกเลิก",
+    });
+
+    if (check) {
+      let response = await deleteExamLocation(locationId);
+      console.log("onClickDeleteLocation ", response);
+      if (response === "success") {
+        Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถลบข้อมูลได้",
+        });
+      }
+      
+    }
+    
+  };
+
   const examZoneResonse = getExamLocationZone();
   const examType = getExamType();
 
@@ -182,6 +220,11 @@ const FormExamLocation = (props) => {
       setRegionName(tmpRegionName);
     }
   };
+
+  const rows = examLocationList.map((row) => {
+    const { locationId, ...rest } = row;
+    return { id: locationId, locationId, ...rest };
+  });
 
   return (
     <Container>
@@ -207,49 +250,49 @@ const FormExamLocation = (props) => {
           <Card>
             <CardBody>
               <h3 className="head">ตัวกรองข้อมูล</h3>
-
-              <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
-                <Col xs="5">
-                  <DropdownExamOrganizer
-                    label="สนามสอบ"
-                    value={examOrganizerCode}
-                    isClearable={true}
-                    onClick={(e) => {
-                      onClickExamOrganizerButton(e);
-                    }}
-                  />
-                </Col>
-                <Col xs="5">
-                  <DropdownExamRegion
-                    label="สถานที่สอบ"
-                    value={provinceCode}
-                    onClick={(e) => {
-                      onClickProvinceButton(e);
-                    }}
-                  />
-                </Col>
-                <Col xs="2">
-                  <Button
-                    onClick={() => onClickAddExamLocation("add", null)}
-                    color="success"
-                    style={{
-                      marginLeft: 0,
-                      marginTop: 34,
-                      fontFamily: "Prompt-Regular",
-                    }}
-                  >
-                    เพิ่มสถานที่สอบ
-                  </Button>
-                </Col>
-              </Row>
-            </CardBody>
-
+              <Card>    
+                <Row style={{ marginTop: "30px", marginLeft: "20px", minWidth: "1000px"}}>
+                  <Col xs="5">
+                    <DropdownExamOrganizer
+                      label="สนามสอบ"
+                      value={examOrganizerCode}
+                      isClearable={true}
+                      onClick={(e) => {
+                        onClickExamOrganizerButton(e);
+                      }}
+                    />
+                  </Col>
+                  <Col xs="5">
+                    <DropdownExamRegion
+                      label="สถานที่สอบ"
+                      value={provinceCode}
+                      onClick={(e) => {
+                        onClickProvinceButton(e);
+                      }}
+                    />
+                  </Col>
+                  <Col xs="2">
+                    <Button
+                      onClick={() => onClickAddExamLocation("add", null)}
+                      color="success"
+                      style={{
+                        marginLeft: 0,
+                        marginTop: 34,
+                        fontFamily: "Prompt-Regular",
+                      }}
+                    >
+                      เพิ่มสถานที่สอบ
+                    </Button>
+                  </Col>
+                </Row>    
+              </Card>
+            </CardBody>            
             <CardBody>
               <LocationTable
                 provinceCode={provinceCode}
                 examOrganizerCode={examOrganizerCode}
                 onClick={onClickEditExamLocation}
-                examLocationList={examLocationList}
+                examLocationList={rows}
               />
             </CardBody>
           </Card>

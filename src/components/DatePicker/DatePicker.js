@@ -21,6 +21,7 @@ export const DatePicker = ({ label, value, onChange, showError }) => {
           id="date-picker-inline"
           value={moment(value,"DD/MM/yyyy").format("MM/DD/yyyy")}
           onChange={onChange}
+          invalidDateMessage=""
           KeyboardButtonProps={{
             "aria-label": "change date",
           }}

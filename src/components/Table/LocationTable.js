@@ -14,7 +14,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import { DataGrid } from '@material-ui/data-grid';
-import { useStyles, StyleTableCell, StyledTableRow, StyledTablePagination } from "./table.style";
+import { useStyles } from "./table.style";
 import PropTypes from "prop-types";
 
 export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLocationList }) => {
@@ -110,40 +110,110 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLo
   };
 
   const columns = [
-    { id: "locationId", label: "รหัสที่ตั้ง", minWidth: 80, className:classes },
+    { field: "locationId", headerName: "รหัสที่ตั้ง", },
     {
-      id: "orgCode",
-      label: "สนามสอบ",
-      minWidth: 150,
+      field: "orgName",
+      headerName: "สนามสอบ",
+      minWidth: 160,
+      align: "left",
+      valueGetter: (params) =>
+      `${getOrganizerData(params.getValue(params.id, 'orgCode'))}`,
+    },
+    { field: "provinceName", headerName: "สถานที่สอบ", minWidth: 160,
+      valueGetter: (params) =>
+      `${getProvinceData(params.getValue(params.id, 'provinceCode'))}`, },
+    {
+      field: "locationName",
+      headerName: "ประเภท",
+      minWidth: 105,
+      align: "left",
+      valueGetter: (params) =>
+      `${getLocationTypeData(params.getValue(params.id, 'locationType'))}`,
+    },
+    {
+      field: "locationDetail",
+      headerName: "สถานที่ตั้งสอบ",
+      minWidth: 260,
       align: "left",
     },
-    { id: "provinceCode", label: "สถานที่สอบ", minWidth: 100 },
     {
-      id: "locationType",
-      label: "ประเภท",
-      minWidth: 100,
+      field: "edit",
+      headerName: "แก้ไข",
       align: "left",
+      minWidth: 125,
+      renderCell: (cellValues) => {
+        return (
+          <Button
+            size="sm"
+            variant="contained"
+            color="primary"
+            // onClick={(event) => {
+            //   handleClick(event, cellValues);
+            // }}
+
+            onClick={(event) =>
+              onClick({
+                selected: cellValues.row,
+                locationDetail:{
+                  locationId: get(cellValues.row, "locationId", ""),
+                  organizerName: getOrganizerData(
+                    get(cellValues.row, "orgCode", "")),
+                  provinceName: getProvinceData(
+                    get(cellValues.row, "provinceCode", "")),
+                  locationTypeName: getLocationTypeData(
+                    get(cellValues.row, "locationType", "")),
+                  locationDetail: get(cellValues.row, "locationDetail", ""),
+                }
+              })
+            }
+          >
+            แก้ไข
+          </Button>
+        );
+      }
     },
     {
-      id: "locationDetail",
-      label: "สถานที่ตั้งสอบ",
-      minWidth: 200,
+      field: "delete",
+      headerName: "ลบ",
       align: "left",
-    },
-    {
-      id: "edit",
-      label: "แก้ไข",
-      minWidth: 50,
-      align: "left",
+      renderCell: (cellValues) => {
+        return (
+          <Button
+            size="sm"
+            variant="contained"
+            color="danger"
+            // onClick={(event) => {
+            //   handleClick(event, cellValues);
+            // }}
+
+            onClick={(event) =>
+              onClick({
+                event:"delete",
+                selected: cellValues.row,
+                locationDetail:{
+                  locationId: get(cellValues.row, "locationId", ""),
+                  organizerName: getOrganizerData(
+                    get(cellValues.row, "orgCode", "")),
+                  provinceName: getProvinceData(
+                    get(cellValues.row, "provinceCode", "")),
+                  locationTypeName: getLocationTypeData(
+                    get(cellValues.row, "locationType", "")),
+                  locationDetail: get(cellValues.row, "locationDetail", ""),
+                }
+              })
+            }
+          >
+            ลบ
+          </Button>
+        );
+      }
     },
   ];
 
   return (
-    <div
-      style={{ marginLeft:"0px",  height: 480, width: "100%" }}
-    >
+    <div style={{ height: 300, width: "100%" }} >
 
-      {/* <DataGrid
+      <DataGrid
         rows={examLocationList
           .filter(
             (zone) =>
@@ -156,110 +226,13 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLo
           )
         }
         columns={columns}
-        pageSize={7}
-        rowsPerPageOptions={[5]}
-        getRowId={(row) => row.locationId}
-        //checkboxSelection
+        pageSize={10}
+        id="locationId"
         disableSelectionOnClick
-      /> */}
-      <TableContainer component="div">
-        <Table classname={classes.container}>
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <StyleTableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                  //sortDirection={{}}
-                >
-                  {column.label}
-                </StyleTableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {examLocationList
-              .filter(
-                (zone) =>
-                  (zone.provinceCode === provinceCode &&
-                    zone.orgCode === examOrganizerCode) ||
-                  (zone.provinceCode === provinceCode &&
-                    examOrganizerCode === "") ||
-                  (zone.orgCode === examOrganizerCode &&
-                    provinceCode === "") || (examOrganizerCode === "" && provinceCode === "")
-              )
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((detail, index) => {
-                return (
-                  <StyledTableRow hover role="checkbox" key={index}>
-                    <StyleTableCell >
-                      {get(detail, "locationId", "")}
-                    </StyleTableCell>                    
-                    <StyleTableCell>
-                      {get(detail, "orgCode", "")}{" "}
-                      {getOrganizerData(get(detail, "orgCode", ""))}
-                    </StyleTableCell>
-                    <StyleTableCell>
-                      {get(detail, "provinceCode", "")}{" "}
-                      {getProvinceData(get(detail, "provinceCode", ""))}
-                    </StyleTableCell>
-                    <StyleTableCell>
-                      {get(detail, "locationType", "")}{" "}                      
-                      {getLocationTypeData(get(detail, "locationType", ""))}
-                    </StyleTableCell>
-                    <StyleTableCell>
-                      {get(detail, "locationDetail", "")}
-                    </StyleTableCell>
-                    <StyleTableCell>
-                      <Button
-                        size="sm"
-                        onClick={() =>
-                          onClick({
-                            locationId: get(detail, "locationId", ""),
-                            provinceCode: get(detail, "provinceCode", ""),
-                            provinceName: getProvinceData(
-                              get(detail, "provinceCode", "")
-                            ),
-                            organizerCode: get(detail, "orgCode", ""),
-                            organizerName: getOrganizerData(
-                              get(detail, "orgCode", "")
-                            ),
-                            locationTypeCode: get(detail, "locationType", ""),
-                            locationTypeName: getLocationTypeData(
-                              get(detail, "locationType", "")
-                            ),
-                            locationDetail: get(detail, "locationDetail", ""),
-                          })
-                        }
-                      >
-                        เลือก
-                      </Button>
-                    </StyleTableCell>
-                  </StyledTableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <StyledTablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={examLocationList.filter(
-          (zone) =>
-            (zone.provinceCode === provinceCode &&
-              zone.orgCode === examOrganizerCode) ||
-            (zone.provinceCode === provinceCode &&
-              examOrganizerCode === "") ||
-            (zone.orgCode === examOrganizerCode &&
-              provinceCode === "") || (examOrganizerCode === "" && provinceCode === "")
-        ).length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="จำนวนแถวต่อหน้า:"
+        disableColumnMenu  
+        className={classes.root}
       />
+      
     </div>
   );
 };

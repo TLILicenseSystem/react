@@ -8,9 +8,15 @@ import EditSchedulePage from "./pages/ExamSchedule/EditSchedule";
 import {SnackBar} from "./components/SnackBar/SnackBar";
 import "./App.css";
 
+const AppRoute = ({component: Component, layout: Layout, ...rest}) => (
+  <Route { ...rest} render={props=>(
+    <Layout><Component { ...props}></Component></Layout>
+  )}></Route>
+)
+
 const App = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={"/salesmanagement/license"}>
       <SnackBar/>
       <Switch>
         <Route
@@ -33,6 +39,11 @@ const App = () => {
           path="/examLocation"
           render={(props) => <FormExamLocation {...props} />}
         />
+
+        <Redirect from="/examSchedule" to="/examSchedule" />
+        <Redirect from="/examOrganizer" to="/examOrganizer" />
+        <Redirect from="/examRound" to="/examRound" />
+        <Redirect from="/examLocation" to="/examLocation" />
         <Redirect from="*" to="/examLocation" />
       </Switch>
     </BrowserRouter>

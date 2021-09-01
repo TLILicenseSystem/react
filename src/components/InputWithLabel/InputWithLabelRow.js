@@ -17,7 +17,7 @@ export const InputWithLabelRow = ({ label, type, value, onChange, disabled, text
       {/* ใส่ colon ที่ label เพื่อไม่ต้องใส่ที่หน้า login */}
       <Form>
         <FormGroup row>
-          <label className={styles.label}>{label}<label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label> :</label>
+          <label className={styles.label}>{label}<label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label></label>
           
           <Col xs={textboxSize}>
           <Input

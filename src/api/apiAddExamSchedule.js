@@ -4,7 +4,7 @@ export const addExamSchedule = async (examSchedule) => {
     try {
         const inputPost = examSchedule;
         console.log("examSchedule " , inputPost);
-        const response = await api.post(`/examschedule/add`, inputPost);
+        const response = await api.post(`examschedule/add`, inputPost);
         if (response.status === 200) {
             console.log('addExamLocation response ', response.data);
             return response.data;
@@ -24,7 +24,7 @@ export const updateExamSchedule = async (examSchedule) => {
     try {
         const inputPut = examSchedule;
         console.log("inputPut",inputPut);
-        const response = await api.put(`/examschedule/update`, inputPut);
+        const response = await api.put(`examschedule/update`, inputPut);
         if (response.status === 200) {
             console.log('updateExamLocation response ', response.data);
             return response.data;
@@ -44,13 +44,13 @@ export const deleteExamSchedule = async (examSchedule) => {
     try {
         console.log('deleteExamLocation ', examSchedule);
         const locationId = examSchedule;
-        const response = await api.delete(`/examlocation/delete/${locationId}`);
+        const response = await api.delete(`examlocation/delete/${locationId}`);
         if (response.status === 200) {
             console.log('deleteExamLocation response ', response.data);
             return response.data;
         }
         else {
-            return response.data;
+            return "error";
         }
     }
     catch (err) {
@@ -62,7 +62,7 @@ export const deleteExamSchedule = async (examSchedule) => {
 export const getExamSchedule = async () => {
     try {
         
-        const response = await api.get(`/examschedule/searchGET`);
+        const response = await api.get(`examschedule/searchGET`);
         if (response.status === 200) {
             console.log('getExamSchedule response ', response.data);
             return response;
@@ -80,7 +80,7 @@ export const getExamSchedule = async () => {
 export const getExamScheduleByDetails = async (examDate, roundId, examOrganizerCode , provinceCode) => {
     try {
         console.log("examDate = ", examDate);
-        const response = await api.get(`/examschedule/searchDetail?examDate=${examDate}&roundId=${roundId}&examOrg=${examOrganizerCode}&provinceCode=${provinceCode}`);
+        const response = await api.get(`examschedule/searchDetail?examDate=${examDate}&roundId=${roundId}&examOrg=${examOrganizerCode}&provinceCode=${provinceCode}`);
         if (response.status === 200) {
             console.log('getExamSchedule response ', response.data);
             return response;

@@ -109,7 +109,6 @@ const BoxSchedule = ({
               </Col>
               <Col xs="4">
                 <label className="label">{lReceiveTime}</label>
-                <form noValidate>
                   <TextField
                     error={eReceiveTime}
                     id="time"
@@ -117,20 +116,20 @@ const BoxSchedule = ({
                     value={InReceiveTime}
                     onChange={onClickInReceiveTime}
                     variant="outlined"
+                    size="small"
                     InputLabelProps={{
                       shrink: true,
                     }}
                     inputProps={{
                       step: 300, // 5 min
                       style: {
-                        fontSize: 16,
-                        height: 0,
+                        fontSize: 15,
+                        //height: 10,
                         fontFamily:"Prompt-Regular"
                     }
                     }}
                    style={{marginLeft:"0px",marginTop:"11px",width:"100%",height:"0px"}}
                   />
-                </form>
               </Col>
               <Col xs="4">
                 <label className="label">{lNum}</label>

@@ -7,6 +7,6 @@ export const getExamLocationZone=()=>{
 };
 
 export const getExamType=()=>{
-  console.log("getExamType: ", get(examLocation,"examType",[]));
+  //console.log("getExamType: ", get(examLocation,"examType",[]));
   return get(examLocation,"examType",[]);
 };

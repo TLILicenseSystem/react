@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "reactstrap";
 import PropTypes from "prop-types";
-import { DataGrid } from "@material-ui/data-grid";
+import { DataGrid, GridRowsProp, GridColDef } from "@material-ui/data-grid";
 import { makeStyles } from "@material-ui/styles";
 import { useStyles } from "./table.style";
 
-export const RoundTable = ({ rows, onClick }) => {
+export const EditLocationTable = ({ rows, onClick }) => {
   const columns = [
-    { field: "roundId", headerName: "รหัสรอบเวลาสอบ", width: 200 },
-    { field: "timeStr", headerName: "รอบเวลาสอบ", width: 250 },
+    { field: "orgCode", headerName: "รหัสสถานที่สอบ", width: 200 },
+    { field: "orgName", headerName: "ชื่อสถานที่สอบ", width: 250 },
     {
       field: "edit",
       headerName: "แก้ไข",
@@ -65,27 +65,27 @@ export const RoundTable = ({ rows, onClick }) => {
   ];
 
   const classes = useStyles();
-
   console.log("rows in roundTable=========>>>>>", rows);
 
   return (
-    <div style={{ height: 300, width: "100%" }} >
+    <div style={{ height: 300, width: "100%" }}>
       <DataGrid
         className={classes.root}
         rows={rows}
         columns={columns}
         pageSize={10}
-        id="roundId"
+        id="orgCode"
         disableSelectionOnClick
+        disableColumnMenu
       />
     </div>
   );
 };
 
-RoundTable.defaultProps = {
+EditLocationTable.defaultProps = {
   onClick: () => {},
 };
-RoundTable.propTypes = {
+EditLocationTable.propTypes = {
   onClick: PropTypes.func,
 };
 // export default RoundTable;

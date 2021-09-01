@@ -35,6 +35,7 @@ export const SearchLocationPopup = ({onChange}) => {
   );
   const handleAction = (e) => {
     //call back function
+    console.log("SearchLocationPopup ", e);
     dispatch(hideSearchLocationPopup());
     onChange(e);
   };
@@ -87,6 +88,11 @@ export const SearchLocationPopup = ({onChange}) => {
     }
   };
 
+  const rows = examLocationList.map((row) => {
+    const { locationId, ...rest } = row;
+    return { id: locationId, locationId, ...rest };
+  });
+
   return (
     <Modal isOpen={isShow} size="lg" toggle={toggle}> 
       <ModalHeader toggle={toggle}>{title}</ModalHeader>
@@ -110,7 +116,7 @@ export const SearchLocationPopup = ({onChange}) => {
           <LocationTable 
             provinceCode={provinceCode}
             examOrganizerCode={examOrganizerCode}
-            examLocationList={examLocationList}
+            examLocationList={rows}
             onClick={handleAction}/>
       </ModalFooter>
     </Modal>

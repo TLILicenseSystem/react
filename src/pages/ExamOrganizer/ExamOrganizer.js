@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, CardBody, Row, Col} from "reactstrap";
 //import styles from "./ExamOrganizer.module.css";
 import styles from "../../components/LicenseStyle/LicenseExamStlye.module.css";
-import {Container,InputWithLabel,Wrapper,} from "../../components/shared";
+import {Container,InputWithLabel,Wrapper,EditLocationTable} from "../../components/shared";
 //import { useHistory } from "react-router-dom";
 //import { useDispatch } from "react-redux";
 //import { showSpinner } from "../../redux/actions";
 //import * as ReactBootstrap from "react-bootstrap";
-import { MDBTable, MDBTableBody, MDBTableHead } from "mdbreact";
+import { get } from "lodash";
 import { confirm } from "../../components/Container/Comfirmation";
 import apiSpring from "../../api/apiSpring";
-import axios from "axios";
 import {insertExamOrganizer,updateExamOrganizer,deleteExamOrganizer} from "./ModelExamOrganizer";
+import Swal from "sweetalert2";
 
 const ExamOrganizer = (props) => {
   //   const history = useHistory();
@@ -20,6 +20,7 @@ const ExamOrganizer = (props) => {
   const [disableTime, setDisableTime] = useState(true);
   const [pressEdit, setPressEdit] = useState(false);
   const [result, setResult] = useState([]);
+  
   let canInsert = false;
   // let date = new Date().toISOString(); //2020-11-05T14:06:33.006Z
   // let messageId = "028840ec147510517da2b23c8b0b6707";
@@ -29,6 +30,11 @@ const ExamOrganizer = (props) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const rows = result.map((row) => {
+    const { orgCode, ...rest } = row;
+    return { id: orgCode, orgCode, ...rest };
+  });
 
 //----------------------------for SearchAll spring boot------------------------
     const fetchData = async () => {
@@ -44,6 +50,7 @@ const ExamOrganizer = (props) => {
       if (status === 200) {
         setResult(data); //เมื่อ setResult แล้ว ค่า result จะได้เป็นค่า arraylist ของ data สามารถนำค่า resultมาใช้ได้เลย เช่น result[0] คือ arrayตัวที่0
         console.log("result in fetchData spring >>>>>>>>>>>>>.. ",data);
+
       } else {
         alert("พบข้อผิดพลาดในการค้นหาข้อมูลรอบสถานที่สอบ! ",status);
       }
@@ -68,13 +75,20 @@ const ExamOrganizer = (props) => {
     try
     {
       const response = await insertExamOrganizer(orgCode, orgName,create_user_code,update_user_code);
-    // add row ในตาราง
-         setResult([...result, { orgCode: id, orgName: orgName }]);
-        alert("บันทึกข้อมูลเรียบร้อยแล้ว");
+        // add row ในตาราง
+        setResult([...result, { orgCode: id, orgName: orgName }]);
+        //alert("บันทึกข้อมูลเรียบร้อยแล้ว");
+        Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
     }
     catch (err) 
     {  
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "พบข้อผิดพลาดในการบันทึกข้อมูล!",
+      });
       throw new Error("พบข้อผิดพลาดในการบันทึกข้อมูล! ",err);
+      
        // throw err;
     }
 
@@ -87,10 +101,16 @@ const ExamOrganizer = (props) => {
       const response = await updateExamOrganizer(orgCode, orgName,create_user_code,update_user_code);
     // update row ในตาราง
        updateItem(id, "orgName", orgName);
-       alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
+       Swal.fire("Added!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+       //alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
     }
     catch (err) 
     {  
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
+      });
       throw new Error("พบข้อผิดพลาดในการแก้ไขข้อมูล! ",err);
        // throw err;
     }
@@ -104,10 +124,15 @@ const ExamOrganizer = (props) => {
       const response = await deleteExamOrganizer(orgCode);
       setResult(result.filter((item) => item.orgCode !== orgCode)); //ให้แสดงข้อมูลทั้งหมดใน result โดยไม่แสดง orgCode ที่ส่งเข้ามา
       ExamOrganizerClear();
-      alert("ลบข้อมูลเรียบร้อยแล้ว");
+      Swal.fire("Deleted!", "ลบข้อมูลเรียบร้อยแล้ว", "success");
     }
     catch (err) 
     {  
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "พบข้อผิดพลาดในการลบข้อมูล!",
+      });
       throw new Error("พบข้อผิดพลาดในการลบข้อมูล! ",err);
        // throw err;
     }
@@ -175,8 +200,16 @@ const ExamOrganizer = (props) => {
   };
 
   const dlgConfirm = async (param) => {
-    if (await confirm("ต้องการลบข้อมูลใช่หรือไม่?")) 
-    {
+    const { value: check } = await Swal.fire({
+      text: `ต้องการลบรหัสสถานที่ ${param.orgCode} ใช่หรือไม่`,
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonColor: "#d9534f",
+      confirmButtonColor: "#0275d8",
+      confirmButtonText: "ใช่",
+      cancelButtonText: "ยกเลิก",
+    });
+    if (check) {
         deleteExamOrganizerProcess(param.orgCode,"D");
     }
   };
@@ -205,6 +238,17 @@ const ExamOrganizer = (props) => {
     setDisableTime(false);
   };
 
+  const doAction = (action) => {
+    if (get(action, "action", "") === "edit") {
+      // alert("edit");
+      console.log("action===", action);
+      console.log("action sel===", action.selected);
+
+      editData(action.selected);
+    } else if (get(action, "action", "") === "delete") {
+      removeData(action.selected);
+    }
+  };
   
   const renderOrganizer = (org, index) => {
     return (
@@ -238,46 +282,32 @@ const ExamOrganizer = (props) => {
       <h2 className="head">ตั้งค่าสถานที่สอบ</h2>
       <Wrapper>
       <Card>
-        <CardBody>
-          <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
-            <Col xs="5">
-              <InputWithLabel label="รหัส" value={id} onChange={(e) => {setId(e.target.value); }} showTime={true} />
-            </Col>
-            <Col xs="5">
-            <InputWithLabel label="ชื่อสถานที่สอบ" value={orgName}  width="300px" onChange={(e) => { setOrgName(e.target.value); }} showTime={disableTime}/>
-            </Col>
-            <Col xs="2">
-              <Button color="success" type="button" onClick={ExamOrganizerAdd}>
-                เพิ่มรอบใหม่
-              </Button>
-            </Col>
-          </Row>          
-        </CardBody>
-      </Card>
-      <Card>
-        <CardBody>
-          <MDBTable striped bordered scrollY hover size="sm">
-            <MDBTableHead>
-              <tr className={styles.head}>
-                <th>รหัสสถานที่สอบ</th>
-                <th>ชื่อสถานที่สอบ</th>
-                <th>แก้ไข</th>
-                <th>ลบ</th>
-              </tr>
-            </MDBTableHead>
-            <MDBTableBody>{result.map(renderOrganizer)}</MDBTableBody>
-          </MDBTable>
+        <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
+          <Col xs="4">
+            <InputWithLabel label="รหัส" value={id} onChange={(e) => {setId(e.target.value); }} showTime={true} />
+          </Col>
+          <Col xs="5">
+          <InputWithLabel label="ชื่อสถานที่สอบ" value={orgName}  width="300px" onChange={(e) => { setOrgName(e.target.value); }} showTime={disableTime}/>
+          </Col>
+          <Col xs="3">
+            <Button style={{ marginTop: "30px", fontFamily: "Prompt-Regular"}} color="success" type="button" onClick={ExamOrganizerAdd}>
+              เพิ่มสถานที่สอบ
+            </Button>
+          </Col>
+        </Row>      
+        <CardBody>  
+          <EditLocationTable rows={rows} onClick={doAction}/>
         </CardBody>
       </Card>
       <CardBody>
-
-      <Button color="primary" type="button" onClick={ExamOrganizerSave}>
-        บันทึก
-      </Button>
-      <Button color="secondary" type="button" onClick={ExamOrganizerClear}>
-        เคลียร์ข้อมูล
-      </Button>
-
+      <Col style={{ textAlign: "right"}}>
+        <Button color="primary" type="button" onClick={ExamOrganizerSave} style={{marginRight:"10px"}}>
+          บันทึก
+        </Button>
+        <Button color="secondary" type="button" onClick={ExamOrganizerClear}>
+          เคลียร์ข้อมูล
+        </Button>
+      </Col>
       </CardBody>
       </Wrapper>
       </div>
