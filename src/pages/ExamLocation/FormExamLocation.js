@@ -292,6 +292,7 @@ const FormExamLocation = (props) => {
                 provinceCode={provinceCode}
                 examOrganizerCode={examOrganizerCode}
                 onClick={onClickEditExamLocation}
+                event={{event:"edit"}}
                 examLocationList={rows}
               />
             </CardBody>

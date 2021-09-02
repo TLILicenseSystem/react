@@ -82,6 +82,12 @@ export const EditLocationPopup = ({
   //   setExamTypeCode(get(e, "examTypeId", "1"));
   // };
 
+  const onChangeLocationDetailInpopup = (e) => {
+    //bug when click edit examLocation
+    onChangeLocationDetail(e.target.value);
+    console.log("onChangeLocationDetailInpopup " , e.target.value);
+  }
+
   const toggle = () => dispatch(hideEditLocationPopup());
 
   const fetchProvinceData = async (e) => {
@@ -249,7 +255,7 @@ export const EditLocationPopup = ({
             value={locationDetail}
             requiredField={true}
             onChange={(e) => {
-              onChangeLocationDetail(e.target.value);
+              onChangeLocationDetailInpopup(e);
             }}
           />
         </Row>

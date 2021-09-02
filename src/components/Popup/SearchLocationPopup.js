@@ -117,6 +117,7 @@ export const SearchLocationPopup = ({onChange}) => {
             provinceCode={provinceCode}
             examOrganizerCode={examOrganizerCode}
             examLocationList={rows}
+            event={{event:"search"}}
             onClick={handleAction}/>
       </ModalFooter>
     </Modal>

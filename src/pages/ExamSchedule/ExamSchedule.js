@@ -105,9 +105,10 @@ const ExamSchedule = () => {
 
   const onClickEditSchedule = (schduleDetail) => {
     console.log("onClickEditSchedule ", schduleDetail);
-    if (get(schduleDetail, "event", "") === "edit") {
+    if (get(schduleDetail, "event", "") === "edit" || get(schduleDetail, "event", "") === "add") {
       history.push("/examSchedule-edit", schduleDetail);
-    } else {
+    }
+    else {
       onClickDeleteSchedule(schduleDetail.selected);
     }
   };
@@ -229,7 +230,7 @@ const ExamSchedule = () => {
                           fontFamily: "Prompt-Regular",
                         }}
                         active={true}
-                        onClick={() => onClickEditSchedule({ mode: "add" })}
+                        onClick={() => onClickEditSchedule({ event: "add" })}
                       >
                         เพิ่ม
                       </Button>

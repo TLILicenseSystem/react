@@ -17,7 +17,7 @@ import { DataGrid } from '@material-ui/data-grid';
 import { useStyles } from "./table.style";
 import PropTypes from "prop-types";
 
-export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLocationList }) => {
+export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLocationList, event }) => {
 
   const classes = useStyles();
   const [examProvinceList, setExamProvinceList] = useState([]);
@@ -137,8 +137,8 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLo
       align: "left",
     },
     {
-      field: "edit",
-      headerName: "แก้ไข",
+      field:  (get(event,"event","") === "edit")? "edit" : "select",
+      headerName: (get(event,"event","") === "edit")? "แก้ไข" : "เลือก",
       align: "left",
       minWidth: 125,
       renderCell: (cellValues) => {
@@ -167,12 +167,12 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLo
               })
             }
           >
-            แก้ไข
+            {(get(event,"event","") === "edit") ? "แก้ไข" : "เลือก"}
           </Button>
         );
       }
     },
-    {
+    (get(event,"event","") === "edit") ? {
       field: "delete",
       headerName: "ลบ",
       align: "left",
@@ -207,12 +207,11 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLo
           </Button>
         );
       }
-    },
+    }: "",
   ];
 
   return (
     <div style={{ height: 300, width: "100%" }} >
-
       <DataGrid
         rows={examLocationList
           .filter(

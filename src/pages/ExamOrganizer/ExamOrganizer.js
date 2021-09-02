@@ -52,12 +52,20 @@ const ExamOrganizer = (props) => {
         console.log("result in fetchData spring >>>>>>>>>>>>>.. ",data);
 
       } else {
-        alert("พบข้อผิดพลาดในการค้นหาข้อมูลรอบสถานที่สอบ! ",status);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "พบข้อผิดพลาดในการค้นหาข้อมูลรอบสถานที่สอบ!",
+        });
       }
     }
     catch (err) 
     {  
-      alert("พบข้อผิดพลาดในการบันทึกข้อมูล! ",err);
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "พบข้อผิดพลาดในการโหลดข้อมูล!",
+      });
       // throw err;
     }
 
@@ -143,14 +151,22 @@ const ExamOrganizer = (props) => {
     //check ข้อมูลซ้ำก่อนกดบันทึก ให้ alert แจ้งเตือน ไม่ให้บันทึก
     const dup = result.find((o) => o.orgName === orgName);
     if (typeof dup !== "undefined" && dup != null) {
-      alert("พบข้อมูลซ้ำในระบบ กรุณาบันทึกรอบเวลาใหม่!");
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "พบข้อมูลซ้ำในระบบ กรุณาบันทึกรอบเวลาใหม่!",
+      });
       canInsert = false;
     } else canInsert = true;
   };
 
   const ExamOrganizerSave = () => {
     if (orgName === "") {
-      alert("กรุณากรอกสถานที่สอบ!");
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณากรอกสถานที่สอบ!",
+      });
     } 
     else 
     {
@@ -300,7 +316,7 @@ const ExamOrganizer = (props) => {
         </CardBody>
       </Card>
       <CardBody>
-      <Col style={{ textAlign: "right"}}>
+      <Col style={{ textAlign: "right", fontFamily: "Prompt-Regular"}}>
         <Button color="primary" type="button" onClick={ExamOrganizerSave} style={{marginRight:"10px"}}>
           บันทึก
         </Button>

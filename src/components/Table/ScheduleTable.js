@@ -151,6 +151,7 @@ export const ScheduleTable = ({ examScheduleList, onClick }) => {
     {
       field: "examDateFormat",
       headerName: "วันที่สอบ",
+      minWidth: 110,
       valueGetter: (params) =>
         `${moment(params.getValue(params.id, "examDate")).format(
           "DD/MM/yyyy"
@@ -162,7 +163,7 @@ export const ScheduleTable = ({ examScheduleList, onClick }) => {
     {
       field: "roundTime",
       headerName: "เวลาสอบ",
-      minWidth: 110,
+      minWidth: 115,
       hideSortIcons: "true",
       valueGetter: (params) =>
         `${getExamRoundDetail(params.getValue(params.id, "roundId"))}`,
@@ -178,7 +179,7 @@ export const ScheduleTable = ({ examScheduleList, onClick }) => {
     {
       field: "applyCloseDateFormat",
       headerName: "วันที่ปิดรับสมัคร",
-      minWidth: 50,
+      minWidth: 110,
       valueGetter: (params) =>
         `${moment(params.getValue(params.id, "applyCloseDate")).format(
           "DD/MM/yyyy"
@@ -229,7 +230,7 @@ export const ScheduleTable = ({ examScheduleList, onClick }) => {
     {
       field: "applyOpenDateFormat",
       headerName: "วันที่ได้รับหนังสือ",
-      minWidth: 50,
+      minWidth: 110,
       align: "left",
       valueGetter: (params) =>
         `${moment(params.getValue(params.id, "applyOpenDate")).format(

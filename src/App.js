@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect, NavLink } from "react-router-dom";
 import ExamRoundPage from "./pages/ExamRound/ExamRound";
 import ExamOrganizerPage from "./pages/ExamOrganizer/ExamOrganizer";
 import ExamSchedulePage from "./pages/ExamSchedule/ExamSchedule";
@@ -18,7 +18,20 @@ const App = () => {
   return (
     <BrowserRouter basename={"/salesmanagement/license"}>
       <SnackBar/>
+      <NavLink exact to="/examRound">
+        examRound{" "}
+      </NavLink>
+      <NavLink exact to="/examOrganizer">
+        examOrganizer{" "}
+      </NavLink>
+      <NavLink exact to="/examLocation">
+        examLocation{" "}
+      </NavLink>
+      <NavLink exact to="/examSchedule">
+        examSchedule
+      </NavLink>
       <Switch>
+        
         <Route
           path="/examSchedule"
           render={(props) => <ExamSchedulePage {...props} />}
@@ -39,12 +52,8 @@ const App = () => {
           path="/examLocation"
           render={(props) => <FormExamLocation {...props} />}
         />
-
-        <Redirect from="/examSchedule" to="/examSchedule" />
-        <Redirect from="/examOrganizer" to="/examOrganizer" />
-        <Redirect from="/examRound" to="/examRound" />
-        <Redirect from="/examLocation" to="/examLocation" />
-        <Redirect from="*" to="/examLocation" />
+        
+        <Redirect from="*" to="/examSchedule" />
       </Switch>
     </BrowserRouter>
   );

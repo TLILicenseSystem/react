@@ -84,7 +84,7 @@ const EditSchedule = () => {
       ? true
       : false
   );
-  const [mode, setMode] = useState(get(scheduleDetail, "mode", ""));
+  const [mode, setMode] = useState(get(scheduleDetail, "event", ""));
   const [userModify, setUserModify] = useState("2901133");
   const [modifyDate, setModifyDate] = useState(moment().format("DD/MM/YYYY"));
   const [dangerCard, setDangerCard] = useState("");
@@ -138,17 +138,22 @@ const EditSchedule = () => {
     return validate;
   };
   const getSearchValue = (e) => {
-    if (scheduleId === "") {
-      console.log("getSearchValue case new ", e);
-      setMainLocation(e.locationDetail);
-      setIsShowMainLocation(true);
-    } else if (scheduleId !== "") {
-      console.log("getSearchValue case edit ", e);
-      setAlterLocation(e.locationDetail);
-      setIsShowAlterLocation(true);
-    } else {
-      console.log("other case ", e);
-    }
+    console.log("getSearchValue case new ", e);
+    setMainLocation(e.locationDetail);
+    setIsShowMainLocation(true);
+    // if (scheduleId === "") {
+    //   console.log("getSearchValue case new ", e);
+    //   setMainLocation(e.locationDetail);
+    //   setIsShowMainLocation(true);
+    // } 
+    // else if (scheduleId !== "") {
+    //   console.log("getSearchValue case edit ", e);
+    //   setAlterLocation(e.locationDetail);
+    //   setIsShowAlterLocation(true);
+    // } 
+    // else {
+    //   console.log("other case ", e);
+    // }
   };
   const changeToSchedulePage = () => {
     history.push("/examSchedule", null);
@@ -283,7 +288,7 @@ const EditSchedule = () => {
                 eNum={eNum}
               />
               <Row>
-                <Col xs="6">
+                <Col xs="12">
                   {!isShowMainLocation ? (
                     <div style={{ marginTop: "20px" }}>
                       <h3 className="head">ข้อมูลสถานที่สอบหลัก</h3>
@@ -325,12 +330,12 @@ const EditSchedule = () => {
                               type="button"
                               onClick={() =>
                                 onClickChangeLocation(
-                                  scheduleId === "" ? "main" : "alter"
+                                  "main"
                                 )
                               }
                             >
                               {" "}
-                              <h6 className="head">เพิ่มสถานที่สอบอื่นๆ</h6>
+                              <h6 className="head">เปลี่ยนแปลงสถานที่สอบ</h6>
                             </i>
                           )}
                         </div>
@@ -380,7 +385,7 @@ const EditSchedule = () => {
                   )}
                 </Col>
 
-                <Col xs="6">
+                {/* <Col xs="6">
                   {!isShowAlterLocation ? (
                     ""
                   ) : (
@@ -445,7 +450,7 @@ const EditSchedule = () => {
                       </Card>
                     </div>
                   )}
-                </Col>
+                </Col> */}
               </Row>
               <CardBody>
                 <Row>

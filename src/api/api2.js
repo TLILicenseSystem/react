@@ -1,7 +1,8 @@
 import axios from "axios";
 
+const baseURL = process.env.REACT_APP_SERVER_URL;
 //const baseURL = 'http://localhost:8080/licenseexam';
-const baseURL = "https://dev-smws.thailife.com:8443/wsLicenseAgentSpring/licenseexam/";
+//const baseURL = "https://dev-smws.thailife.com:8443/wsLicenseAgentSpring/licenseexam/";
 
 const refreshToken = async () => {
   // call api refreshToken
