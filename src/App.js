@@ -1,65 +1,34 @@
 import React from "react";
-import { BrowserRouter, Switch, Route, Redirect, NavLink } from "react-router-dom";
-import ExamRoundPage from "./pages/ExamRound/ExamRound";
-import ExamOrganizerPage from "./pages/ExamOrganizer/ExamOrganizer";
-import ExamSchedulePage from "./pages/ExamSchedule/ExamSchedule";
-import FormExamLocation from "./pages/ExamLocation/FormExamLocation";
-import EditSchedulePage from "./pages/ExamSchedule/EditSchedule";
-import {SnackBar} from "./components/SnackBar/SnackBar";
+import AppRoute from "./routes";
+import { Row, Col } from "reactstrap";
 import "./App.css";
-
-const AppRoute = ({component: Component, layout: Layout, ...rest}) => (
-  <Route { ...rest} render={props=>(
-    <Layout><Component { ...props}></Component></Layout>
-  )}></Route>
-)
-
+import MainSidebar from "./themes/Sidebar/MainSidebar";
 const App = () => {
   return (
-    <BrowserRouter basename={"/salesmanagement/license"}>
-      <SnackBar/>
-      <NavLink exact to="/examRound">
-        examRound{" "}
-      </NavLink>
-      <NavLink exact to="/examOrganizer">
-        examOrganizer{" "}
-      </NavLink>
-      <NavLink exact to="/examLocation">
-        examLocation{" "}
-      </NavLink>
-      <NavLink exact to="/examSchedule">
-        examSchedule
-      </NavLink>
-      <Switch>
-        
-        <Route
-          path="/examSchedule"
-          render={(props) => <ExamSchedulePage {...props} />}
-        />
-        <Route
-          path="/examSchedule-edit"
-          render={(props) => <EditSchedulePage {...props} />}
-        />        
-        <Route
-          path="/examOrganizer"
-          render={(props) => <ExamOrganizerPage {...props} />}
-        />
-        <Route
-          path="/examRound"
-          render={(props) => <ExamRoundPage {...props} />}
-        />
-        <Route
-          path="/examLocation"
-          render={(props) => <FormExamLocation {...props} />}
-        />
-        
-        <Redirect from="*" to="/examSchedule" />
-      </Switch>
-    </BrowserRouter>
+    // แบ่ง layout เป็น 2 คอลั่ม Sidebar กับ content ที่จะเปลี่ยนหน้าตาม Route ที่เรียก
+    <Row>
+      <Col xs="12" sm="2" md="2" style={{ padding: 0 }}>
+        <MainSidebar />
+      </Col>
+      <Col xs="12" sm="10" md="10" style={{ padding: 0 }}>
+        <AppRoute />
+      </Col>
+    </Row>
   );
 };
 
 export default App;
+
+// const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
+//   <Route
+//     {...rest}
+//     render={(props) => (
+//       <Layout>
+//         <Component {...props}></Component>
+//       </Layout>
+//     )}
+//   ></Route>
+// );
 
 // import React from "react";
 // import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
