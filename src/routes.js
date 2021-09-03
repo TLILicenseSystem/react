@@ -29,7 +29,7 @@ const AppRoute = () => {
         path="/examLocation"
         render={(props) => <FormExamLocation {...props} />}
       />
-      <Redirect from="*" to="/examSchedule" />
+      <Redirect from="*" to="/examLocation" />
     </Switch>
   );
 };

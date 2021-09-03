@@ -24,11 +24,6 @@
         "path" : "/examSchedule"
         }		
     ]
-    },
-    {
-        "main": "ระบบตั้งค่า",
-        "path" : "/",
-        "submenu":null
     }
 ]
 
