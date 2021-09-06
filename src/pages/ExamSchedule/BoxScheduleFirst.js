@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Input, Card, CardBody, Row, Col } from "reactstrap";
 import { DatePicker } from "../../components/shared";
 import "react-datepicker/dist/react-datepicker.css";
-import TextField from '@material-ui/core/TextField';
+import TextField from "@material-ui/core/TextField";
 import DateFnsUtils from "@date-io/date-fns";
 import Select from "react-select";
 import { get } from "lodash";
@@ -46,7 +46,7 @@ const BoxSchedule = ({
   onClickInReceiveDate,
   InReceiveTime,
   onClickInReceiveTime,
-  InNum,  
+  InNum,
   onChangeInNum,
   eExamDate,
   eCloseDate,
@@ -57,13 +57,12 @@ const BoxSchedule = ({
   width,
   height,
 }) => {
-
   const onChangeApplicant = (e) => {
     const re = /^[0-9\b]+$/;
-    if (e.target.value === '' || re.test(e.target.value)) {
+    if (e.target.value === "" || re.test(e.target.value)) {
       onChangeInNum(e);
-   }
-  } 
+    }
+  };
 
   return (
     <div>
@@ -98,7 +97,7 @@ const BoxSchedule = ({
               </Col>
             </Row>
 
-            <Row style={{paddingTop: "20px", paddingBottom: "20px"}}>
+            <Row style={{ paddingTop: "20px", paddingBottom: "20px" }}>
               <Col xs="4">
                 <DatePicker
                   label={lReceiveDate}
@@ -109,38 +108,47 @@ const BoxSchedule = ({
               </Col>
               <Col xs="4">
                 <label className="label">{lReceiveTime}</label>
-                  <TextField
-                    error={eReceiveTime}
-                    id="time"
-                    type="time"
-                    value={InReceiveTime}
-                    onChange={onClickInReceiveTime}
-                    variant="outlined"
-                    size="small"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    inputProps={{
-                      step: 300, // 5 min
-                      style: {
-                        fontSize: 15,
-                        //height: 10,
-                        fontFamily:"Prompt-Regular"
-                    }
-                    }}
-                   style={{marginLeft:"0px",marginTop:"11px",width:"100%",height:"0px"}}
-                  />
+                <TextField
+                  error={eReceiveTime}
+                  id="time"
+                  type="time"
+                  value={InReceiveTime}
+                  onChange={onClickInReceiveTime}
+                  variant="outlined"
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  inputProps={{
+                    step: 300, // 5 min
+                    style: {
+                      fontSize: 15,
+                      //height: 10,
+                      fontFamily: "Prompt-Regular",
+                    },
+                  }}
+                  style={{
+                    marginLeft: "0px",
+                    marginTop: "11px",
+                    width: "100%",
+                    height: "0px",
+                  }}
+                />
               </Col>
               <Col xs="4">
                 <label className="label">{lNum}</label>
-                <Input value={InNum} onChange={onChangeApplicant} invalid={eNum} style={{
+                <Input
+                  value={InNum}
+                  onChange={onChangeApplicant}
+                  invalid={eNum}
+                  style={{
                     marginLeft: "0px",
                     marginTop: "8px",
                     width: "100%",
                     height: "40px",
-                    fontFamily:"Prompt-Regular",
-                    
-                  }}/>
+                    fontFamily: "Prompt-Regular",
+                  }}
+                />
               </Col>
             </Row>
           </MuiPickersUtilsProvider>

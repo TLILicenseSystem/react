@@ -105,10 +105,12 @@ const ExamSchedule = () => {
 
   const onClickEditSchedule = (schduleDetail) => {
     console.log("onClickEditSchedule ", schduleDetail);
-    if (get(schduleDetail, "event", "") === "edit" || get(schduleDetail, "event", "") === "add") {
+    if (
+      get(schduleDetail, "event", "") === "edit" ||
+      get(schduleDetail, "event", "") === "add"
+    ) {
       history.push("/examSchedule-edit", schduleDetail);
-    }
-    else {
+    } else {
       onClickDeleteSchedule(schduleDetail.selected);
     }
   };

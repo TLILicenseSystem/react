@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { List } from "reactstrap";
 import { withRouter, Link } from "react-router-dom";
 import menu from "../../conf/menuList.json";
-// import { FontAwesomeIcon } from "@fortawesome/fontawesome-free";
-// import { faAngleUp, faAngleDown } from "@fortawesome/free-solid-svg-icons";
-import { SideBar, MainMenu, SubMenu } from "./SidebarStyles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleUp, faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { SideBar, MainMenu, SubMenu } from "./MainSidebarStyles";
 
 const MainSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,16 +24,15 @@ const MainSidebar = () => {
             {item.submenu ? (
               <>
                 <MainMenu onClick={() => toggle(index)}>
-                  {/* <FontAwesomeIcon icon="coffee" /> */}
                   {item.main}
-                  {/* {item.submenu && (
+                  {item.submenu && (
                     // <i class={index === indexOpen ? faAngleUp : faAngleDown}></i>
-                    // <FontAwesomeIcon
-                    //   icon={index === indexOpen ? faAngleUp : faAngleDown}
-                    //   className="float-right"
-                    // />
-                    <FontAwesomeIcon icon="coffee" />
-                  )} */}
+                    <FontAwesomeIcon
+                      icon={index === indexOpen ? faAngleUp : faAngleDown}
+                      className="float-right"
+                    />
+                    // <FontAwesomeIcon icon="coffee" />
+                  )}
                 </MainMenu>
                 <div style={index === indexOpen ? {} : { display: "none" }}>
                   {item.submenu.map((sub, subindex) => (

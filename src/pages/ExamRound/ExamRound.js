@@ -131,7 +131,6 @@ const ExamRound = (props) => {
       updateItem(id, "timeStr", `${start}-${end}`);
       //alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
       Swal.fire("Added!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
-
     } catch (err) {
       throw new Error("พบข้อผิดพลาดในการแก้ไขข้อมูล! ", err);
       // throw err;
@@ -177,7 +176,8 @@ const ExamRound = (props) => {
       });
       setEStart(true);
       showError = true;
-    } if (end === "") {
+    }
+    if (end === "") {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -185,9 +185,8 @@ const ExamRound = (props) => {
       });
       setEEnd(true);
       showError = true;
-    } 
+    }
     if (showError) {
-
     } else {
       checkDuplicateData();
       if (canInsert) {
@@ -293,55 +292,76 @@ const ExamRound = (props) => {
         <Wrapper>
           <Card>
             <CardBody>
-            <h3 className="head">ตัวกรองข้อมูล</h3>          
-            <Card>                  
-              <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
-                <Col xs="3">
-                  <InputWithLabelRow
-                    label="รหัส"
-                    value={id}
-                    textboxSize={6}
-                    onChange={(e) => {
-                      setId(e.target.value);
-                    }}
-                    disabled={true}
-                  />
-                </Col>
-                <Col xs="3">
-                  <TimePicker
-                    label="เวลาสอบเริ่มต้น"
-                    timeValue={start}
-                    onClickTime={(e) =>
-                      setStart(e.target.value, setEStart(false))}
-                    eTime={eStart}
-                    disabled={disableTime}/>
-                </Col>
-                <Col xs="3">
-                  <TimePicker
-                    label="เวลาสอบสิ้นสุด"
-                    timeValue={end}
-                    onClickTime={(e) =>
-                      setEnd(e.target.value, setEEnd(false))}
-                    eTime={eEnd}
-                    disabled={disableTime}/>
-                </Col>
-                <Col xs="3">
-                  <Button color="primary" type="button" onClick={examRoundAdd} style={{marginTop:"34px", fontFamily: "Prompt-Regular"}}>
-                    เพิ่มรอบใหม่
-                  </Button>
-                </Col>
-              </Row>
-            </Card>
-            </CardBody>          
+              <h3 className="head">ตัวกรองข้อมูล</h3>
+              <Card>
+                <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
+                  <Col xs="3">
+                    <InputWithLabelRow
+                      label="รหัส"
+                      value={id}
+                      textboxSize={6}
+                      onChange={(e) => {
+                        setId(e.target.value);
+                      }}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col xs="3">
+                    <TimePicker
+                      label="เวลาสอบเริ่มต้น"
+                      timeValue={start}
+                      onClickTime={(e) =>
+                        setStart(e.target.value, setEStart(false))
+                      }
+                      eTime={eStart}
+                      disabled={disableTime}
+                    />
+                  </Col>
+                  <Col xs="3">
+                    <TimePicker
+                      label="เวลาสอบสิ้นสุด"
+                      timeValue={end}
+                      onClickTime={(e) =>
+                        setEnd(e.target.value, setEEnd(false))
+                      }
+                      eTime={eEnd}
+                      disabled={disableTime}
+                    />
+                  </Col>
+                  <Col xs="3">
+                    <Button
+                      color="primary"
+                      type="button"
+                      onClick={examRoundAdd}
+                      style={{
+                        marginTop: "34px",
+                        fontFamily: "Prompt-Regular",
+                      }}
+                    >
+                      เพิ่มรอบใหม่
+                    </Button>
+                  </Col>
+                </Row>
+              </Card>
+            </CardBody>
             <CardBody>
               <RoundTable onClick={doAction} rows={rows} />
             </CardBody>
-            <CardBody >
-              <Col xs="12" style={{ textAlign: "right"}}>
-                <Button color="success" type="button" onClick={examRoundSave} style={{marginRight:"10px"}}>
+            <CardBody>
+              <Col xs="12" style={{ textAlign: "right" }}>
+                <Button
+                  color="success"
+                  type="button"
+                  onClick={examRoundSave}
+                  style={{ marginRight: "10px" }}
+                >
                   บันทึก
                 </Button>
-                <Button color="secondary" type="button" onClick={examRoundClear}>
+                <Button
+                  color="secondary"
+                  type="button"
+                  onClick={examRoundClear}
+                >
                   เคลียร์ข้อมูล
                 </Button>
               </Col>

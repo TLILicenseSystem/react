@@ -6,14 +6,21 @@ import MainSidebar from "./themes/Sidebar/MainSidebar";
 const App = () => {
   return (
     // แบ่ง layout เป็น 2 คอลั่ม Sidebar กับ content ที่จะเปลี่ยนหน้าตาม Route ที่เรียก
-    <Row>
-      <Col xs="12" sm="2" md="2" style={{ padding: 0 }}>
-        <MainSidebar />
-      </Col>
-      <Col xs="12" sm="10" md="10" style={{ padding: 0 }}>
-        <AppRoute />
-      </Col>
-    </Row>
+    <div>
+      {/* <Row>
+        <Col xs="12" sm="12" md="12" style={{ padding: 0, height: "10%" }}>
+          retret
+        </Col>
+      </Row> */}
+      <Row>
+        <Col xs="12" sm="2" md="2" style={{ padding: 0 }}>
+          <MainSidebar />
+        </Col>
+        <Col xs="12" sm="10" md="10" style={{ padding: 0 }}>
+          <AppRoute />
+        </Col>
+      </Row>
+    </div>
   );
 };
 

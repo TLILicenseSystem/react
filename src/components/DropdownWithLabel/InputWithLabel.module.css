@@ -1,30 +1,30 @@
 .label {
-    margin-top: 0px;
-    margin-bottom: 10px;   
-    font-family: "Prompt-Regular"; 
+  margin-top: 0px;
+  margin-bottom: 10px;
+  font-family: "Prompt-Regular";
 }
-.labelDate { 
-    font-family: "Prompt-Regular"; 
+.labelDate {
+  font-family: "Prompt-Regular";
 }
 .labelDropdown {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-family: "Prompt-Regular";
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-family: "Prompt-Regular";
 }
 .input {
-    margin-top: 0px;
-    margin-bottom: 0px;
-    font-family: "Prompt-Regular";
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-family: "Prompt-Regular";
 }
 .inputDropdown {
-    margin-top: 0px;
-    margin-bottom: 10px;
-    font-family: "Prompt-Regular";
+  margin-top: 0px;
+  margin-bottom: 10px;
+  font-family: "Prompt-Regular";
 }
-.scrollable {    
-    max-height: 240px;
-    overflow-y: scroll;
+.scrollable {
+  max-height: 240px;
+  overflow-y: scroll;
 }
 .required {
-    color: red;
+  color: red;
 }

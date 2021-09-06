@@ -46,7 +46,7 @@ export const DropdownExamTime = ({
       ...provided,
       fontFamily: "Prompt-Regular",
     }),
-    control: provided => ({
+    control: (provided) => ({
       ...provided,
       borderColor: showError ? "red" : "#adb5bd",
     }),

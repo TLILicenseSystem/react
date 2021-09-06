@@ -40,7 +40,7 @@ export const DropdownExamOrganizer = ({
     fetchData();
   }, []);
 
-  const customStyle =  {
+  const customStyle = {
     option: (provided, state) => ({
       ...provided,
       fontFamily: "Prompt-Regular",
@@ -53,8 +53,13 @@ export const DropdownExamOrganizer = ({
 
   return (
     <Form>
-        <FormGroup row>
-        <label className={styles.labelDropdown}>{label}<label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label></label>    
+      <FormGroup row>
+        <label className={styles.labelDropdown}>
+          {label}
+          <label className={styles.required}>
+            {value === "" && requiredField ? "*" : ""}
+          </label>
+        </label>
         <Select
           styles={customStyle}
           className={styles.inputDropdown}
@@ -68,7 +73,6 @@ export const DropdownExamOrganizer = ({
           onChange={onClick}
           value={userData.filter((option) => option.orgCode === value)}
         />
-
       </FormGroup>
     </Form>
   );

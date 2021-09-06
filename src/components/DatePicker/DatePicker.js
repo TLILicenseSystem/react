@@ -19,7 +19,7 @@ export const DatePicker = ({ label, value, onChange, showError }) => {
           format="dd/MM/yyyy"
           margin="normal"
           id="date-picker-inline"
-          value={moment(value,"DD/MM/yyyy").format("MM/DD/yyyy")}
+          value={moment(value, "DD/MM/yyyy").format("MM/DD/yyyy")}
           onChange={onChange}
           invalidDateMessage=""
           KeyboardButtonProps={{

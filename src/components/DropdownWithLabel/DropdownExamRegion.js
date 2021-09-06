@@ -35,7 +35,7 @@ export const DropdownExamRegion = ({
     fetchData();
   }, []);
 
-  const customStyle =  {
+  const customStyle = {
     option: (provided, state) => ({
       ...provided,
       fontFamily: "Prompt-Regular",

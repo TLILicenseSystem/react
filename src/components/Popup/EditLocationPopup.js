@@ -15,7 +15,11 @@ import {
   DropdownLocationType,
   SearchPopup,
   InputWithLabelRow,
-} from "../../components/shared";
+  InputField,
+  SelectField,
+  CancelButton,
+  SubmitButton,
+} from "../shared";
 import {
   addExamLocation,
   updateExamLocation,
@@ -24,102 +28,80 @@ import {
 import Snackbar from "@material-ui/core/Snackbar";
 import { useSelector, useDispatch } from "react-redux";
 import { hideSearchPopup, hideEditLocationPopup } from "../../redux/actions";
-import { getProvinceCode } from "../../api/apiGetProvinceCode";
+import { getProvinceCodeAll } from "../../api/apiGetProvinceCode";
+import { getExamType } from "../../api/apiGetConfig";
+import { getOrganizerAll } from "../../api/apiGetExamOrganizer";
+
 import { getOrganizer } from "../../api/apiGetExamOrganizer";
 import { getExamLocationZone } from "../../api/apiGetConfig";
 import { get } from "lodash";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
+import { Field, reduxForm, reset, change, formValueSelector } from "redux-form";
+import { connect } from "react-redux";
 
-export const EditLocationPopup = ({
-  locationId,
-  locationTypeCode,
-  locationTypeName,
-  region,
-  regionName,   
-  organizerCode,
-  organizerName,
-  provinceCode,
-  provinceName,
-  locationDetail,
-  onChangeLocationDetail,
-  onChangeExamType,
-}) => {
+const validate = (values) => {
+  const errors = {};
 
-  const [addRegion, setAddRegion] = useState("");
-  const [addRegionName, setAddRegionName] = useState("");
-  const [addProvinceCode, setAddProvinceCode] = useState("");
-  // const [provinceName, setProvinceName] = useState("");
-  const [addExamOrganizerCode, setAddExamOrganizerCode] = useState("");
-  const [addExamOrganizerName, setAddExamOrganizerName] = useState("");
-  // const [locationDetail, setLocationDetail] = useState("");
-  const [addExamTypeCode, setAddExamTypeCode] = useState("");
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-
-  const examZoneResonse = getExamLocationZone();
-  const dispatch = useDispatch();
-  const { isShow, title, description, locationEditDetail, action } =
-    useSelector((state) => state.editLocationPopup);
-
-  const handleSnackbarOpen = () => {
-    setSnackbarOpen(true);
-  };
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
-  const onClickProvinceButton = (e) => {
-    setAddProvinceCode(get(e, "provinceCode", ""));
-    fetchProvinceData(get(e, "provinceCode", ""));
-  };
-  const onClickExamOrganizerButton = (e) => {
-    setAddExamOrganizerCode(get(e, "orgCode", ""));
-    //fetchExamOrganizer(get(e, "orgCode", ""));
-  };
-  // const onClickExamType = (e) => {
-  //   setExamTypeCode(get(e, "examTypeId", "1"));
-  // };
-
-  const onChangeLocationDetailInpopup = (e) => {
-    //bug when click edit examLocation
-    onChangeLocationDetail(e.target.value);
-    console.log("onChangeLocationDetailInpopup " , e.target.value);
+  if (!values.locationDetail) {
+    errors.locationDetail = "กรุณาระบุข้อมูล";
+  }
+  if (!values.provinceCode) {
+    errors.provinceCode = "กรุณาเลือกข้อมูล";
+  }
+  if (!values.orgCode) {
+    errors.orgCode = "กรุณาเลือกข้อมูล";
   }
 
-  const toggle = () => dispatch(hideEditLocationPopup());
+  return errors;
+};
 
-  const fetchProvinceData = async (e) => {
-    if (e === "") {
-      setAddRegion("");
-      setAddRegionName("");
-    } else {
-      const response = await getProvinceCode(e);
-      let tmpRegionCode = get(response[0], "region", "");
-      setAddRegion(tmpRegionCode);      
+export let EditLocationPopup = (props) => {
+  const { isShow, title, description, action } = props.editLocationPopup;
+  const { provinceCode, handleSubmit } = props;
+  const dispatch = useDispatch();
+  const [province, setProvince] = useState([]);
+  const [organizer, setOrganizer] = useState([]);
+  const [examType, setExamType] = useState([]);
+  const [regionName, setRegionName] = useState([]);
+
+  const examZoneResonse = getExamLocationZone();
+
+  const fetchData = async () => {
+    const responseExamType = await getExamType();
+    setExamType(responseExamType);
+
+    const response = await getProvinceCodeAll();
+    setProvince(get(response, "data", []));
+
+    const responseOrganizer = await getOrganizerAll();
+    setOrganizer(get(responseOrganizer, "data", []));
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const found = province.find(
+      (element) => element.provinceCode === provinceCode
+    );
+    if (found) {
       let tmpRegionName = get(
-        examZoneResonse.filter(
-          (zone) => zone.regionCode === get(response[0], "region", "")
-        )[0],
+        examZoneResonse.find((element) => element.regionCode === found.region),
         "regionName",
         ""
       );
-      console.log(tmpRegionName);
-      setAddRegionName(tmpRegionName);
+      props.dispatch(change("EditLocationPopup", "regionName", tmpRegionName));
+      setRegionName(tmpRegionName);
+    } else {
+      props.dispatch(change("EditLocationPopup", "regionName", ""));
+      setRegionName("");
     }
-  };
-  const onClickAddExamLocation = async () => {
-    console.log("addExamOrganizerCode ",addExamOrganizerCode);
-    console.log("addProvinceCode ",addProvinceCode);
-    console.log("locationDetail ",locationDetail);
-    console.log("locationTypeCode ",locationTypeCode);
-    if (
-      addExamOrganizerCode === "" ||
-      addProvinceCode === "" ||
-      locationDetail === "" ||
-      locationTypeCode === ""
-    ) {
+  }, [provinceCode]);
+
+  const onClickAddExamLocation = async (data) => {
+    if (props.invalid) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -127,13 +109,7 @@ export const EditLocationPopup = ({
       });
       return;
     }
-    let examlocation = {
-      orgCode: addExamOrganizerCode,
-      provinceCode: addProvinceCode,
-      locationDetail: locationDetail,
-      locationType: locationTypeCode,
-      createUserCode: "2901133",
-    };
+    let examlocation = { createUserCode: "2901133", ...data };
     let response = await addExamLocation(examlocation);
     if (response !== "error") {
       Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
@@ -147,13 +123,8 @@ export const EditLocationPopup = ({
     }
     toggle();
   };
-  const onClickEditLocationData = async () => {
-    if (
-      locationId === "" ||
-      organizerCode === "" ||
-      locationTypeCode === "" ||
-      locationTypeCode === ""
-    ) {
+  const onClickEditLocationData = async (data) => {
+    if (props.invalid) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -161,18 +132,9 @@ export const EditLocationPopup = ({
       });
       return;
     }
-
-    let examlocation = {
-      locationId: locationId,
-      orgCode: organizerCode,
-      provinceCode: provinceCode,
-      locationDetail: locationDetail,
-      locationType: locationTypeCode,
-      createUserCode: "2901133",
-    };
+    let examlocation = { createUserCode: "2901133", ...data };
 
     let response = await updateExamLocation(examlocation);
-
     if (response !== "error") {
       Swal.fire("Updated!", "แก้ไขข้อมูลแล้ว", "success");
       action();
@@ -184,109 +146,161 @@ export const EditLocationPopup = ({
       });
     }
     toggle();
-
   };
-
+  const toggle = () => {
+    dispatch(reset("EditLocationPopup"));
+    dispatch(hideEditLocationPopup());
+  };
   return (
     <div>
-    <Modal isOpen={isShow} className="div">
-      <ModalBody>
-        <h4 className="head">{title}</h4>
-      </ModalBody>
-      <ModalBody>
-        <Row xs="1">
-          <Col xs="6">
-            <InputWithLabelRow
-              label="รหัสที่ตั้ง"
-              value={locationId}
-              textboxSize={6}
-              disabled={true}
+      <Modal isOpen={isShow} className="div">
+        <ModalBody>
+          <h4 className="head">{title}</h4>
+        </ModalBody>
+        <ModalBody>
+          <Row xs="1" style={{ paddingBottom: "20px" }}>
+            <Col xs="6">
+              <Field
+                label="รหัสที่ตั้ง"
+                name="locationId"
+                component={InputField}
+                textboxSize={6}
+                disabled={true}
+              />
+            </Col>
+            <Col xs="6"></Col>
+          </Row>
+          <Row xs="1" sm="2" style={{ paddingBottom: "20px" }}>
+            <Col xs="6">
+              <Field
+                label="สนามสอบ"
+                name="provinceCode"
+                component={SelectField}
+                textboxSize={12}
+                option={province.map((row) => {
+                  return {
+                    value: row.provinceCode,
+                    label: `${row.provinceCode} ${row.provinceName}`,
+                  };
+                })}
+                requiredField={true}
+                isClearable={true}
+              />
+              {/* <DropdownExamRegion
+                label="สนามสอบ"
+                value={description === "edit" ? provinceCode : addProvinceCode}
+                requiredField={true}
+                disabled={description === "edit" ? true : false}
+                onClick={(e) => {
+                  onClickProvinceButton(e);
+                }}
+              /> */}
+            </Col>
+
+            <Col xs="6">
+              <Field
+                label="โซน"
+                name="regionName"
+                component={InputField}
+                textboxSize={12}
+                disabled={description === "edit" ? true : false}
+              />
+            </Col>
+          </Row>
+          <Row xs="1" sm="2" style={{ paddingBottom: "20px" }}>
+            <Field
+              label="สถานที่สอบ"
+              name="orgCode"
+              component={SelectField}
+              textboxSize={12}
+              option={organizer.map((row) => {
+                return {
+                  value: row.orgCode,
+                  label: `${row.orgCode} ${row.orgName}`,
+                };
+              })}
+              requiredField={true}
+              isClearable={true}
             />
-          </Col>
-          <Col xs="6"></Col>
-        </Row>
-        <Row xs="1" sm="2">
-          <Col xs="6">
-            <DropdownExamRegion
-              label="สนามสอบ"
-              value={description === "edit" ? provinceCode : addProvinceCode}
+            <Field
+              label="ประเภท"
+              name="locationTypeCode"
+              component={SelectField}
+              textboxSize={12}
+              option={examType.map((row) => {
+                return {
+                  value: row.examTypeId,
+                  label: row.examTypeName,
+                };
+              })}
+              // requiredField={true}
+              isClearable={true}
+            />
+            {/* <DropdownExamOrganizer
+              label="สถานที่สอบ"
+              value={
+                description === "edit" ? orgCode : addExamorgCode
+              }
               requiredField={true}
               disabled={description === "edit" ? true : false}
               onClick={(e) => {
-                onClickProvinceButton(e);
+                onClickExamOrganizerButton(e);
               }}
             />
-          </Col>
-
-          <Col xs="6">
-            <InputWithLabelRow
-              label="โซน"
-              value={description === "edit" ? regionName : addRegionName}
-              disabled={description === "edit" ? true : false}
+            <DropdownLocationType
+              label="ประเภท"
+              value={locationTypeCode}
+              requiredField={true}
+              onClick={(e) => {
+                onChangeExamType(e);
+              }}
+            /> */}
+          </Row>
+          <Row xs="1" style={{ paddingBottom: "20px" }}>
+            <Field
+              label="สถานที่ตั้งสอบ"
+              name="locationDetail"
+              component={InputField}
+              requiredField={true}
               textboxSize={12}
             />
-          </Col>
-        </Row>
-        <Row xs="1" sm="2">
-          <DropdownExamOrganizer
-            label="สถานที่สอบ"
-            value={description === "edit" ? organizerCode : addExamOrganizerCode}
-            requiredField={true}
-            disabled={description === "edit" ? true : false}
-            onClick={(e) => {
-              onClickExamOrganizerButton(e);
-            }}
+          </Row>
+        </ModalBody>
+        <ModalFooter>
+          <SubmitButton
+            type="button"
+            disabled={props.invalid}
+            onClick={
+              description === "edit"
+                ? handleSubmit(onClickEditLocationData)
+                : handleSubmit(onClickAddExamLocation)
+            }
           />
-          <DropdownLocationType
-            label="ประเภท"
-            value={locationTypeCode}
-            requiredField={true}
-            onClick={(e) => {
-              onChangeExamType(e);
-            }}
-          />
-        </Row>
-        <Row xs="1">
-          <InputWithLabelRow
-            label="สถานที่ตั้งสอบ"
-            showTime={false}
-            labelSize={2}
-            textboxSize={12}
-            value={locationDetail}
-            requiredField={true}
-            onChange={(e) => {
-              onChangeLocationDetailInpopup(e);
-            }}
-          />
-        </Row>
-      </ModalBody>
-      <ModalFooter>  
-        <Button
-          style={{ fontFamily: "Prompt-Regular" }}
-          onClick={description === "edit" ? onClickEditLocationData : onClickAddExamLocation}
-          color="primary"
-        >
-          บันทึก
-        </Button>
-        <Button
-          style={{ fontFamily: "Prompt-Regular" }}
-          color="secondary"
-          onClick={toggle}
-        >
-          ยกเลิก
-        </Button>
-      </ModalFooter>
-    </Modal>
+          <CancelButton onClick={toggle} />
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };
+
 EditLocationPopup.defaultProps = {
-  onChange: () => {},
-  onChangeLocationDetail: () => {},
-  onChangeExamType: () => {},
+  handleSubmit: () => {},
 };
 EditLocationPopup.propTypes = {
-  onChange: PropTypes.func,
-  onChangeLocationDetail: PropTypes.func,
-  onChangeExamType: PropTypes.func,
+  handleSubmit: PropTypes.func,
 };
+
+EditLocationPopup = reduxForm({
+  // a unique name for the form
+  form: "EditLocationPopup",
+  validate,
+  enableReinitialize: true,
+})(EditLocationPopup);
+
+const selector = formValueSelector("EditLocationPopup"); // <-- same as form name
+
+EditLocationPopup = connect((state) => ({
+  initialValues: state.editLocationPopup.initialValues,
+  editLocationPopup: state.editLocationPopup,
+  provinceCode: selector(state, "provinceCode"),
+}))(EditLocationPopup);

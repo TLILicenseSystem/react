@@ -1,9 +1,17 @@
-.div {
-    font-family: "Prompt-Regular";
+.contents {
+  font-family: "Prompt-Regular";
+  margin-top: 30px;
+  width: 95%;
 }
 .div .head {
-    font-family: "Prompt-Regular";
-} 
+  font-family: "Prompt-Regular";
+}
 .label {
-    font-family: "Prompt-Regular";
+  font-family: "Prompt-Regular";
+}
+.test {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 14px;
 }

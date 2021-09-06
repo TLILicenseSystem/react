@@ -10,6 +10,12 @@ const AppRoute = () => {
   return (
     <Switch>
       <Route
+        exact
+        path="/"
+        render={(props) => <ExamSchedulePage {...props} />}
+      />
+
+      <Route
         path="/examSchedule"
         render={(props) => <ExamSchedulePage {...props} />}
       />

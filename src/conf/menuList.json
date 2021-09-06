@@ -3,26 +3,11 @@
     "main": "ระบบตั้งค่า",
     "path" : "#",
     "submenu":[
-        {
-            "title":"ตั้งค่ารอบเวลาสอบ",
-            "path" : "/examRound"
-        },
+     
         {
             "title":"ตั้งค่าสถานที่สอบ",
             "path" : "/examLocation"
-        },
-        {
-            "title":"ตั้งค่าข้อมูลภูมิภาคจังหวัด (ตาม OIC)",
-            "path" : "/examOrganizer"
-        },
-        {
-            "title":"ตั้งค่าสถานที่ตั้งสอบ",
-            "path" : "/examOrganizer"
-        },
-        {
-        "title":"ตั้งค่าตารางสอบ",
-        "path" : "/examSchedule"
-        }		
+        } 
     ]
     }
 ]

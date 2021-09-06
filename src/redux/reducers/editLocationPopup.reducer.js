@@ -1,18 +1,21 @@
-import { HIDE_EDIT_LOCATION_POPUP, SHOW_EDIT_LOCATION_POPUP } from "../constants";
+import {
+  HIDE_EDIT_LOCATION_POPUP,
+  SHOW_EDIT_LOCATION_POPUP,
+} from "../constants";
 
 const initalState = {
   isShow: false,
   title: "",
-  description: "",
-  locationEditDetail: {},
-  locationDetail: "",
-  locationId: "",
-  locationTypeCode: "",
-  locationTypeName: "",
-  organizerCode: "",
-  organizerName: "",
-  provinceCode: "",
-  provinceName: "",
+  initialValues: null,
+  // locationEditDetail: {},
+  // locationDetail: "",
+  // locationId: "",
+  // locationTypeCode: "",
+  // locationTypeName: "",
+  // organizerCode: "",
+  // organizerName: "",
+  // provinceCode: "",
+  // provinceName: "",
   action: () => {},
 };
 
