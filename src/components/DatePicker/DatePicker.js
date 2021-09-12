@@ -1,21 +1,29 @@
 import React from "react";
-import { Form, FormGroup } from "reactstrap";
-import FormControl from "@material-ui/core/FormControl";
+import { Form, FormGroup, Input, Label, FormText } from "reactstrap";
+// import FormControl from "@material-ui/core/FormControl";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import PropTypes from "prop-types";
 import styles from "../InputWithLabel/InputWithLabel.module.css";
-import moment from "moment";
+
 export const DatePicker = ({ label, value, onChange, showError }) => {
   return (
     <Form>
       <FormGroup row>
         <label className={styles.label}>{label}</label>
-        <KeyboardDatePicker
+        <Input
+          id="date-picker"
+          type="date"
+          value={value ? value : null}
+          onChange={(e) =>
+            onChange(e.target && e.target.value ? e.target.value : null)
+          }
+        />
+        {/* <KeyboardDatePicker
           error={showError}
           autoOk
           disableToolbar
           variant="inline"
-          inputVariant="outlined"
+          // inputVariant="outlined"
           format="dd/MM/yyyy"
           margin="normal"
           id="date-picker-inline"
@@ -38,7 +46,7 @@ export const DatePicker = ({ label, value, onChange, showError }) => {
             width: "90%",
             height: "0px",
           }}
-        />
+        /> */}
       </FormGroup>
     </Form>
   );

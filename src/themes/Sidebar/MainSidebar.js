@@ -26,12 +26,10 @@ const MainSidebar = () => {
                 <MainMenu onClick={() => toggle(index)}>
                   {item.main}
                   {item.submenu && (
-                    // <i class={index === indexOpen ? faAngleUp : faAngleDown}></i>
                     <FontAwesomeIcon
                       icon={index === indexOpen ? faAngleUp : faAngleDown}
                       className="float-right"
                     />
-                    // <FontAwesomeIcon icon="coffee" />
                   )}
                 </MainMenu>
                 <div style={index === indexOpen ? {} : { display: "none" }}>

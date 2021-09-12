@@ -7,14 +7,22 @@ import {
   InputWithLabel,
   Wrapper,
   EditLocationTable,
+  InputWithLabelRow,
+  Table,
+  TimePicker,
+  AddButton,
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+  EditButton,
 } from "../../components/shared";
 //import { useHistory } from "react-router-dom";
 //import { useDispatch } from "react-redux";
 //import { showSpinner } from "../../redux/actions";
-//import * as ReactBootstrap from "react-bootstrap";
+//import * as ReactBootstrap from "react-bootstrap";\apiGetExamOrganizer
+import { getOrganizer } from "../../api/apiGetExamOrganizer";
 import { get } from "lodash";
 import { confirm } from "../../components/Container/Comfirmation";
-import apiSpring from "../../api/apiSpring";
 import {
   insertExamOrganizer,
   updateExamOrganizer,
@@ -29,6 +37,30 @@ const ExamOrganizer = (props) => {
   const [disableTime, setDisableTime] = useState(true);
   const [pressEdit, setPressEdit] = useState(false);
   const [result, setResult] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const columns = [
+    { field: "orgCode", headerName: "รหัสสถานที่สอบ", width: 200 },
+    { field: "orgName", headerName: "สถานที่สอบ", width: 400 },
+    {
+      field: "edit",
+      headerName: "แก้ไข",
+      align: "center",
+      width: 150,
+      renderCell: (cellValues) => {
+        return <EditButton onClick={() => editData(cellValues.row)} />;
+      },
+    },
+    {
+      field: "delete",
+      headerName: "ลบ",
+      align: "center",
+      width: 150,
+      renderCell: (cellValues) => {
+        return <DeleteButton onClick={() => removeData(cellValues.row)} />;
+      },
+    },
+  ];
 
   let canInsert = false;
   // let date = new Date().toISOString(); //2020-11-05T14:06:33.006Z
@@ -47,38 +79,10 @@ const ExamOrganizer = (props) => {
 
   //----------------------------for SearchAll spring boot------------------------
   const fetchData = async () => {
-    let formData = new FormData(); //formdata object
-    formData.append("type", "A"); //append the values with key, value pair
-    const config = { headers: { "content-type": "application/json" } };
-
-    try {
-      const { status, data } = await apiSpring.post(
-        "/examorganizer/search",
-        formData,
-        config
-      );
-      if (status === 200) {
-        setResult(data); //เมื่อ setResult แล้ว ค่า result จะได้เป็นค่า arraylist ของ data สามารถนำค่า resultมาใช้ได้เลย เช่น result[0] คือ arrayตัวที่0
-        console.log("result in fetchData spring >>>>>>>>>>>>>.. ", data);
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "พบข้อผิดพลาดในการค้นหาข้อมูลรอบสถานที่สอบ!",
-        });
-      }
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "พบข้อผิดพลาดในการโหลดข้อมูล!",
-      });
-      // throw err;
-    }
-
-    // const response = await getAllUser();
-    //   console.log('response', response);
-    //   setUserData(response);
+    setLoading(true);
+    const response = await getOrganizer("A");
+    setResult(response);
+    setLoading(false);
   };
 
   //----------------------------for insert spring boot------------------------
@@ -116,7 +120,7 @@ const ExamOrganizer = (props) => {
       );
       // update row ในตาราง
       updateItem(id, "orgName", orgName);
-      Swal.fire("Added!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+      Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
       //alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
     } catch (err) {
       Swal.fire({
@@ -208,7 +212,7 @@ const ExamOrganizer = (props) => {
 
   const dlgConfirm = async (param) => {
     const { value: check } = await Swal.fire({
-      text: `ต้องการลบรหัสสถานที่ ${param.orgCode} ใช่หรือไม่`,
+      text: `ต้องการลบสถานที่สอบ ${param.orgName} ใช่หรือไม่`,
       icon: "warning",
       showCancelButton: true,
       cancelButtonColor: "#d9534f",
@@ -245,112 +249,62 @@ const ExamOrganizer = (props) => {
     setDisableTime(false);
   };
 
-  const doAction = (action) => {
-    if (get(action, "action", "") === "edit") {
-      // alert("edit");
-      console.log("action===", action);
-      console.log("action sel===", action.selected);
-
-      editData(action.selected);
-    } else if (get(action, "action", "") === "delete") {
-      removeData(action.selected);
-    }
-  };
-
-  const renderOrganizer = (org, index) => {
-    return (
-      <tr className={styles.title} key={index}>
-        <td>{org.orgCode}</td>
-        <td>{org.orgName}</td>
-
-        <td className={styles.operation}>
-          <button className={styles.buttonEdit} onClick={() => editData(org)}>
-            แก้ไข
-          </button>
-        </td>
-
-        <td className={styles.operation}>
-          <button
-            className={styles.buttonDelete}
-            onClick={() => removeData(org)}
-          >
-            ลบ
-          </button>
-        </td>
-      </tr>
-    );
-  };
   return (
     <Container>
-      <div style={{ marginTop: "20px" }} className="div">
+      <div className="contents">
         <h2 className="head">ตั้งค่าสถานที่สอบ</h2>
-        <Wrapper>
-          <Card>
+        <Card>
+          <CardBody>
             <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
-              <Col xs="4">
-                <InputWithLabel
+              <Col xs="12" sm="3" md="3">
+                <InputWithLabelRow
+                  id="org-id"
                   label="รหัส"
                   value={id}
+                  textboxSize={6}
                   onChange={(e) => {
                     setId(e.target.value);
                   }}
-                  showTime={true}
+                  disabled={true}
                 />
               </Col>
-              <Col xs="5">
-                <InputWithLabel
+              <Col xs="12" sm="3" md="3">
+                <InputWithLabelRow
+                  id="org-id"
                   label="ชื่อสถานที่สอบ"
                   value={orgName}
-                  width="300px"
                   onChange={(e) => {
                     setOrgName(e.target.value);
                   }}
-                  showTime={disableTime}
+                  disabled={disableTime}
                 />
               </Col>
-              <Col xs="3">
-                <Button
-                  style={{
-                    marginTop: "30px",
-                    fontFamily: "Prompt-Regular",
-                  }}
-                  color="success"
-                  type="button"
-                  onClick={ExamOrganizerAdd}
-                >
-                  เพิ่มสถานที่สอบ
-                </Button>
-              </Col>
             </Row>
-            <CardBody>
-              <EditLocationTable rows={rows} onClick={doAction} />
-            </CardBody>
-          </Card>
-          <CardBody>
-            <Col
-              style={{
-                textAlign: "right",
-                fontFamily: "Prompt-Regular",
-              }}
-            >
-              <Button
-                color="primary"
-                type="button"
-                onClick={ExamOrganizerSave}
-                style={{ marginRight: "10px" }}
-              >
-                บันทึก
-              </Button>
-              <Button
-                color="secondary"
-                type="button"
-                onClick={ExamOrganizerClear}
-              >
-                เคลียร์ข้อมูล
-              </Button>
-            </Col>
           </CardBody>
-        </Wrapper>
+
+          <CardBody style={{ textAlign: "right", paddingBottom: 0 }}>
+            <AddButton
+              title="เพิ่มสถานที่สอบ"
+              onClick={() => ExamOrganizerAdd()}
+            />
+          </CardBody>
+          <CardBody style={{ textAlign: "right" }}>
+            {/* <EditLocationTable rows={rows} onClick={doAction} /> */}
+            <Table
+              data={rows}
+              id="orgCode"
+              columns={columns}
+              loading={loading}
+            />
+            <br />
+            <SubmitButton
+              title="บันทึก"
+              disabled={disableTime}
+              onClick={ExamOrganizerSave}
+            />{" "}
+            <CancelButton title="เคลียร์ข้อมูล" onClick={ExamOrganizerClear} />
+          </CardBody>
+        </Card>
       </div>
     </Container>
   );

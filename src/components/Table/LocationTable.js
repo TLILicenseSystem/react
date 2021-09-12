@@ -13,12 +13,17 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid } from "@material-ui/data-grid";
 import { useStyles } from "./table.style";
 import PropTypes from "prop-types";
 
-export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLocationList, event }) => {
-
+export const LocationTable = ({
+  provinceCode,
+  examOrganizerCode,
+  onClick,
+  examLocationList,
+  event,
+}) => {
   const classes = useStyles();
   const [examProvinceList, setExamProvinceList] = useState([]);
   const [examZoneList, setExamZoneList] = useState([]);
@@ -110,35 +115,39 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLo
   };
 
   const columns = [
-    { field: "locationId", headerName: "รหัสที่ตั้ง", },
+    { field: "locationId", headerName: "รหัสที่ตั้ง" },
     {
       field: "orgName",
-      headerName: "สนามสอบ",
+      headerName: "สถานที่สอบ",
       minWidth: 160,
       align: "left",
       valueGetter: (params) =>
-      `${getOrganizerData(params.getValue(params.id, 'orgCode'))}`,
+        `${getOrganizerData(params.getValue(params.id, "orgCode"))}`,
     },
-    { field: "provinceName", headerName: "สถานที่สอบ", minWidth: 160,
+    {
+      field: "provinceName",
+      headerName: "สนามสอบ",
+      minWidth: 160,
       valueGetter: (params) =>
-      `${getProvinceData(params.getValue(params.id, 'provinceCode'))}`, },
+        `${getProvinceData(params.getValue(params.id, "provinceCode"))}`,
+    },
     {
       field: "locationName",
       headerName: "ประเภท",
       minWidth: 105,
       align: "left",
       valueGetter: (params) =>
-      `${getLocationTypeData(params.getValue(params.id, 'locationType'))}`,
+        `${getLocationTypeData(params.getValue(params.id, "locationType"))}`,
     },
     {
       field: "locationDetail",
       headerName: "สถานที่ตั้งสอบ",
-      minWidth: 260,
+      minWidth: 150,
       align: "left",
     },
     {
-      field:  (get(event,"event","") === "edit")? "edit" : "select",
-      headerName: (get(event,"event","") === "edit")? "แก้ไข" : "เลือก",
+      field: get(event, "event", "") === "edit" ? "edit" : "select",
+      headerName: get(event, "event", "") === "edit" ? "แก้ไข" : "เลือก",
       align: "left",
       minWidth: 125,
       renderCell: (cellValues) => {
@@ -154,84 +163,88 @@ export const LocationTable = ({ provinceCode, examOrganizerCode, onClick, examLo
             onClick={(event) =>
               onClick({
                 selected: cellValues.row,
-                locationDetail:{
+                locationDetail: {
                   locationId: get(cellValues.row, "locationId", ""),
                   organizerName: getOrganizerData(
-                    get(cellValues.row, "orgCode", "")),
+                    get(cellValues.row, "orgCode", "")
+                  ),
                   provinceName: getProvinceData(
-                    get(cellValues.row, "provinceCode", "")),
+                    get(cellValues.row, "provinceCode", "")
+                  ),
                   locationTypeName: getLocationTypeData(
-                    get(cellValues.row, "locationType", "")),
+                    get(cellValues.row, "locationType", "")
+                  ),
                   locationDetail: get(cellValues.row, "locationDetail", ""),
-                }
+                },
               })
             }
           >
-            {(get(event,"event","") === "edit") ? "แก้ไข" : "เลือก"}
+            {get(event, "event", "") === "edit" ? "แก้ไข" : "เลือก"}
           </Button>
         );
-      }
+      },
     },
-    (get(event,"event","") === "edit") ? {
-      field: "delete",
-      headerName: "ลบ",
-      align: "left",
-      renderCell: (cellValues) => {
-        return (
-          <Button
-            size="sm"
-            variant="contained"
-            color="danger"
-            // onClick={(event) => {
-            //   handleClick(event, cellValues);
-            // }}
+    get(event, "event", "") === "edit"
+      ? {
+          field: "delete",
+          headerName: "ลบ",
+          align: "left",
+          renderCell: (cellValues) => {
+            return (
+              <Button
+                size="sm"
+                variant="contained"
+                color="danger"
+                // onClick={(event) => {
+                //   handleClick(event, cellValues);
+                // }}
 
-            onClick={(event) =>
-              onClick({
-                event:"delete",
-                selected: cellValues.row,
-                locationDetail:{
-                  locationId: get(cellValues.row, "locationId", ""),
-                  organizerName: getOrganizerData(
-                    get(cellValues.row, "orgCode", "")),
-                  provinceName: getProvinceData(
-                    get(cellValues.row, "provinceCode", "")),
-                  locationTypeName: getLocationTypeData(
-                    get(cellValues.row, "locationType", "")),
-                  locationDetail: get(cellValues.row, "locationDetail", ""),
+                onClick={(event) =>
+                  onClick({
+                    event: "delete",
+                    selected: cellValues.row,
+                    locationDetail: {
+                      locationId: get(cellValues.row, "locationId", ""),
+                      organizerName: getOrganizerData(
+                        get(cellValues.row, "orgCode", "")
+                      ),
+                      provinceName: getProvinceData(
+                        get(cellValues.row, "provinceCode", "")
+                      ),
+                      locationTypeName: getLocationTypeData(
+                        get(cellValues.row, "locationType", "")
+                      ),
+                      locationDetail: get(cellValues.row, "locationDetail", ""),
+                    },
+                  })
                 }
-              })
-            }
-          >
-            ลบ
-          </Button>
-        );
-      }
-    }: "",
+              >
+                ลบ
+              </Button>
+            );
+          },
+        }
+      : "",
   ];
 
   return (
-    <div style={{ height: 300, width: "100%" }} >
+    <div style={{ height: 300, width: "100%" }}>
       <DataGrid
-        rows={examLocationList
-          .filter(
-            (zone) =>
-              (zone.provinceCode === provinceCode &&
-                zone.orgCode === examOrganizerCode) ||
-              (zone.provinceCode === provinceCode &&
-                examOrganizerCode === "") ||
-              (zone.orgCode === examOrganizerCode &&
-                provinceCode === "") || (examOrganizerCode === "" && provinceCode === "")
-          )
-        }
+        rows={examLocationList.filter(
+          (zone) =>
+            (zone.provinceCode === provinceCode &&
+              zone.orgCode === examOrganizerCode) ||
+            (zone.provinceCode === provinceCode && examOrganizerCode === "") ||
+            (zone.orgCode === examOrganizerCode && provinceCode === "") ||
+            (examOrganizerCode === "" && provinceCode === "")
+        )}
         columns={columns}
         pageSize={10}
         id="locationId"
         disableSelectionOnClick
-        disableColumnMenu  
+        disableColumnMenu
         className={classes.root}
       />
-      
     </div>
   );
 };

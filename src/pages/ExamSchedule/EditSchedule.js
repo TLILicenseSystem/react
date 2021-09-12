@@ -1,82 +1,100 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, connect } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import { get } from "lodash";
-import {
-  ButtonGroup,
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  Row,
-  Col,
-  FormGroup,
-  Form,
-} from "reactstrap";
+import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Card, CardBody, Row, Col, Table, Input, Button } from "reactstrap";
 import {
   Container,
-  InputWithLabel,
-  Wrapper,
   SearchLocationPopup,
-  LocationTable,
-  DatePicker,
-  DropdownExamTime,
-  DropdownExamOrganizer,
-  DropdownExamRegion,
-  ScheduleTable,
-  EditSchedulePopup,
+  SubmitButton,
+  CancelButton,
+  DateField,
+  InputField,
+  SelectField,
+  TimeField,
 } from "../../components/shared";
-import {
-  showSearchLocationPopup,
-  showEditSchedulePopup,
-} from "../../redux/actions";
-import BoxScheduleFirst from "../../pages/ExamSchedule/BoxScheduleFirst";
-import BoxSchedule from "./BoxSchedule";
-import BoxUserModify from "./BoxUserModify";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import { showSearchLocationPopup } from "../../redux/actions";
+
 import {
   addExamSchedule,
   updateExamSchedule,
 } from "../../api/apiAddExamSchedule";
+import { getExamRoundAll } from "../../api/apiGetExamRound";
 
 import moment from "moment";
 import Swal from "sweetalert2";
 
-import styles from "../pageStyles.css";
+const validate = (values) => {
+  const errors = {};
+  if (!values.examDate) {
+    errors.examDate = "กรุณาระบุข้อมูล";
+  } else if (values.examDate) {
+    if (!moment(values.examDate).isValid())
+      errors.examDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
+  }
 
-const EditSchedule = () => {
+  if (!values.applyCloseDate) {
+    errors.applyCloseDate = "กรุณาเลือกข้อมูล";
+  } else if (values.applyCloseDate) {
+    if (!moment(values.applyCloseDate).isValid())
+      errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
+    if (
+      values.examDate &&
+      moment(values.applyCloseDate) < moment(values.examDate)
+    ) {
+      errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
+    }
+  }
+  if (!values.receiveDate) {
+    errors.receiveDate = "กรุณาเลือกข้อมูล";
+  } else if (values.receiveDate) {
+    if (!moment(values.receiveDate).isValid())
+      errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
+    if (
+      values.examDate &&
+      moment(values.receiveDate) < moment(values.examDate)
+    ) {
+      errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
+    }
+  }
+
+  if (!values.roundId) {
+    errors.roundId = "กรุณาเลือกข้อมูล";
+  }
+
+  if (!values.receiveTime) {
+    errors.receiveTime = "กรุณาเลือกข้อมูล";
+  }
+
+  if (!values.maxApplicant) {
+    errors.maxApplicant = "กรุณาระบุข้อมูล";
+  } else if (values.maxApplicant) {
+    const re = /^[0-9\b]+$/;
+    if (values.maxApplicant === "" || re.test(values.maxApplicant)) {
+      values.maxApplicant = values.maxApplicant;
+    } else values.maxApplicant = 0;
+  }
+
+  return errors;
+};
+
+let EditSchedule = (props) => {
+  const { handleSubmit } = props;
+
   const location = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
   const scheduleDetail = get(location, "state", {});
-  console.log("user", scheduleDetail);
 
-  const [scheduleId, setScheduleId] = useState(
-    get(scheduleDetail.selected, "scheduleId", "")
+  const [mainLocation, setMainLocation] = useState(scheduleDetail);
+  const [alterLocation, setAlterLocation] = useState(
+    scheduleDetail.alteredLocationDetail
   );
-  const [examDate, setExamDate] = useState(
-    moment(get(scheduleDetail.selected, "examDate", "")),"DD/MM/yyyy"
-  );
-  const [closeDate, setCloseDate] = useState(
-    moment(get(scheduleDetail.selected, "applyCloseDate", "")),"DD/MM/yyyy"
-  );
-  const [examTime, setExamTime] = useState(
-    get(scheduleDetail.selected, "roundId", "")
-  );
-  const [receiveDate, setReceiveDate] = useState(
-    moment(get(scheduleDetail.selected, "receiveDate", "")).format("DD/MM/yyyy")
-  );
-  const [receiveTime, setReceiveTime] = useState(
-    moment(get(scheduleDetail.selected, "receiveTime", ""), "HH:mm ").format(
-      "HH:mm"
-    )
-  );
-  const [num, setNum] = useState(
-    get(scheduleDetail.selected, "maxApplicant", "0")
-  );
-  const [mainLocation, setMainLocation] = useState(scheduleDetail.locationDetail);
-  const [alterLocation, setAlterLocation] = useState(scheduleDetail.alteredLocationDetail);
   const [isShowMainLocation, setIsShowMainLocation] = useState(
-    get(scheduleDetail.locationDetail, "locationId", "") !== "" ? true : false
+    get(scheduleDetail, "locationId", "") !== "" ? true : false
   );
   const [isShowAlterLocation, setIsShowAlterLocation] = useState(
     get(scheduleDetail.locationDetail, "locationId", "") !==
@@ -84,120 +102,51 @@ const EditSchedule = () => {
       ? true
       : false
   );
-  const [mode, setMode] = useState(get(scheduleDetail, "event", ""));
+
   const [userModify, setUserModify] = useState("2901133");
   const [modifyDate, setModifyDate] = useState(moment().format("DD/MM/YYYY"));
-  const [dangerCard, setDangerCard] = useState("");
-  const [eExamDate, setEExamDate] = useState(false);
-  const [eCloseDate, setECloseDate] = useState(false);
-  const [eRoundTime, setERoundTime] = useState(false);
-  const [eReceiveDate, setEReceiveDate] = useState(false);
-  const [eReceiveTime, setEReceiveTime] = useState(false);
-  const [eNum, setENum] = useState(false);
+  const [examRoundList, setExamRoundList] = useState([]);
 
-  const validateForm = () => {
-    console.log("examDate ", examDate);
-    console.log("closeDate ", closeDate);
-    console.log("examTime ", examTime);
-    console.log("receiveDate ", receiveDate);
-    console.log("receiveTime ", receiveTime);
-    let validate = true;
-    if (examDate === "" || examDate === "Invalid date") {
-      setEExamDate(true);
-      validate = false;
-    }
-    if (closeDate === "" || closeDate === "Invalid date") {
-      setECloseDate(true);
-      validate = false;
-      console.log("setExam");
-    }
-    if (examTime === "") {
-      setERoundTime(true);
-      validate = false;
-    }
-    if (receiveDate === "" || examDate === "Invalid date") {
-      setEReceiveDate(true);
-      validate = false;
-    }
-    if (receiveTime === "" || receiveTime === null || receiveTime === "null") {
-      setEReceiveTime(true);
-      validate = false;
-    }
-    if (num === "") {
-      setENum(true);
-      validate = false;
-    }
-    if (mainLocation === "0") {
-      setDangerCard("danger");
-      validate = false;
-    }
-    if (validate) {
-      setECloseDate(false);
-    }
-
-    return validate;
-  };
   const getSearchValue = (e) => {
-    console.log("getSearchValue case new ", e);
     setMainLocation(e.locationDetail);
     setIsShowMainLocation(true);
-    // if (scheduleId === "") {
-    //   console.log("getSearchValue case new ", e);
-    //   setMainLocation(e.locationDetail);
-    //   setIsShowMainLocation(true);
-    // } 
-    // else if (scheduleId !== "") {
-    //   console.log("getSearchValue case edit ", e);
-    //   setAlterLocation(e.locationDetail);
-    //   setIsShowAlterLocation(true);
-    // } 
-    // else {
-    //   console.log("other case ", e);
-    // }
   };
+
+  useEffect(() => {
+    fetchData();
+
+    if (props.history.location) {
+      let { state } = props.history.location;
+      props.change("roundId", state.roundId);
+      props.change("scheduleId", get(state, "scheduleId", null));
+      props.change("examDate", state.examDate);
+      props.change("applyCloseDate", state.applyCloseDate);
+      props.change("receiveDate", state.receiveDate);
+      props.change("receiveDate", state.receiveDate);
+      props.change("receiveTime", state.receiveTime);
+      props.change("maxApplicant", state.maxApplicant);
+    }
+  }, []);
+
+  const fetchData = async () => {
+    const response = await getExamRoundAll();
+    setExamRoundList(get(response, "data", []));
+  };
+
   const changeToSchedulePage = () => {
     history.push("/examSchedule", null);
   };
-  const onClickSaveChange = async () => {
-    console.log("isShowMainLocation ", isShowMainLocation);
-    if (!validateForm()) {
+  const onClickSave = async (data) => {
+    if (!isShowMainLocation) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "กรุณาระบุข้อมูลให้ครบถ้วน",
+        text: "กรุณาเลือกข้อมูลสถานที่สอบ",
       });
       return;
     } else {
-      if (mode === "add") {
-        let examSchedule = {
-          locationId: get(mainLocation, "locationId", ""),
-          alteredLocationId: get(mainLocation, "locationId", ""),
-          examDate: moment(examDate).format("yyyy-MM-DD"),
-          roundId: examTime,
-          maxApplicant: num,
-          applyOpenDate: moment().format("yyyy-MM-DD"),
-          applyCloseDate: moment(closeDate).format("yyyy-MM-DD"),
-          openStatus: "N",
-          receiveDate: moment(receiveDate).format("yyyy-MM-DD"),
-          receiveTime: moment(receiveTime, "HH:mm").format("HH:mm"),
-          createUserCode: userModify,
-          createTime: moment().format(),
-          updateUserCode: userModify,
-          lastUpdate: moment().format(),
-        };
-        let response = await addExamSchedule(examSchedule);
-        if (response !== "error") {
-          Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
-          changeToSchedulePage();
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "เกิดข้อผิดพลาด",
-            text: "ไม่สามารถแก้ไขข้อมูลได้",
-          });
-        }
-      } else if (mode !== "add") {
-        if (scheduleId === "") {
+      if (data.scheduleId) {
+        if (isShowMainLocation.scheduleId === "") {
           Swal.fire({
             icon: "error",
             title: "เกิดข้อผิดพลาด",
@@ -207,23 +156,49 @@ const EditSchedule = () => {
         }
 
         let examSchedule = {
-          scheduleId: scheduleId,
-          locationId: get(mainLocation,"locationId",""),
-          alteredLocationId: get(alterLocation, "locationId", ""),
-          examDate: moment(examDate).format("yyyy-MM-DD"),
-          roundId: examTime,
-          maxApplicant: num,
-          applyOpenDate: moment().format("yyyy-MM-DD"),
-          applyCloseDate: moment(closeDate).format("yyyy-MM-DD"),
+          ...data,
+          // roundId: data.examTime,
+          locationId: get(mainLocation, "locationId", ""),
+          alteredLocationId: get(mainLocation, "locationId", ""),
+          examDate: moment(data.examDate).format("YYYY-MM-DD"),
+          applyOpenDate: moment().format("YYYY-MM-DD"),
+          applyCloseDate: moment(data.applyCloseDate).format("YYYY-MM-DD"),
           openStatus: "N",
-          receiveDate: moment(receiveDate, "DD/MM/yyyy").format("yyyy-MM-DD"),
-          receiveTime: moment(receiveTime, "HH:mm").format("HH:mm"),
+          receiveDate: moment(data.receiveDate).format("YYYY-MM-DD"),
+          receiveTime: moment(data.receiveTime, "HH:mm").format("HH:mm"),
           updateUserCode: userModify,
           lastUpdate: moment().format(),
         };
+
         let response = await updateExamSchedule(examSchedule);
         if (response !== "error") {
           Swal.fire("Updated!", "ปรับปรุงข้อมูลแล้ว", "success");
+          changeToSchedulePage();
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถแก้ไขข้อมูลได้",
+          });
+        }
+      } else {
+        let examSchedule = {
+          ...data,
+          // roundId: data.examTime,
+          locationId: get(mainLocation, "locationId", ""),
+          alteredLocationId: get(mainLocation, "locationId", ""),
+          examDate: moment(data.examDate).format("YYYY-MM-DD"),
+          applyOpenDate: moment().format("YYYY-MM-DD"),
+          applyCloseDate: moment(data.applyCloseDate).format("YYYY-MM-DD"),
+          openStatus: "N",
+          receiveDate: moment(data.receiveDate).format("YYYY-MM-DD"),
+          receiveTime: moment(data.receiveTime, "HH:mm").format("HH:mm"),
+          updateUserCode: userModify,
+          lastUpdate: moment().format(),
+        };
+        let response = await addExamSchedule(examSchedule);
+        if (response !== "error") {
+          Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
           changeToSchedulePage();
         } else {
           Swal.fire({
@@ -243,259 +218,229 @@ const EditSchedule = () => {
       })
     );
   };
+  const toggle = () => {
+    props.initialize();
+    props.reset();
+    history.push("/examSchedule", null);
+  };
 
   return (
     <Container>
-      <SearchLocationPopup onChange={getSearchValue} />
-      <div style={{ marginTop: "20px" }} className="div">
+      <div className="contents">
         <h2 className="head">ตั้งค่าตารางสอบ</h2>
-        <Wrapper>
-          <Card>
-            <CardBody>
-              <h3 className="head">
-                {mode === "" ? "แก้ไขตารางสอบ" : "เพิ่มตารางสอบ"}
-              </h3>
-              <BoxScheduleFirst
-                lExamDate="วันที่สอบ"
-                lCloseDate="วันที่ปิดรับสมัคร"
-                lRoundTime="เวลาสอบ"
-                lReceiveDate="วันที่ได้รับหนังสือ"
-                lReceiveTime="เวลาที่ได้รับหนังสือ"
-                lNum="จำนวนผู้สมัคร(คน)"
-                InExamDate={examDate}
-                onClickInExamDate={(e) => setExamDate(e, setEExamDate(false))}
-                InCloseDate={closeDate}
-                onClickInCloseDate={(e) =>
-                  setCloseDate(e, setECloseDate(false))
-                }
-                InRoundTime={examTime}
-                onClickInRoundTime={(e) => setExamTime(e.roundId, setERoundTime(false))}
-                InReceiveDate={receiveDate}
-                onClickInReceiveDate={(e) =>
-                  setReceiveDate(e, setEReceiveDate(false))
-                }
-                InReceiveTime={receiveTime}
-                onClickInReceiveTime={(e) =>
-                  setReceiveTime(e.target.value, setEReceiveTime(false))
-                }
-                InNum={num}
-                onChangeInNum={(e) => setNum(e.target.value, setENum(false))}
-                eExamDate={eExamDate}
-                eCloseDate={eCloseDate}
-                eRoundTime={eRoundTime}
-                eReceiveDate={eReceiveDate}
-                eReceiveTime={eReceiveTime}
-                eNum={eNum}
-              />
-              <Row>
-                <Col xs="12">
-                  {!isShowMainLocation ? (
-                    <div style={{ marginTop: "20px" }}>
-                      <h3 className="head">ข้อมูลสถานที่สอบหลัก</h3>
-                      <Card body outline color={dangerCard}>
-                        <CardBody>
-                          <h6 className="head">
-                            ไม่พบข้อมูลสถานที่สอบ กรุณาเลือก
-                          </h6>
-                          <i
-                            class="far fa-edit"
-                            style={{
-                              paddingLeft: "20px",
-                              paddingTop: "9px",
-                              display: "flex",
-                            }}
-                            type="button"
-                            onClick={() => onClickChangeLocation("main")}
-                          >
-                            <h6 className="head">เปลี่ยนแปลงสถานที่สอบ</h6>
-                          </i>
-                        </CardBody>
-                      </Card>
-                    </div>
-                  ) : (
-                    <div style={{ marginTop: "20px" }}>
-                      <div style={{ display: "flex" }}>
-                        <h3 className="head">ข้อมูลสถานที่สอบหลัก</h3>
-                        <div>
-                          {isShowAlterLocation ? (
-                            ""
-                          ) : (
-                            <i
-                              class="far fa-edit"
-                              style={{
-                                paddingLeft: "20px",
-                                paddingTop: "9px",
-                                display: "flex",
-                              }}
-                              type="button"
-                              onClick={() =>
-                                onClickChangeLocation(
-                                  "main"
-                                )
-                              }
-                            >
-                              {" "}
-                              <h6 className="head">เปลี่ยนแปลงสถานที่สอบ</h6>
-                            </i>
-                          )}
-                        </div>
-                      </div>
-                      <Card>
-                        <CardBody>
-                          <BoxSchedule
-                            lLocationID="รหัสสถานที่ตั้งสอบ"
-                            lOrg="สถานที่สอบ"
-                            lProvince="สนามสอบ"
-                            lType="ประเภทสถานที่ตั้ง"
-                            lLocation="สถานที่ตั้งสอบ"
-                            InLocationID={get(
-                              mainLocation,
-                              "locationId",
-                              ""
-                            )}
-                            InOrg={get(
-                              mainLocation,
-                              "organizerName",
-                              ""
-                            )}
-                            InProvince={get(
-                              mainLocation,
-                              "provinceCode",
-                              ""
-                            )}
-                            InProvinceName={get(
-                              mainLocation,
-                              "provinceName",
-                              ""
-                            )}
-                            InType={get(
-                              mainLocation,
-                              "locationTypeName",
-                              ""
-                            )}
-                            InLocation={get(
-                              mainLocation,
-                              "locationDetail",
-                              ""
-                            )}
-                          />
-                        </CardBody>
-                      </Card>
-                    </div>
-                  )}
-                </Col>
+        <Card>
+          <CardBody>
+            {scheduleDetail && scheduleDetail.scheduleId ? (
+              <h3>แก้ไขตารางสอบ</h3>
+            ) : (
+              <h3>เพิ่มตารางสอบ</h3>
+            )}
 
-                {/* <Col xs="6">
-                  {!isShowAlterLocation ? (
-                    ""
-                  ) : (
-                    <div style={{ marginTop: "20px" }}>
-                      <div style={{ display: "flex" }}>
-                        <h3 className="head">ข้อมูลสถานที่สอบอื่นๆ</h3>
-                        <div>
-                          <i
-                            class="far fa-edit"
-                            style={{
-                              paddingLeft: "20px",
-                              paddingTop: "9px",
-                              display: "flex",
-                            }}
-                            type="button"
-                            onClick={() => onClickChangeLocation("alter")}
-                          >
-                            <h6 className="head">เปลี่ยนแปลง</h6>
-                          </i>
-                        </div>
-                      </div>
-                      <Card>
-                        <CardBody>
-                          <BoxSchedule
-                            lLocationID="รหัสสถานที่ตั้งสอบ"
-                            lOrg="สถานที่สอบ"
-                            lProvince="สนามสอบ"
-                            lType="ประเภทสถานที่ตั้ง"
-                            lLocation="สถานที่ตั้งสอบ"
-                            InLocationID={get(
-                              alterLocation,
-                              "locationId",
-                              ""
-                            )}
-                            InOrg={get(
-                              alterLocation,
-                              "organizerName",
-                              ""
-                            )}
-                            InProvince={get(
-                              alterLocation,
-                              "provinceCode",
-                              ""
-                            )}
-                            InProvinceName={get(
-                              alterLocation,
-                              "provinceName",
-                              ""
-                            )}
-                            InType={get(
-                              alterLocation,
-                              "locationTypeName",
-                              ""
-                            )}
-                            InLocation={get(
-                              alterLocation,
-                              "locationDetail",
-                              ""
-                            )}
+            <div style={{ padding: "14px", margin: "14px" }}>
+              <Card body outline>
+                <CardBody>
+                  <div>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                      <Row xs="1" sm="3" md="3">
+                        <Col>
+                          <Field
+                            label="วันที่สอบ"
+                            name="examDate"
+                            component={DateField}
                           />
-                        </CardBody>
-                      </Card>
-                    </div>
-                  )}
-                </Col> */}
-              </Row>
-              <CardBody>
-                <Row>
-                  <Col xs="8">
-                    <BoxUserModify
-                      lUser="ผู้บันทึก"
-                      lModifyDate="วันที่บันทึก"
-                      InUser={userModify}
-                      InModifyDate={modifyDate}
-                    />
-                  </Col>
-                  <Col
-                    xd="4"
-                    className="label"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "flex-end",
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <Button
-                      color="primary"
-                      type="button"
-                      style={{ marginRight: "10px" }}
-                      onClick={onClickSaveChange}
-                    >
-                      บันทึก
-                    </Button>
-                    <Button
-                      color="secondary"
-                      type="button"
-                      onClick={changeToSchedulePage}
-                    >
-                      ยกเลิก
-                    </Button>
-                  </Col>
-                </Row>
-              </CardBody>
-            </CardBody>
-          </Card>
-        </Wrapper>
+                        </Col>
+                        <Col>
+                          <Field
+                            label="วันที่ปิดรับสมัคร"
+                            name="applyCloseDate"
+                            component={DateField}
+                            mindate={props.examDate}
+                          />
+                        </Col>
+                        <Col>
+                          <Field
+                            label="เวลาสอบ"
+                            name="roundId"
+                            component={SelectField}
+                            option={examRoundList.map((row) => {
+                              return {
+                                value: row.roundId,
+                                label: row.timeStr,
+                              };
+                            })}
+                            // requiredField={true}
+                            isClearable={false}
+                          />
+                        </Col>
+                      </Row>
+
+                      <Row
+                        xs="1"
+                        sm="3"
+                        md="3"
+                        style={{ paddingTop: "20px", paddingBottom: "20px" }}
+                      >
+                        <Col>
+                          <Field
+                            label="วันที่ได้รับหนังสือ"
+                            name="receiveDate"
+                            component={DateField}
+                            mindate={props.examDate}
+                          />
+                        </Col>
+                        <Col>
+                          <Field
+                            label="เวลาที่ได้รับหนังสือ"
+                            name="receiveTime"
+                            component={TimeField}
+                            textboxSize={6}
+                          />
+                        </Col>
+                        <Col>
+                          <Field
+                            label="จำนวนผู้สมัคร (คน)"
+                            name="maxApplicant"
+                            textboxSize={6}
+                            defaultValue={0}
+                            component={InputField}
+                            // requiredField={true}
+                          />
+                        </Col>
+                      </Row>
+                    </MuiPickersUtilsProvider>
+                  </div>
+                </CardBody>
+              </Card>
+            </div>
+          </CardBody>
+          <CardBody>
+            <div
+              style={{
+                display: "flex",
+                display: "flex",
+                alignItems: "baseline",
+              }}
+            >
+              <h3>ข้อมูลสถานที่สอบหลัก</h3>
+              <Button
+                size="sm"
+                outline
+                color="secondary"
+                style={{ marginLeft: "20px", display: "inline" }}
+                onClick={() => onClickChangeLocation("main")}
+              >
+                <i class="fas fa-search" type="button"></i>{" "}
+                ค้นหาข้อมูลสถานที่สอบ
+              </Button>
+            </div>
+
+            <div style={{ padding: "14px", margin: "14px" }}>
+              <Card body outline>
+                <CardBody>
+                  <Row>
+                    <Col xs="12">
+                      {!isShowMainLocation ? (
+                        <h6 className="head">
+                          ไม่พบข้อมูลสถานที่สอบ กรุณา "ค้นหาข้อมูลสถานที่สอบ"
+                        </h6>
+                      ) : (
+                        <div>
+                          <Table borderless>
+                            <tbody>
+                              <tr>
+                                <th>รหัสสถานที่ตั้งสอบ</th>
+                                <td>{get(mainLocation, "locationId", "")}</td>
+                                <th>สถานที่สอบ</th>
+                                <td>
+                                  {get(
+                                    mainLocation,
+                                    "organizerName",
+                                    get(mainLocation, "orgName", "")
+                                  )}
+                                </td>
+                              </tr>
+                              <tr>
+                                <th>สถามสอบ</th>
+                                <td>{get(mainLocation, "provinceName", "")}</td>
+                                <th>ประเภทสถานที่ตั้ง</th>
+                                <td>
+                                  {get(mainLocation, "locationTypeName", "")}
+                                </td>
+                              </tr>
+                              <tr>
+                                <th>สถานที่ตั้งสอบ</th>
+                                <td>
+                                  {get(mainLocation, "locationDetail", "")}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+            </div>
+          </CardBody>
+          <CardBody style={{ paddingTop: "0px", paddingBottom: "14px" }}>
+            <Row style={{ textAlign: "center" }}>
+              <Col
+                xs={{ size: 4, offset: 2 }}
+                sm="12"
+                md={{ size: 2, offset: 4 }}
+              >
+                <label className="label" style={{ textAlign: "center" }}>
+                  ผู้บันทึก
+                </label>
+                <Input
+                  readOnly={true}
+                  style={{
+                    textAlign: "center",
+                  }}
+                  value={userModify}
+                />
+              </Col>
+              <Col xs="4" sm="12" md={{ size: 2 }}>
+                <label className="label">วันที่บันทึก</label>
+                <Input
+                  readOnly={true}
+                  style={{
+                    textAlign: "center",
+                  }}
+                  value={modifyDate}
+                />
+              </Col>
+            </Row>
+          </CardBody>
+          <CardBody style={{ textAlign: "right" }}>
+            <SubmitButton
+              disabled={props.invalid || props.pristine || props.submitting}
+              title="บันทึก"
+              onClick={handleSubmit(onClickSave)}
+            />{" "}
+            <CancelButton title="ยกเลิก" onClick={toggle} />
+          </CardBody>
+        </Card>
       </div>
+      <SearchLocationPopup onChange={getSearchValue} />
     </Container>
   );
 };
+
+EditSchedule = reduxForm({
+  // a unique name for the form
+  form: "EditSchedule",
+  validate,
+  shouldValidate: () => true,
+  destroyOnUnmount: false,
+  enableReinitialize: true,
+})(EditSchedule);
+
+const selector = formValueSelector("EditSchedule"); // <-- same as form name
+
+EditSchedule = connect((state) => ({
+  examDate: selector(state, "examDate"),
+}))(EditSchedule);
 
 export default EditSchedule;

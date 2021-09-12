@@ -48,7 +48,7 @@ EditButton.propTypes = {
   onClick: PropTypes.func,
 };
 
-export const DeleteButton = ({ onClick }) => {
+export const DeleteButton = ({ title, onClick }) => {
   return (
     <Button
       id="deleteButton"
@@ -59,15 +59,17 @@ export const DeleteButton = ({ onClick }) => {
         border: `${colors.GREY}`,
       }}
     >
-      ลบ
+      {title}
     </Button>
   );
 };
 
 DeleteButton.defaultProps = {
+  title: "ลบ",
   onClick: () => {},
 };
 DeleteButton.propTypes = {
+  title: PropTypes.string,
   onClick: PropTypes.func,
 };
 
@@ -79,8 +81,8 @@ export const SubmitButton = ({ type, disabled, onClick }) => {
       disabled={disabled}
       onClick={onClick}
       style={{
-        backgroundColor: `${colors.PRIMARYBLUE}`,
-        border: `${colors.PRIMARYBLUE}`,
+        backgroundColor: `${colors.SECONDARYBLUE}`,
+        border: `${colors.SECONDARYBLUE}`,
       }}
     >
       บันทึก
@@ -99,7 +101,7 @@ SubmitButton.propTypes = {
   onClick: PropTypes.func,
 };
 
-export const CancelButton = ({ onClick }) => {
+export const CancelButton = ({ title, onClick }) => {
   return (
     <Button
       id="cancelButton"
@@ -109,14 +111,16 @@ export const CancelButton = ({ onClick }) => {
         border: `${colors.GREY}`,
       }}
     >
-      ยกเลิก
+      {title}
     </Button>
   );
 };
 
 CancelButton.defaultProps = {
+  title: "ยกเลิก",
   onClick: () => {},
 };
 CancelButton.propTypes = {
+  title: PropTypes.string,
   onClick: PropTypes.func,
 };

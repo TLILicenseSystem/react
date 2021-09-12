@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, CardBody, Row, Col } from "reactstrap";
+import { Card, CardBody, Row, Col } from "reactstrap";
 
 import { get } from "lodash";
-//import styles from "./ExamRound.module.css";
-import styles from "../../components/LicenseStyle/LicenseExamStlye.module.css";
 import {
   Container,
-  InputWithLabel,
   InputWithLabelRow,
-  Wrapper,
-  BoxSearch,
-  BoxCriteria,
-  RoundTable,
+  Table,
   TimePicker,
+  AddButton,
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+  EditButton,
 } from "../../components/shared";
 //import { MDBTable, MDBTableBody, MDBTableHead, MDBDataTable } from "mdbreact";
-import { confirm } from "../../components/Container/Comfirmation";
 import apiSpring from "../../api/apiSpring";
 import {
   insertExamRound,
@@ -35,28 +33,49 @@ const ExamRound = (props) => {
   const [pressEdit, setPressEdit] = useState(false);
   const [init, setInit] = useState([]);
   const [result, setResult] = useState([]);
+
+  const columns = [
+    { field: "roundId", headerName: "รหัสรอบเวลาสอบ", width: 200 },
+    { field: "timeStr", headerName: "รอบเวลาสอบ", width: 400 },
+    {
+      field: "edit",
+      headerName: "แก้ไข",
+      align: "center",
+      width: 150,
+      renderCell: (cellValues) => {
+        return <EditButton onClick={() => editData(cellValues.row)} />;
+      },
+    },
+    {
+      field: "delete",
+      headerName: "ลบ",
+      align: "center",
+      width: 150,
+      renderCell: (cellValues) => {
+        return <DeleteButton onClick={() => removeData(cellValues.row)} />;
+      },
+    },
+  ];
+
   let canInsert = false;
 
   let create_user_code = "9009998";
   let update_user_code = "9009999";
-
-  const [err, setErr] = useState("");
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const rows = result.map((row) => {
     const { roundId, ...rest } = row;
     return { id: roundId, roundId, ...rest };
   });
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   // //----------------------------for SearchAll spring boot------------------------
   const fetchData = async () => {
     let formData = new FormData(); //formdata object
     formData.append("type", "A"); //append the values with key, value pair
     const config = { headers: { "content-type": "application/json" } };
-
     try {
       const { status, data } = await apiSpring.post(
         "/examround/search",
@@ -65,13 +84,8 @@ const ExamRound = (props) => {
       );
       if (status === 200) {
         // setResult(data); //เมื่อ setResult แล้ว ค่า result จะได้เป็นค่า arraylist ของ data สามารถนำค่า resultมาใช้ได้เลย เช่น result[0] คือ arrayตัวที่0
-        console.log("result in fetchData spring >>>>>>>>>>>>>.. ", data);
         setResult(data);
-
         setInit(data);
-        console.log("setResult in fetchData spring >>>>>>>>>>>>>.. ", result);
-        console.log("setInit in fetchData spring >>>>>>>>>>>>>.. ", init);
-        //setInit([...init, {id:init.roundId}]);
       } else {
         // alert("พบข้อผิดพลาดในการค้นหาข้อมูลรอบเวลาสอบ! ", status);
         Swal.fire({
@@ -130,7 +144,7 @@ const ExamRound = (props) => {
       // update row ในตาราง
       updateItem(id, "timeStr", `${start}-${end}`);
       //alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
-      Swal.fire("Added!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+      Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
     } catch (err) {
       throw new Error("พบข้อผิดพลาดในการแก้ไขข้อมูล! ", err);
       // throw err;
@@ -186,6 +200,15 @@ const ExamRound = (props) => {
       setEEnd(true);
       showError = true;
     }
+    if (end < start || start > end) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณากรอกเวลาให้ถูกต้อง",
+      });
+      setEEnd(true);
+      showError = true;
+    }
     if (showError) {
     } else {
       checkDuplicateData();
@@ -211,11 +234,9 @@ const ExamRound = (props) => {
     setEnd("");
     setDisableTime(false);
 
-    console.log("size list examround in database ======", result.length);
     if (result.length === 0) setId("01");
     else {
       let max = Math.max.apply(null, result.map(getListRoundID));
-
       let newRound = String(parseInt(max) + 1);
       if (newRound.length === 1) newRound = "0" + newRound;
       setId(newRound);
@@ -232,7 +253,7 @@ const ExamRound = (props) => {
 
   const dlgConfirm = async (param) => {
     const { value: check } = await Swal.fire({
-      text: `ต้องการลบข้อมูลรหัสเวลาสอบ ${param.roundId} ใช่หรือไม่`,
+      text: `ต้องการลบข้อมูลรหัสเวลาสอบ ${param.timeStr} ใช่หรือไม่`,
       icon: "warning",
       showCancelButton: true,
       cancelButtonColor: "#d9534f",
@@ -251,11 +272,9 @@ const ExamRound = (props) => {
 
   const updateItem = (roundId, whichvalue, newvalue) => {
     var index = result.findIndex((x) => x.roundId === roundId);
-
     let g = result[index];
     g[whichvalue] = newvalue;
     if (index === -1) {
-      // handle error
       console.log("no match");
     } else
       setResult([...result.slice(0, index), g, ...result.slice(index + 1)]);
@@ -270,104 +289,63 @@ const ExamRound = (props) => {
     setDisableTime(false);
   };
 
-  const doAction = (action) => {
-    if (get(action, "action", "") === "edit") {
-      // alert("edit");
-      console.log("action===", action);
-      console.log("action sel===", action.selected);
-
-      editData(action.selected);
-    } else if (get(action, "action", "") === "delete") {
-      removeData(action.selected);
-    }
-  };
-
-  console.log("result ====", result);
-  console.log("rows ====", rows);
-  console.log("init ====", init);
   return (
     <Container>
-      <div style={{ marginTop: "20px" }} className="div">
+      <div className="contents">
         <h2 className="head">ตั้งค่าเวลาสอบ</h2>
-        <Wrapper>
-          <Card>
-            <CardBody>
-              <h3 className="head">ตัวกรองข้อมูล</h3>
-              <Card>
-                <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
-                  <Col xs="3">
-                    <InputWithLabelRow
-                      label="รหัส"
-                      value={id}
-                      textboxSize={6}
-                      onChange={(e) => {
-                        setId(e.target.value);
-                      }}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col xs="3">
-                    <TimePicker
-                      label="เวลาสอบเริ่มต้น"
-                      timeValue={start}
-                      onClickTime={(e) =>
-                        setStart(e.target.value, setEStart(false))
-                      }
-                      eTime={eStart}
-                      disabled={disableTime}
-                    />
-                  </Col>
-                  <Col xs="3">
-                    <TimePicker
-                      label="เวลาสอบสิ้นสุด"
-                      timeValue={end}
-                      onClickTime={(e) =>
-                        setEnd(e.target.value, setEEnd(false))
-                      }
-                      eTime={eEnd}
-                      disabled={disableTime}
-                    />
-                  </Col>
-                  <Col xs="3">
-                    <Button
-                      color="primary"
-                      type="button"
-                      onClick={examRoundAdd}
-                      style={{
-                        marginTop: "34px",
-                        fontFamily: "Prompt-Regular",
-                      }}
-                    >
-                      เพิ่มรอบใหม่
-                    </Button>
-                  </Col>
-                </Row>
-              </Card>
-            </CardBody>
-            <CardBody>
-              <RoundTable onClick={doAction} rows={rows} />
-            </CardBody>
-            <CardBody>
-              <Col xs="12" style={{ textAlign: "right" }}>
-                <Button
-                  color="success"
-                  type="button"
-                  onClick={examRoundSave}
-                  style={{ marginRight: "10px" }}
-                >
-                  บันทึก
-                </Button>
-                <Button
-                  color="secondary"
-                  type="button"
-                  onClick={examRoundClear}
-                >
-                  เคลียร์ข้อมูล
-                </Button>
+        <Card>
+          <CardBody>
+            <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
+              <Col xs="12" sm="3" md="3">
+                <InputWithLabelRow
+                  id="round-id"
+                  label="รหัส"
+                  value={id}
+                  textboxSize={6}
+                  onChange={(e) => {
+                    setId(e.target.value);
+                  }}
+                  disabled={true}
+                />
               </Col>
-            </CardBody>
-          </Card>
-        </Wrapper>
+              <Col xs="12" sm="2" md="2">
+                <TimePicker
+                  id="round-start"
+                  label="เวลาสอบเริ่มต้น"
+                  timeValue={start}
+                  onClickTime={(e) =>
+                    setStart(e.target.value, setEStart(false))
+                  }
+                  eTime={eStart}
+                  disabled={disableTime}
+                />
+              </Col>
+              <Col xs="12" sm="2" md="2">
+                <TimePicker
+                  id="round-end"
+                  label="เวลาสอบสิ้นสุด"
+                  timeValue={end}
+                  onClickTime={(e) => setEnd(e.target.value, setEEnd(false))}
+                  eTime={eEnd}
+                  disabled={disableTime}
+                />
+              </Col>
+            </Row>
+          </CardBody>
+          <CardBody style={{ textAlign: "right", paddingBottom: 0 }}>
+            <AddButton title="เพิ่มรอบใหม่" onClick={() => examRoundAdd()} />
+          </CardBody>
+          <CardBody style={{ textAlign: "right" }}>
+            <Table data={rows} id="roundId" columns={columns} />
+            <br />
+            <SubmitButton
+              title="บันทึก"
+              disabled={disableTime}
+              onClick={examRoundSave}
+            />{" "}
+            <CancelButton title="เคลียร์ข้อมูล" onClick={examRoundClear} />
+          </CardBody>
+        </Card>
       </div>
     </Container>
   );

@@ -22,7 +22,7 @@ export const InputField = ({
           <label className={styles.label}>
             {label}
             <label className={styles.required}>
-              {value === "" && requiredField ? " *" : ""}
+              {requiredField ? " *" : ""}
             </label>
           </label>
 
@@ -32,7 +32,7 @@ export const InputField = ({
               {...input}
               className={styles.input}
               type={type}
-              invalid={invalid}
+              invalid={error && touched}
               disabled={disabled}
             />
             {touched && error && <FormFeedback>{error}</FormFeedback>}

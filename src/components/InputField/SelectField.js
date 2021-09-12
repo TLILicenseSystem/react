@@ -28,6 +28,19 @@ export const SelectField = ({
       ...provided,
       fontFamily: "Prompt-Regular",
     }),
+    control: (base, state) => ({
+      ...base,
+      // state.isFocused can display different borderColor if you need it
+      borderColor: state.isFocused ? "#ced4da" : error ? "#dc3545" : "#ced4da",
+      // overwrittes hover style
+      "&:hover": {
+        borderColor: state.isFocused
+          ? "#ced4da"
+          : error
+          ? "#dc3545"
+          : "#ced4da",
+      },
+    }),
   };
 
   return (
@@ -45,19 +58,16 @@ export const SelectField = ({
               id={input.name}
               className={error && "is-invalid"}
               styles={customStyle}
-              defaultValue={option.filter(
+              value={option.find((option) => option.value === input.value)}
+              defaultValue={option.find(
                 (option) => option.value === input.value
               )}
-              //  className={styles.inputDropdown}
-              isClearable={isClearable}
-              isSearchable={false}
+              isClearable={true}
+              isSearchable={true}
               options={option}
               isDisabled={disabled}
               onChange={(e) => input.onChange(get(e, "value", null))}
-              // onChange={onClick}
-              // value={userData.filter((option) => option.orgCode === value)}
             />
-            {error && <FormFeedback>{error}</FormFeedback>}
           </Col>
         </FormGroup>
       </Form>
@@ -72,6 +82,7 @@ SelectField.defaultProps = {
   disabled: false,
   textboxSize: 9,
   requiredField: false,
+  option: [],
   meta: {
     invalid: false,
     touched: false,
@@ -82,6 +93,7 @@ SelectField.defaultProps = {
 SelectField.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string,
+  option: PropTypes.array,
   disabled: PropTypes.bool,
   textboxSize: PropTypes.number,
   requiredField: PropTypes.bool,

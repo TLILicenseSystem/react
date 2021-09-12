@@ -63,8 +63,8 @@ export const DropdownExamOrganizer = ({
         <Select
           styles={customStyle}
           className={styles.inputDropdown}
-          isClearable={isClearable}
-          isSearchable={false}
+          isClearable={true}
+          isSearchable={true}
           name="examOrganizer"
           options={userData}
           isDisabled={disabled}

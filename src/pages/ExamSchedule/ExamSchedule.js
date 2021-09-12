@@ -14,6 +14,11 @@ import {
   DropdownExamRegion,
   ScheduleTable,
   EditSchedulePopup,
+  Table,
+  EditButton,
+  DeleteButton,
+  AddButton,
+  FilterCollapse,
 } from "../../components/shared";
 import BoxScheduleFirst from "./BoxScheduleFirst";
 import BoxSchedule from "./BoxSchedule";
@@ -32,6 +37,7 @@ import {
   FormGroup,
   Form,
 } from "reactstrap";
+
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
@@ -42,56 +48,161 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import styles from "../pageStyles.css";
 import { getExamRoundAll } from "../../api/apiGetExamRound";
+import { getExamType } from "../../api/apiGetConfig";
 
 const ExamSchedule = () => {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const [scheduleId, setScheduleId] = useState("");
-  const [examDate, setExamDate] = useState("");
-  const [closeDate, setCloseDate] = useState("");
-  const [examTime, setExamTime] = useState("");
-  const [receiveDate, setReceiveDate] = useState("");
-  const [receiveTime, setReceiveTime] = useState("");
-  const [num, setNum] = useState(0);
-
-  //------------------ผู้บันทึก------------------------
-  const [userModify, setUserModify] = useState("2901133");
-  const [modifyDate, setModifyDate] = useState(moment().format("DD/MM/YYYY"));
-
-  //------------------radio button------------------
-  const [radioValue, setRadioValue] = useState("1");
-
-  const [isShowMainLocation, setIsShowMainLocation] = useState(true);
-  const [isShowAlterLocation, setIsShowAlterLocation] = useState(false);
-  const [searchValue, setSearchValue] = useState({});
-  const [mainLocation, setMainLocation] = useState({});
-  const [alterLocation, setAlterLocation] = useState({});
-
   const [examRound, setExamRound] = useState("");
-  const [examRoundList, setExamRoundList] = useState([]);
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [examScheduleList, setExamScheduleList] = useState([]);
+  const examType = getExamType();
+  const [loading, setLoading] = useState(false);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
+  const getLocationTypeData = (e) => {
+    if (e !== "" || e !== null) {
+      const locationType = get(
+        examType.filter((zone) => zone.examTypeId === e)[0],
+        "examTypeName",
+        ""
+      );
+      return locationType;
+    } else {
+      return "";
+    }
   };
-  const onClickExamOrganizerButton = (e) => {
-    setExamOrganizerCode(get(e, "orgCode", ""));
-  };
-  const onClickProvinceButton = (e) => {
-    setProvinceCode(get(e, "provinceCode", ""));
-  };
+  const columns = [
+    {
+      field: "examDateFormat",
+      headerName: "วันที่สอบ",
+      minWidth: 140,
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "examDate")).format(
+          "DD/MM/yyyy"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+      cellClassName: "cellDark",
+    },
+    {
+      field: "timeStr",
+      headerName: "เวลาสอบ",
+      minWidth: 120,
+      hideSortIcons: "true",
+      // valueGetter: (params) =>
+      //   `${getExamRoundDetail(params.getValue(params.id, "roundId"))}`,
+      headerClassName: "header",
+    },
+    {
+      field: "maxApplicant",
+      headerName: "จำนวนผู้สมัครสอบ",
+      width: 100,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "applyCloseDateFormat",
+      headerName: "วันที่ปิดรับสมัคร",
+      minWidth: 140,
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "applyCloseDate")).format(
+          "DD/MM/yyyy"
+        )}`,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+
+    {
+      field: "orgName",
+      headerName: "สถานที่สอบ",
+      width: 160,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "provinceName",
+      headerName: "สนามสอบ",
+      width: 160,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "locationTypeName",
+      headerName: "ประเภท",
+      width: 100,
+      align: "left",
+      valueGetter: (params) =>
+        `${getLocationTypeData(params.getValue(params.id, "locationType"))}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "locationDetail",
+      headerName: "สถานที่ตั้งสอบ",
+      width: 160,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "applyOpenDateFormat",
+      headerName: "วันที่ได้รับหนังสือ",
+      minWidth: 140,
+      align: "left",
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "applyOpenDate")).format(
+          "DD/MM/yyyy"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "receiveTime",
+      headerName: "เวลาที่ได้รับหนังสือ",
+      minWidth: 120,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "edit",
+      headerName: "แก้ไข",
+      align: "center",
+      width: 100,
+      renderCell: (cellValues) => {
+        return (
+          <EditButton onClick={() => onClickEditSchedule(cellValues.row)} />
+        );
+      },
+    },
+    {
+      field: "delete",
+      headerName: "ลบ",
+      align: "center",
+      width: 100,
+      renderCell: (cellValues) => {
+        return (
+          <DeleteButton onClick={() => onClickDeleteSchedule(cellValues.row)} />
+        );
+      },
+    },
+  ];
 
   const fetchData = async () => {
+    setLoading(true);
     const responseSchedule = await getExamScheduleByDetails(
-      selectedDate,
+      selectedDate === null ? "" : moment(selectedDate).format("YYYY-MM-DD"),
       examRound,
       examOrganizerCode,
       provinceCode
     );
     setExamScheduleList(get(responseSchedule, "data", []));
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -103,35 +214,16 @@ const ExamSchedule = () => {
     return { id: scheduleId, scheduleId, ...rest };
   });
 
-  const onClickEditSchedule = (schduleDetail) => {
-    console.log("onClickEditSchedule ", schduleDetail);
-    if (
-      get(schduleDetail, "event", "") === "edit" ||
-      get(schduleDetail, "event", "") === "add"
-    ) {
-      history.push("/examSchedule-edit", schduleDetail);
-    } else {
-      onClickDeleteSchedule(schduleDetail.selected);
-    }
+  const onClickEditSchedule = (scheduleDetail) => {
+    history.push("/examSchedule-edit", scheduleDetail);
   };
-  const handleExamRound = (date) => {
-    console.log("handleExamRound ", date);
-    setExamRound(get(date, "roundId", ""));
-  };
+
   const onClickSearchSchedule = async () => {
-    console.log("onClickSearchSchedule ", selectedDate);
-    const responseSchedule = await getExamScheduleByDetails(
-      selectedDate === null ? "" : moment(selectedDate).format("DD/MM/yyyy"),
-      examRound,
-      examOrganizerCode,
-      provinceCode
-    );
-    setExamScheduleList(get(responseSchedule, "data", []));
+    fetchData();
   };
 
   const onClickDeleteSchedule = async (selected) => {
     let scheduleId = get(selected, "scheduleId", "");
-    console.log(scheduleId);
     if (scheduleId === "") {
       Swal.fire({
         icon: "error",
@@ -144,7 +236,7 @@ const ExamSchedule = () => {
     const { value: check } = await Swal.fire({
       text: `ต้องการลบตารางสอบวันที่ ${moment(
         get(selected, "examDate", "")
-      ).format("DD/MM/yyyy")} เวลา ${get(selected, "roundId", "")} ใช่หรือไม่`,
+      ).format("DD/MM/yyyy")} เวลา ${get(selected, "timeStr", "")} ใช่หรือไม่`,
       icon: "warning",
       showCancelButton: true,
       cancelButtonColor: "#d9534f",
@@ -162,60 +254,58 @@ const ExamSchedule = () => {
           text: "พบข้อผิดพลาดในการลบข้อมูล!",
         });
       } else {
-        //rows = (rows.filter((item) => item.roundId !== roundId));
         Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
+        fetchData();
       }
     }
   };
 
   return (
     <Container>
-      <div style={{ marginTop: "20px" }} className="div">
+      <div className="contents">
         <h2 className="head">ตั้งค่าตารางสอบ</h2>
-        <Wrapper>
-          <Card>
-            <CardBody>
-              <h3 className="head">ตัวกรองข้อมูล</h3>
+        <Card>
+          <CardBody>
+            <FilterCollapse title="ตัวกรองข้อมูล">
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
-                  <Col xs="3">
+                <Row>
+                  <Col xs="12" sm="2" md="2">
                     <DatePicker
                       label="วันที่สอบ"
                       value={selectedDate}
-                      onChange={handleDateChange}
+                      onChange={(date) => setSelectedDate(date)}
+                      // onChange={(date) => console.log(date)}
                     />
                   </Col>
-                  <Col xs="4">
+                  <Col xs="12" sm="2" md="2">
                     <DropdownExamTime
                       label="เวลาสอบ"
                       value={examRound}
                       isClearable={true}
-                      onClick={(e) => handleExamRound(e)}
+                      onClick={(e) => setExamRound(get(e, "roundId", ""))}
                     />
                   </Col>
-                  <Col xs="5">
+                  <Col xs="12" sm="3" md="3">
                     <DropdownExamOrganizer
                       label="สถานที่สอบ"
                       value={examOrganizerCode}
                       isClearable={true}
                       onClick={(e) => {
-                        onClickExamOrganizerButton(e);
+                        setExamOrganizerCode(get(e, "orgCode", ""));
                       }}
                     />
                   </Col>
-                </Row>
-                <Row style={{ marginTop: "7px", marginLeft: "20px" }}>
-                  <Col xs="7">
+                  <Col xs="12" sm="3" md="3">
                     <DropdownExamRegion
                       label="สนามสอบ"
                       value={provinceCode}
                       isClearable={true}
                       onClick={(e) => {
-                        onClickProvinceButton(e);
+                        setProvinceCode(get(e, "provinceCode", ""));
                       }}
                     />
                   </Col>
-                  <Col xs="5">
+                  <Col xs="12" sm="2" md="2">
                     <div style={{ marginTop: "34px", marginLeft: "0px" }}>
                       <Button
                         color="primary"
@@ -224,31 +314,27 @@ const ExamSchedule = () => {
                       >
                         ค้นหา
                       </Button>
-                      <Button
-                        color="outline-success"
-                        type="button"
-                        style={{
-                          marginLeft: "10px",
-                          fontFamily: "Prompt-Regular",
-                        }}
-                        active={true}
-                        onClick={() => onClickEditSchedule({ event: "add" })}
-                      >
-                        เพิ่ม
-                      </Button>
                     </div>
                   </Col>
                 </Row>
               </MuiPickersUtilsProvider>
-            </CardBody>
-            <CardBody>
-              <ScheduleTable
-                examScheduleList={rows}
-                onClick={onClickEditSchedule}
-              />
-            </CardBody>
-          </Card>
-        </Wrapper>
+            </FilterCollapse>
+          </CardBody>
+          <CardBody style={{ textAlign: "right", paddingBottom: 0 }}>
+            <AddButton
+              title="เพิ่มตารางสอบ"
+              onClick={() => onClickEditSchedule({ event: "add" })}
+            />
+          </CardBody>
+          <CardBody>
+            <Table
+              data={rows}
+              id="locationId"
+              columns={columns}
+              loading={loading}
+            />
+          </CardBody>
+        </Card>
       </div>
     </Container>
   );

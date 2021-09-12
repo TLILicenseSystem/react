@@ -9,7 +9,7 @@
 .label {
   font-family: "Prompt-Regular";
 }
-.test {
+.contents-left-right {
   display: flex;
   justify-content: space-between;
   width: 100%;

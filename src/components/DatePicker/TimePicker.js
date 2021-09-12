@@ -19,9 +19,11 @@ export const TimePicker = ({
         id="time"
         type="time"
         value={timeValue}
+        ampm={false}
         onChange={onClickTime}
-        variant="outlined"
+        // variant="outlined"
         size="small"
+        pattern="[0-9]{2}:[0-9]{2}"
         InputLabelProps={{
           shrink: true,
         }}
@@ -30,6 +32,7 @@ export const TimePicker = ({
           style: {
             fontSize: 15,
             //height: 10,
+            padding: "8px",
             fontFamily: "Prompt-Regular",
           },
         }}

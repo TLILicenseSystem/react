@@ -65,8 +65,8 @@ export const DropdownExamTime = ({
           <Select
             styles={customStyle}
             className={styles.inputDropdown}
-            isClearable={isClearable}
-            isSearchable={false}
+            isClearable={true}
+            isSearchable={true}
             name="examTime"
             options={examRoundList}
             getOptionLabel={(option) => `${option.timeStr}`}

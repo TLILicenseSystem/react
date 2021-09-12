@@ -46,6 +46,10 @@ const validate = (values) => {
   if (!values.locationDetail) {
     errors.locationDetail = "กรุณาระบุข้อมูล";
   }
+  if (values.locationDetail) {
+    if (values.locationDetail.trim() === "")
+      errors.locationDetail = "กรุณาระบุข้อมูล";
+  }
   if (!values.provinceCode) {
     errors.provinceCode = "กรุณาเลือกข้อมูล";
   }
@@ -79,6 +83,7 @@ export let EditLocationPopup = (props) => {
   };
 
   useEffect(() => {
+    props.reset();
     fetchData();
   }, []);
 
@@ -113,6 +118,7 @@ export let EditLocationPopup = (props) => {
     let response = await addExamLocation(examlocation);
     if (response !== "error") {
       Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
+      toggle();
       action();
     } else {
       Swal.fire({
@@ -137,6 +143,7 @@ export let EditLocationPopup = (props) => {
     let response = await updateExamLocation(examlocation);
     if (response !== "error") {
       Swal.fire("Updated!", "แก้ไขข้อมูลแล้ว", "success");
+      toggle();
       action();
     } else {
       Swal.fire({
@@ -148,12 +155,14 @@ export let EditLocationPopup = (props) => {
     toggle();
   };
   const toggle = () => {
-    dispatch(reset("EditLocationPopup"));
+    props.initialize();
+    props.reset();
     dispatch(hideEditLocationPopup());
   };
+
   return (
     <div>
-      <Modal isOpen={isShow} className="div">
+      <Modal isOpen={isShow} className="div" size="lg">
         <ModalBody>
           <h4 className="head">{title}</h4>
         </ModalBody>
@@ -171,6 +180,33 @@ export let EditLocationPopup = (props) => {
             <Col xs="6"></Col>
           </Row>
           <Row xs="1" sm="2" style={{ paddingBottom: "20px" }}>
+            <Field
+              label="สถานที่สอบ"
+              name="orgCode"
+              component={SelectField}
+              textboxSize={12}
+              option={organizer.map((row) => {
+                return {
+                  value: row.orgCode,
+                  label: `${row.orgCode} ${row.orgName}`,
+                };
+              })}
+              requiredField={true}
+              isClearable={true}
+              disabled={description === "edit" ? true : false}
+            />
+
+            <Col xs="6">
+              <Field
+                label="โซน"
+                name="regionName"
+                component={InputField}
+                textboxSize={12}
+                disabled={true}
+              />
+            </Col>
+          </Row>
+          <Row xs="1" sm="2" style={{ paddingBottom: "20px" }}>
             <Col xs="6">
               <Field
                 label="สนามสอบ"
@@ -185,46 +221,13 @@ export let EditLocationPopup = (props) => {
                 })}
                 requiredField={true}
                 isClearable={true}
-              />
-              {/* <DropdownExamRegion
-                label="สนามสอบ"
-                value={description === "edit" ? provinceCode : addProvinceCode}
-                requiredField={true}
                 disabled={description === "edit" ? true : false}
-                onClick={(e) => {
-                  onClickProvinceButton(e);
-                }}
-              /> */}
+              />
             </Col>
 
-            <Col xs="6">
-              <Field
-                label="โซน"
-                name="regionName"
-                component={InputField}
-                textboxSize={12}
-                disabled={description === "edit" ? true : false}
-              />
-            </Col>
-          </Row>
-          <Row xs="1" sm="2" style={{ paddingBottom: "20px" }}>
-            <Field
-              label="สถานที่สอบ"
-              name="orgCode"
-              component={SelectField}
-              textboxSize={12}
-              option={organizer.map((row) => {
-                return {
-                  value: row.orgCode,
-                  label: `${row.orgCode} ${row.orgName}`,
-                };
-              })}
-              requiredField={true}
-              isClearable={true}
-            />
             <Field
               label="ประเภท"
-              name="locationTypeCode"
+              name="locationType"
               component={SelectField}
               textboxSize={12}
               option={examType.map((row) => {
@@ -233,28 +236,8 @@ export let EditLocationPopup = (props) => {
                   label: row.examTypeName,
                 };
               })}
-              // requiredField={true}
               isClearable={true}
             />
-            {/* <DropdownExamOrganizer
-              label="สถานที่สอบ"
-              value={
-                description === "edit" ? orgCode : addExamorgCode
-              }
-              requiredField={true}
-              disabled={description === "edit" ? true : false}
-              onClick={(e) => {
-                onClickExamOrganizerButton(e);
-              }}
-            />
-            <DropdownLocationType
-              label="ประเภท"
-              value={locationTypeCode}
-              requiredField={true}
-              onClick={(e) => {
-                onChangeExamType(e);
-              }}
-            /> */}
           </Row>
           <Row xs="1" style={{ paddingBottom: "20px" }}>
             <Field
@@ -269,7 +252,7 @@ export let EditLocationPopup = (props) => {
         <ModalFooter>
           <SubmitButton
             type="button"
-            disabled={props.invalid}
+            disabled={props.invalid || props.pristine || props.submitting}
             onClick={
               description === "edit"
                 ? handleSubmit(onClickEditLocationData)
@@ -294,6 +277,8 @@ EditLocationPopup = reduxForm({
   // a unique name for the form
   form: "EditLocationPopup",
   validate,
+  shouldValidate: () => true,
+  destroyOnUnmount: false,
   enableReinitialize: true,
 })(EditLocationPopup);
 

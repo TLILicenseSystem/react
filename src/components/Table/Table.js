@@ -3,7 +3,7 @@ import { DataGrid } from "@material-ui/data-grid";
 import { useStyles } from "./table.style";
 import PropTypes from "prop-types";
 
-export const Table = ({ id, data, columns }) => {
+export const Table = ({ id, data, columns, loading }) => {
   const classes = useStyles();
 
   return (
@@ -11,7 +11,7 @@ export const Table = ({ id, data, columns }) => {
       <DataGrid
         autoHeight
         id={id}
-        rows={data}
+        rows={loading ? [] : data}
         columns={columns}
         pageSize={10}
         disableSelectionOnClick
@@ -25,9 +25,11 @@ Table.defaultProps = {
   id: "data-table",
   data: [],
   columns: [],
+  loading: false,
 };
 Table.propTypes = {
   id: PropTypes.string,
   data: PropTypes.array,
   columns: PropTypes.array,
+  loading: PropTypes.bool,
 };

@@ -5,9 +5,21 @@
     "submenu":[
      
         {
+            "title":"ตั้งค่ารอบเวลาสอบ",
+            "path" : "/examRound"	
+        },
+        {
             "title":"ตั้งค่าสถานที่สอบ",
+            "path" : "/examOrganizer"	
+        },
+        {
+            "title":"ตั้งค่าสถานที่ตั้งสอบ",
             "path" : "/examLocation"
-        } 
+        }
+        ,{
+            "title":"ตั้งค่าตารางสอบ",
+            "path" : "/examSchedule"	
+        }
     ]
     }
 ]

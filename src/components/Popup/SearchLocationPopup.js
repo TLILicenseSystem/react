@@ -8,7 +8,11 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import { DropdownExamRegion, DropdownExamOrganizer, LocationTable } from "../shared";
+import {
+  DropdownExamRegion,
+  DropdownExamOrganizer,
+  LocationTable,
+} from "../shared";
 import { useSelector, useDispatch } from "react-redux";
 import { hideSearchLocationPopup } from "../../redux/actions";
 import { getProvinceCode } from "../../api/apiGetProvinceCode";
@@ -18,7 +22,7 @@ import { getExamLocation } from "../../api/apiGetExamLocation";
 import { get } from "lodash";
 import PropTypes from "prop-types";
 
-export const SearchLocationPopup = ({onChange}) => {
+export const SearchLocationPopup = ({ onChange }) => {
   const [region, setRegion] = useState("");
   const [regionName, setRegionName] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
@@ -45,9 +49,12 @@ export const SearchLocationPopup = ({onChange}) => {
   };
   const onClickExamOrganizerButton = (e) => {
     console.log("onClickExamOrganizerButton ", e);
-    setExamOrganizerCode(get(e,"orgCode",""));
-    fetchExamOrganizer(get(e,"orgCode",""));
-    setSearchProvince({"provinceCode":provinceCode,"examOrganizerCode":examOrganizerCode});
+    setExamOrganizerCode(get(e, "orgCode", ""));
+    fetchExamOrganizer(get(e, "orgCode", ""));
+    setSearchProvince({
+      provinceCode: provinceCode,
+      examOrganizerCode: examOrganizerCode,
+    });
   };
   const fetchData = async () => {
     const responseLocation = await getExamLocation("A");
@@ -81,8 +88,7 @@ export const SearchLocationPopup = ({onChange}) => {
     );
   };
   const fetchExamOrganizer = async (e) => {
-    console.log("fetchExamOrganizer " , e);
-    if (e !== ""){
+    if (e !== "") {
       const response = await getOrganizer(e);
       setExamOrganizerName(get(response[0], "orgName", ""));
     }
@@ -94,31 +100,38 @@ export const SearchLocationPopup = ({onChange}) => {
   });
 
   return (
-    <Modal isOpen={isShow} size="lg" toggle={toggle}> 
-      <ModalHeader toggle={toggle}>{title}</ModalHeader>
+    <Modal isOpen={isShow} size="lg" toggle={toggle}>
+      <ModalHeader>{title}</ModalHeader>
       <ModalBody>
-        <DropdownExamRegion
-          label="สนามสอบ"
-          value={provinceCode}
-          onClick={(e) => {
-            onClickProvinceButton(e);
-          }}
-        />
-        <DropdownExamOrganizer
-          label="สถานที่สอบ"
-          value={examOrganizerCode}
-          onClick={(e) => {
-            onClickExamOrganizerButton(e);
-          }}
-        />
+        <Row>
+          <Col sm="4">
+            <DropdownExamOrganizer
+              label="สถานที่สอบ "
+              value={examOrganizerCode}
+              onClick={(e) => {
+                onClickExamOrganizerButton(e);
+              }}
+            />
+          </Col>
+          <Col sm="4">
+            <DropdownExamRegion
+              label="สนามสอบ"
+              value={provinceCode}
+              onClick={(e) => {
+                onClickProvinceButton(e);
+              }}
+            />
+          </Col>
+        </Row>
       </ModalBody>
       <ModalFooter>
-          <LocationTable 
-            provinceCode={provinceCode}
-            examOrganizerCode={examOrganizerCode}
-            examLocationList={rows}
-            event={{event:"search"}}
-            onClick={handleAction}/>
+        <LocationTable
+          provinceCode={provinceCode}
+          examOrganizerCode={examOrganizerCode}
+          examLocationList={rows}
+          event={{ event: "search" }}
+          onClick={handleAction}
+        />
       </ModalFooter>
     </Modal>
   );
