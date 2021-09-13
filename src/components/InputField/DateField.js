@@ -5,6 +5,8 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import PropTypes from "prop-types";
 import styles from "../InputWithLabel/InputWithLabel.module.css";
 import { Input } from "reactstrap";
+import DatePicker from "reactstrap-date-picker";
+import moment from "moment";
 
 export const DateField = ({ input, textboxSize, label, meta, mindate }) => {
   let { invalid, touched, error } = meta;
@@ -13,12 +15,16 @@ export const DateField = ({ input, textboxSize, label, meta, mindate }) => {
     if (e.target && e.target.value) input.onChange(e.target.value);
     // date ?  : input.onChange(null);
   };
+
+  const handleChange = (value, formattedValue) => {
+    input.onChange(value);
+  };
   return (
     <Form>
       <FormGroup row>
         <label className={styles.label}>{label}</label>
         <Col xs={textboxSize}>
-          <Input
+          {/* <Input
             id={input.name}
             {...input}
             min={mindate}
@@ -26,7 +32,19 @@ export const DateField = ({ input, textboxSize, label, meta, mindate }) => {
             type="date"
             value={input.value}
             onChange={onChange}
-          />{" "}
+            placeholder="dd-mm-yyyy"
+            max="2021-09-13"
+          />{" "} */}
+          <DatePicker
+            id={input.name}
+            {...input}
+            maxDate={moment(mindate).toISOString()}
+            invalid={error && touched}
+            value={input.value && moment(input.value).toISOString()}
+            showTodayButton={true}
+            dateFormat="DD/MM/YYYY"
+            onChange={(v, f) => handleChange(v, f)}
+          />
           {touched && error && <FormFeedback>{error}</FormFeedback>}
         </Col>
 

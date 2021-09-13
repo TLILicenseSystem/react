@@ -43,7 +43,7 @@ const validate = (values) => {
       errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     if (
       values.examDate &&
-      moment(values.applyCloseDate) < moment(values.examDate)
+      moment(values.applyCloseDate) > moment(values.examDate)
     ) {
       errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     }
@@ -55,7 +55,7 @@ const validate = (values) => {
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     if (
       values.examDate &&
-      moment(values.receiveDate) < moment(values.examDate)
+      moment(values.receiveDate) > moment(values.examDate)
     ) {
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     }

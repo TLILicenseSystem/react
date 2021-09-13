@@ -15,27 +15,28 @@ export const TimeField = ({ input, label, disabled, meta, textboxSize }) => {
       <label className={styles.label}>{label}</label>
       <Col xs={textboxSize}>
         {/* <Input
-        id={input.name}
-        // {...input}
-        className={styles.input}
-        type="text"
-        invalid={error && touched}
-        disabled={disabled}
-        onChange={(e) => console.log("e", e)}
-      /> */}
-        {/*  <TimePicker
-        id={input.name}
-        {...input}
-        error={error && touched}
-        disabled={disabled}
-        type="time"
-        value={input.value ? input.value : null}
-        onChange={onChange}
-        format={24}
-        // start="10:00"
-        // end="21:00"
-        step={30}
-      /> */}
+          id={input.name}
+          // {...input}
+          className={styles.input}
+          type="text"
+          invalid={error && touched}
+          disabled={disabled}
+          onChange={(e) => console.log("e", e)}
+        /> */}
+        {/* <TimePicker
+          id={input.name}
+          {...input}
+          className={error && touched && "is-invalid"}
+          invalid={error && touched}
+          disabled={disabled}
+          type="time"
+          value={input.value ? input.value : null}
+          onChange={onChange}
+          format={24}
+          // start="10:00"
+          // end="21:00"
+          step={30}
+        /> */}
         <TextField
           id={input.name}
           {...input}

@@ -43,6 +43,7 @@
     "react-select": "^4.3.1",
     "react-time-input": "^0.0.19",
     "reactstrap": "^8.9.0",
+    "reactstrap-date-picker": "^0.0.11",
     "redux": "^4.1.0",
     "redux-form": "^8.3.7",
     "styled-components": "^5.3.0",

@@ -4,19 +4,31 @@ import { Form, FormGroup, Input, Label, FormText } from "reactstrap";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import PropTypes from "prop-types";
 import styles from "../InputWithLabel/InputWithLabel.module.css";
+import RSDatePicker from "reactstrap-date-picker";
+import moment from "moment";
 
 export const DatePicker = ({ label, value, onChange, showError }) => {
+  const handleChange = (value, formattedValue) => {
+    onChange(value);
+  };
   return (
     <Form>
       <FormGroup row>
         <label className={styles.label}>{label}</label>
-        <Input
+        {/* <Input
           id="date-picker"
           type="date"
           value={value ? value : null}
           onChange={(e) =>
             onChange(e.target && e.target.value ? e.target.value : null)
           }
+        /> */}
+        <RSDatePicker
+          id="date-picker"
+          value={value && moment(value).toISOString()}
+          showTodayButton={true}
+          dateFormat="DD/MM/YYYY"
+          onChange={(v, f) => handleChange(v, f)}
         />
         {/* <KeyboardDatePicker
           error={showError}
