@@ -32,10 +32,10 @@ export const InputField = ({
               {...input}
               className={styles.input}
               type={type}
-              invalid={error && touched}
+              invalid={error}
               disabled={disabled}
             />
-            {touched && error && <FormFeedback>{error}</FormFeedback>}
+            {error && <FormFeedback>{error}</FormFeedback>}
           </Col>
         </FormGroup>
       </Form>

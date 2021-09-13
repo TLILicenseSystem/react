@@ -66,7 +66,7 @@ const validate = (values) => {
   }
 
   if (!values.receiveTime) {
-    errors.receiveTime = "กรุณาเลือกข้อมูล";
+    errors.receiveTime = "กรุณาระบุข้อมูล";
   }
 
   if (!values.maxApplicant) {
@@ -198,7 +198,7 @@ let EditSchedule = (props) => {
         };
         let response = await addExamSchedule(examSchedule);
         if (response !== "error") {
-          Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
+          Swal.fire("Added!", "บันทึกข้อมูลแล้ว", "success");
           changeToSchedulePage();
         } else {
           Swal.fire({
@@ -321,7 +321,7 @@ let EditSchedule = (props) => {
                 alignItems: "baseline",
               }}
             >
-              <h3>ข้อมูลสถานที่สอบหลัก</h3>
+              <h3>ข้อมูลสถานที่สอบ</h3>
               <Button
                 size="sm"
                 outline
@@ -348,29 +348,66 @@ let EditSchedule = (props) => {
                           <Table borderless>
                             <tbody>
                               <tr>
-                                <th>รหัสสถานที่ตั้งสอบ</th>
-                                <td>{get(mainLocation, "locationId", "")}</td>
-                                <th>สถานที่สอบ</th>
+                                <td>รหัสสถานที่ตั้งสอบ</td>
                                 <td>
-                                  {get(
-                                    mainLocation,
-                                    "organizerName",
-                                    get(mainLocation, "orgName", "")
-                                  )}
+                                  <Col sm={4}>
+                                    <Input
+                                      readOnly={true}
+                                      value={get(
+                                        mainLocation,
+                                        "locationId",
+                                        ""
+                                      )}
+                                    />
+                                  </Col>
+                                </td>
+                                <td>สถานที่สอบ</td>
+                                <td>
+                                  <Input
+                                    readOnly={true}
+                                    value={get(
+                                      mainLocation,
+                                      "organizerName",
+                                      get(mainLocation, "orgName", "")
+                                    )}
+                                  />
                                 </td>
                               </tr>
                               <tr>
-                                <th>สถามสอบ</th>
-                                <td>{get(mainLocation, "provinceName", "")}</td>
-                                <th>ประเภทสถานที่ตั้ง</th>
+                                <td>สถามสอบ</td>
                                 <td>
-                                  {get(mainLocation, "locationTypeName", "")}
+                                  <Input
+                                    readOnly={true}
+                                    value={get(
+                                      mainLocation,
+                                      "provinceName",
+                                      ""
+                                    )}
+                                  />
+                                </td>
+                                <td>ประเภทสถานที่ตั้ง</td>
+                                <td>
+                                  <Input
+                                    readOnly={true}
+                                    value={get(
+                                      mainLocation,
+                                      "locationTypeName",
+                                      ""
+                                    )}
+                                  />
                                 </td>
                               </tr>
                               <tr>
-                                <th>สถานที่ตั้งสอบ</th>
+                                <td>สถานที่ตั้งสอบ</td>
                                 <td>
-                                  {get(mainLocation, "locationDetail", "")}
+                                  <Input
+                                    readOnly={true}
+                                    value={get(
+                                      mainLocation,
+                                      "locationDetail",
+                                      ""
+                                    )}
+                                  />
                                 </td>
                               </tr>
                             </tbody>

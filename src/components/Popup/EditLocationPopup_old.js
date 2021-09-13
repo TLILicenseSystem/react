@@ -136,7 +136,7 @@ export const EditLocationPopup = ({
     };
     let response = await addExamLocation(examlocation);
     if (response !== "error") {
-      Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
+      Swal.fire("Added!", "บันทึกข้อมูลแล้ว", "success");
       action();
     } else {
       Swal.fire({

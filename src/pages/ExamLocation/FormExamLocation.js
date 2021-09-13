@@ -77,27 +77,8 @@ const FormExamLocation = (props) => {
   ];
   const dispatch = useDispatch();
 
-  const fetchData = async () => {
-    setLoading(true);
-    const responseLocation = await getExamLocation("A");
-    let result = get(responseLocation, "data", []).map((row) => {
-      const { locationId, ...rest } = row;
-      return { id: locationId, locationId, ...rest };
-    });
-    setExamLocationList(result); // เก็บค่าแบบคงที่ ไม่เปลี่ยนแปลง
-    setData(result); // เก็บค่าที่ผ่านการ filter
-    setLoading(false);
-  };
-
-  // ทำงานครั้งแรกที่เข้าหน้านี้
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // ทำงานทุกครั้งที่ตัวแปรใน [] เปลี่ยน
-  // เหมาะสำหรับการ filter
-  useEffect(() => {
-    let result = examLocationList;
+  const filterData = (data) => {
+    let result = data;
     if (examOrganizerCode) {
       result = result.filter((row) => {
         return row.orgCode === examOrganizerCode;
@@ -109,6 +90,29 @@ const FormExamLocation = (props) => {
       });
     }
     setData(result);
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    const responseLocation = await getExamLocation("A");
+    let result = get(responseLocation, "data", []).map((row) => {
+      const { locationId, ...rest } = row;
+      return { id: locationId, locationId, ...rest };
+    });
+    setExamLocationList(result); // เก็บค่าแบบคงที่ ไม่เปลี่ยนแปลง
+    filterData(result); // เก็บค่าที่ผ่านการ filter
+    setLoading(false);
+  };
+
+  // ทำงานครั้งแรกที่เข้าหน้านี้
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // ทำงานทุกครั้งที่ตัวแปรใน [] เปลี่ยน
+  // เหมาะสำหรับการ filter
+  useEffect(() => {
+    filterData(examLocationList);
   }, [examOrganizerCode, provinceCode]);
 
   const onClickAddExamLocation = () => {

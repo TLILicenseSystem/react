@@ -117,7 +117,7 @@ export let EditLocationPopup = (props) => {
     let examlocation = { createUserCode: "2901133", ...data };
     let response = await addExamLocation(examlocation);
     if (response !== "error") {
-      Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
+      Swal.fire("Added!", "บันทึกข้อมูลแล้ว", "success");
       toggle();
       action();
     } else {

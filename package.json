@@ -27,6 +27,7 @@
     "mdbreact": "^5.0.2",
     "moment": "^2.29.1",
     "prop-types": "^15.7.2",
+    "rc-time-picker": "^3.7.3",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.3",
     "react-bootstrap-time-picker": "^2.0.1",

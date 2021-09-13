@@ -22,3 +22,9 @@
 a {
   text-decoration: none !important;
 }
+
+.rdp-header {
+  display: flex; /* displays flex-items (children) inline */
+  justify-content: space-between; /* MDN: The items are evenly distributed within the alignment container along the main axis. The spacing between each pair of adjacent items is the same. */
+  align-items: center; /* centers them vertically */
+}

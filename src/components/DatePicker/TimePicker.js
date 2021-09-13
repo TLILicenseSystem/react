@@ -1,62 +1,86 @@
-import React from "react";
-import TextField from "@material-ui/core/TextField";
-import { propTypes } from "react-bootstrap/esm/Image";
+import React, { useState, useEffect, useRef } from "react";
+import { isValid } from "./validate";
 import styles from "../InputWithLabel/InputWithLabel.module.css";
+import { Input, Col, FormFeedback } from "reactstrap";
 
 export const TimePicker = ({
-  label,
+  id,
   timeValue,
-  onClickTime,
-  eTime,
   disabled,
+  mountFocus,
+  type,
+  placeholder,
+  label,
+  textboxSize,
+  onClickTime,
 }) => {
+  const _input = useRef(null);
+
+  useEffect(() => {
+    if (!disabled && mountFocus) {
+      setTimeout(() => {
+        _input.current.focus();
+      }, 0);
+    }
+  });
+
+  let lastVal = "";
+
+  const onChangeHandler = (val) => {
+    if (val == timeValue) {
+      return;
+    }
+    if (isValid(val)) {
+      if (val.length === 2 && lastVal.length !== 3 && val.indexOf(":") === -1) {
+        val = val + ":";
+      }
+
+      if (val.length === 2 && lastVal.length === 3) {
+        val = val.slice(0, 1);
+      }
+
+      if (val.length > 5) {
+        return false;
+      }
+
+      lastVal = val;
+
+      onClickTime(val);
+
+      if (val.length === 5) {
+        onClickTime(val);
+      }
+    }
+  };
+
+  const getType = () => {
+    if (type) {
+      return type;
+    }
+    return "tel";
+  };
+
   return (
     <div>
       <label className={styles.label}>{label}</label>
-      <TextField
-        disabled={disabled}
-        error={eTime}
-        id="time"
-        type="time"
-        value={timeValue}
-        ampm={false}
-        onChange={onClickTime}
-        // variant="outlined"
-        size="small"
-        pattern="[0-9]{2}:[0-9]{2}"
-        InputLabelProps={{
-          shrink: true,
-        }}
-        inputProps={{
-          step: 300, // 5 min
-          style: {
-            fontSize: 15,
-            //height: 10,
-            padding: "8px",
-            fontFamily: "Prompt-Regular",
-          },
-        }}
-        style={{
-          marginLeft: "0px",
-          marginTop: "11px",
-          width: "100%",
-          height: "0px",
-        }}
-      />
+      <Col xs={textboxSize}>
+        <Input
+          id={id}
+          name={id}
+          type={getType()}
+          disabled={disabled}
+          placeholder={placeholder}
+          value={timeValue}
+          onChange={(e) => onChangeHandler(e.target.value)}
+          ref={_input}
+        />
+      </Col>
     </div>
   );
 };
 
 TimePicker.defaultProps = {
+  placeholder: " ",
   label: "",
-  timeValue: "",
-  disabled: false,
-  onClickTime: () => {},
-  eTime: () => {},
-};
-TimePicker.propTypes = {
-  label: propTypes.string,
-  timeValue: propTypes.string,
-  onClickTime: propTypes.func,
-  eTime: propTypes.func,
+  textboxSize: 9,
 };

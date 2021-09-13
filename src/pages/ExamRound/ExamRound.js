@@ -121,7 +121,6 @@ const ExamRound = (props) => {
         { id: id, roundId: id, timeStr: `${start}-${end}` },
       ]);
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
-      console.log("after insert=", result);
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -175,14 +174,19 @@ const ExamRound = (props) => {
     //check ข้อมูลซ้ำก่อนกดบันทึก ให้ alert แจ้งเตือน ไม่ให้บันทึก
     const dup = result.find((o) => o.timeStr === `${start}-${end}`);
     if (typeof dup !== "undefined" && dup != null) {
-      alert("พบข้อมูลซ้ำในระบบ กรุณาบันทึกรอบเวลาใหม่!");
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "พบข้อมูลซ้ำในระบบ กรุณาบันทึกรอบเวลาใหม่!",
+      });
+      // alert("พบข้อมูลซ้ำในระบบ กรุณาบันทึกรอบเวลาใหม่!");
       canInsert = false;
     } else canInsert = true;
   };
 
   const examRoundSave = () => {
     let showError = false;
-    if (start === "") {
+    if (start === "" || start === null) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -191,7 +195,7 @@ const ExamRound = (props) => {
       setEStart(true);
       showError = true;
     }
-    if (end === "") {
+    if (end === "" || end === null) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -253,7 +257,7 @@ const ExamRound = (props) => {
 
   const dlgConfirm = async (param) => {
     const { value: check } = await Swal.fire({
-      text: `ต้องการลบข้อมูลรหัสเวลาสอบ ${param.timeStr} ใช่หรือไม่`,
+      text: `ต้องการลบข้อมูลเวลาสอบ ${param.timeStr} ใช่หรือไม่`,
       icon: "warning",
       showCancelButton: true,
       cancelButtonColor: "#d9534f",
@@ -313,9 +317,7 @@ const ExamRound = (props) => {
                   id="round-start"
                   label="เวลาสอบเริ่มต้น"
                   timeValue={start}
-                  onClickTime={(e) =>
-                    setStart(e.target.value, setEStart(false))
-                  }
+                  onClickTime={(value) => setStart(value, setEStart(false))}
                   eTime={eStart}
                   disabled={disableTime}
                 />
@@ -325,7 +327,7 @@ const ExamRound = (props) => {
                   id="round-end"
                   label="เวลาสอบสิ้นสุด"
                   timeValue={end}
-                  onClickTime={(e) => setEnd(e.target.value, setEEnd(false))}
+                  onClickTime={(value) => setEnd(value, setEEnd(false))}
                   eTime={eEnd}
                   disabled={disableTime}
                 />

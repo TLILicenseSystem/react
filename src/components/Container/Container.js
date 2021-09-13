@@ -9,6 +9,9 @@ export const Container = styled.div`
   display: flex;
   justify-content: center;
   // align-items: center;
+  overflow: auto;
+  height: 100vh;
+}
 `;
 
 export const BoxCriteria = styled.div`

@@ -12,22 +12,22 @@ import axios from "axios";
 import { get } from "lodash";
 import { Button } from "reactstrap";
 import PropTypes from "prop-types";
+import Swal from "sweetalert2";
 
-export const RoundTable = ({onClick}) => {
+export const RoundTable = ({ onClick }) => {
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-      };
-    
-      const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-      };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
   const [result, setResult] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
- //----------------------------for SearchAll spring boot------------------------
- const fetchData = async () => {
+  //----------------------------for SearchAll spring boot------------------------
+  const fetchData = async () => {
     let formData = new FormData(); //formdata object
     formData.append("type", "A"); //append the values with key, value pair
     const config = { headers: { "content-type": "application/json" } };
@@ -42,11 +42,20 @@ export const RoundTable = ({onClick}) => {
         setResult(data); //เมื่อ setResult แล้ว ค่า result จะได้เป็นค่า arraylist ของ data สามารถนำค่า resultมาใช้ได้เลย เช่น result[0] คือ arrayตัวที่0
         console.log("result in fetchData spring >>>>>>>>>>>>>.. ", data);
       } else {
-        alert("พบข้อผิดพลาดในการค้นหาข้อมูลรอบเวลาสอบ! ", status);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "พบข้อผิดพลาดในการค้นหาข้อมูลรอบเวลาสอบ! ",
+        });
         throw new Error();
       }
     } catch (err) {
-      alert("พบข้อผิดพลาดในการค้นหาข้อมูลรอบเวลาสอบ! ", err);
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "พบข้อผิดพลาดในการค้นหาข้อมูลรอบเวลาสอบ! ",
+      });
+      // alert("พบข้อผิดพลาดในการค้นหาข้อมูลรอบเวลาสอบ! ", err);
       throw err;
     }
   };
@@ -55,28 +64,27 @@ export const RoundTable = ({onClick}) => {
     fetchData();
   }, []);
 
-    const columns = [
-        { id: "roundId", label: "รหัสรอบเวลาสอบ", minWidth: 80 },
-        { id: "timeStr", label: "รอบเวลาสอบ", minWidth: 100 },
-      
-        {
-          id: "edit",
-          label: "แก้ไข",
-          minWidth: 50,
-          align: "left",
-        },
-        {
-            id: "delete",
-            label: "ลบ",
-            minWidth: 50,
-            align: "left",
-          }
-      ];
+  const columns = [
+    { id: "roundId", label: "รหัสรอบเวลาสอบ", minWidth: 80 },
+    { id: "timeStr", label: "รอบเวลาสอบ", minWidth: 100 },
 
+    {
+      id: "edit",
+      label: "แก้ไข",
+      minWidth: 50,
+      align: "left",
+    },
+    {
+      id: "delete",
+      label: "ลบ",
+      minWidth: 50,
+      align: "left",
+    },
+  ];
 
-return(
-<div>
-<TableContainer component="div">
+  return (
+    <div>
+      <TableContainer component="div">
         <Table aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -97,12 +105,8 @@ return(
               .map((detail, index) => {
                 return (
                   <TableRow hover role="checkbox" key={index}>
-                    <TableCell >
-                      {get(detail, "roundId", "")}
-                    </TableCell>
-                    <TableCell>
-                      {get(detail, "timeStr", "")}{" "}
-                    </TableCell>
+                    <TableCell>{get(detail, "roundId", "")}</TableCell>
+                    <TableCell>{get(detail, "timeStr", "")} </TableCell>
 
                     <TableCell>
                       <Button
@@ -111,32 +115,27 @@ return(
                           onClick({
                             roundId: get(detail, "roundId", ""),
                             timeStr: get(detail, "timeStr", ""),
-                            action: "edit"
-
+                            action: "edit",
                           })
                         }
                       >
                         แก้ไข
                       </Button>
-                      </TableCell>
+                    </TableCell>
 
-
-                      <TableCell>
+                    <TableCell>
                       <Button
                         size="sm"
-
                         onClick={() =>
                           onClick({
                             roundId: get(detail, "roundId", ""),
                             timeStr: get(detail, "timeStr", ""),
-                            action: "delete"
+                            action: "delete",
                           })
                         }
                       >
                         ลบ
                       </Button>
-
-
                     </TableCell>
                   </TableRow>
                 );
@@ -154,15 +153,13 @@ return(
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage="จำนวนแถวต่อหน้า:"
       />
-      </div>
-) ;
+    </div>
+  );
 };
 RoundTable.defaultProps = {
-
-    onClick: () => {},
-  };
-  RoundTable.propTypes = {
-
-    onClick: PropTypes.func,
-  };
+  onClick: () => {},
+};
+RoundTable.propTypes = {
+  onClick: PropTypes.func,
+};
 // export default RoundTable;

@@ -7,9 +7,8 @@ export const Table = ({ id, data, columns, loading }) => {
   const classes = useStyles();
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ height: "50vh", width: "100%" }}>
       <DataGrid
-        autoHeight
         id={id}
         rows={loading ? [] : data}
         columns={columns}

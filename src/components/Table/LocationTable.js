@@ -119,7 +119,7 @@ export const LocationTable = ({
     {
       field: "orgName",
       headerName: "สถานที่สอบ",
-      minWidth: 160,
+      minWidth: 200,
       align: "left",
       valueGetter: (params) =>
         `${getOrganizerData(params.getValue(params.id, "orgCode"))}`,
@@ -127,14 +127,14 @@ export const LocationTable = ({
     {
       field: "provinceName",
       headerName: "สนามสอบ",
-      minWidth: 160,
+      minWidth: 200,
       valueGetter: (params) =>
         `${getProvinceData(params.getValue(params.id, "provinceCode"))}`,
     },
     {
       field: "locationName",
       headerName: "ประเภท",
-      minWidth: 105,
+      minWidth: 150,
       align: "left",
       valueGetter: (params) =>
         `${getLocationTypeData(params.getValue(params.id, "locationType"))}`,
@@ -142,7 +142,7 @@ export const LocationTable = ({
     {
       field: "locationDetail",
       headerName: "สถานที่ตั้งสอบ",
-      minWidth: 150,
+      minWidth: 200,
       align: "left",
     },
     {

@@ -193,7 +193,7 @@ const EditSchedule = () => {
         };
         let response = await addExamSchedule(examSchedule);
         if (response !== "error") {
-          Swal.fire("Added!", "อัพโหลดข้อมูลแล้ว", "success");
+          Swal.fire("Added!", "บันทึกข้อมูลแล้ว", "success");
           changeToSchedulePage();
         } else {
           Swal.fire({

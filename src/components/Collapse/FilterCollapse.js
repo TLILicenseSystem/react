@@ -14,6 +14,9 @@ const collapse = {
   // background: "#f7f7f7",
   padding: "14px",
   margin: "14px",
+  alignContent: "flex-end",
+  flexDirection: "row",
+  alignItems: "flex-end",
 };
 
 export const FilterCollapse = ({ title, children }) => {

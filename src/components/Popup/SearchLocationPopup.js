@@ -100,7 +100,7 @@ export const SearchLocationPopup = ({ onChange }) => {
   });
 
   return (
-    <Modal isOpen={isShow} size="lg" toggle={toggle}>
+    <Modal isOpen={isShow} size="xl" toggle={toggle}>
       <ModalHeader>{title}</ModalHeader>
       <ModalBody>
         <Row>

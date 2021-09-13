@@ -1,85 +1,89 @@
-import React from "react";
-import TextField from "@material-ui/core/TextField";
-import PropTypes from "prop-types";
+import React, { useState, useEffect, useRef } from "react";
+import { isValid } from "./validate";
 import styles from "../InputWithLabel/InputWithLabel.module.css";
-import TimePicker from "react-bootstrap-time-picker";
-import { Input, Col } from "reactstrap";
+import { Input, Col, FormFeedback } from "reactstrap";
 
-export const TimeField = ({ input, label, disabled, meta, textboxSize }) => {
+export const TimeField = ({
+  input,
+  disabled,
+  mountFocus,
+  type,
+  placeholder,
+  label,
+  textboxSize,
+  meta,
+}) => {
   let { invalid, touched, error } = meta;
-  const onChange = (time) => {
-    time ? input.onChange(time) : input.onChange(null);
+
+  const _input = useRef(null);
+
+  useEffect(() => {
+    if (!disabled && mountFocus) {
+      setTimeout(() => {
+        _input.current.focus();
+      }, 0);
+    }
+  });
+
+  let lastVal = "";
+
+  const onChangeHandler = (val) => {
+    if (val == input.val) {
+      return;
+    }
+    if (isValid(val)) {
+      if (val.length === 2 && lastVal.length !== 3 && val.indexOf(":") === -1) {
+        val = val + ":";
+      }
+
+      if (val.length === 2 && lastVal.length === 3) {
+        val = val.slice(0, 1);
+      }
+
+      if (val.length > 5) {
+        return false;
+      }
+
+      lastVal = val;
+
+      input.onChange(val);
+
+      if (val.length === 5) {
+        input.onChange(val);
+      }
+    }
   };
+
+  const getType = () => {
+    if (type) {
+      return type;
+    }
+    return "tel";
+  };
+
   return (
     <div>
       <label className={styles.label}>{label}</label>
       <Col xs={textboxSize}>
-        {/* <Input
+        <Input
           id={input.name}
-          // {...input}
-          className={styles.input}
-          type="text"
-          invalid={error && touched}
+          name={input.name}
+          invalid={error}
+          type={getType()}
           disabled={disabled}
-          onChange={(e) => console.log("e", e)}
-        /> */}
-        {/* <TimePicker
-          id={input.name}
-          {...input}
-          className={error && touched && "is-invalid"}
-          invalid={error && touched}
-          disabled={disabled}
-          type="time"
-          value={input.value ? input.value : null}
-          onChange={onChange}
-          format={24}
-          // start="10:00"
-          // end="21:00"
-          step={30}
-        /> */}
-        <TextField
-          id={input.name}
-          {...input}
-          //   error={showError}
-          error={error && touched}
-          disabled={disabled}
-          type="time"
-          value={input.value ? input.value.trim() : null}
-          ampm={false}
-          onChange={onChange}
-          // variant="outlined"
-          format="HH:mm:ss"
-          size="small"
-          pattern="[0-9]{2}:[0-9]{2}"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          inputProps={{
-            step: 300, // 5 min
-            style: {
-              fontSize: 15,
-              //height: 10,
-              padding: "8px",
-              fontFamily: "Prompt-Regular",
-            },
-          }}
-          style={{
-            marginLeft: "0px",
-            marginTop: "11px",
-            width: "100%",
-            height: "0px",
-          }}
+          placeholder={placeholder}
+          value={input.value}
+          onChange={(e) => onChangeHandler(e.target.value)}
+          ref={_input}
         />
+        {error && <FormFeedback>{error}</FormFeedback>}
       </Col>
     </div>
   );
 };
 
 TimeField.defaultProps = {
+  placeholder: " ",
   label: "",
   textboxSize: 9,
-};
-TimeField.propTypes = {
-  label: PropTypes.string,
-  textboxSize: PropTypes.number,
 };
