@@ -1,3 +1,2 @@
-# Basic React Training
+# React License
 
-Basic React Training 1
