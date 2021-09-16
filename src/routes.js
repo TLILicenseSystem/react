@@ -5,6 +5,7 @@ import ExamOrganizerPage from "./pages/ExamOrganizer/ExamOrganizer";
 import ExamSchedulePage from "./pages/ExamSchedule/ExamSchedule";
 import FormExamLocation from "./pages/ExamLocation/FormExamLocation";
 import EditSchedulePage from "./pages/ExamSchedule/EditSchedule";
+import ExamApplication from "./pages/ExamApplication/ExamApplication";
 
 const AppRoute = () => {
   return (
@@ -35,6 +36,12 @@ const AppRoute = () => {
         path="/examLocation"
         render={(props) => <FormExamLocation {...props} />}
       />
+      <Route
+        exact
+        path="/examApplication"
+        render={(props) => <ExamApplication {...props} />}
+      />
+
       <Redirect from="*" to="/examLocation" />
     </Switch>
   );

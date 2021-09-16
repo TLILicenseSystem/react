@@ -24,10 +24,14 @@ export { DropdownExamTime } from "./DropdownWithLabel/DropdownExamTime";
 export { EditLocationTable } from "./Table/EditLocationTable";
 
 // mook
-export { InputField } from "./InputField/InputField";
-export { SelectField } from "./InputField/SelectField";
-export { DateField } from "./InputField/DateField";
-export { TimeField } from "./InputField/TimeField";
+export { InputField } from "./InputFieldWithRedux/InputField";
+export { SelectField } from "./InputFieldWithRedux/SelectField";
+export { DateField } from "./InputFieldWithRedux/DateField";
+export { TimeField } from "./InputFieldWithRedux/TimeField";
+export { InputCitizenID } from "./InputFieldWithFormat/InputCitizenID";
+export { InputPersonID } from "./InputFieldWithFormat/InputPersonID";
+
+export { PersonelData } from "./ฺCard/PersonelData";
 
 export { Table } from "./Table/Table";
 export {

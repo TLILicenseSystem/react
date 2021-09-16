@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { isValid } from "./validate";
+import { isValid } from "./TimeValidate";
 import styles from "../InputWithLabel/InputWithLabel.module.css";
 import { Input, Col, FormFeedback } from "reactstrap";
 
