@@ -210,6 +210,17 @@ const ExamRound = (props) => {
         title: "เกิดข้อผิดพลาด",
         text: "กรุณากรอกเวลาให้ถูกต้อง",
       });
+      setEStart(true);
+      setEEnd(true);
+      showError = true;
+    }
+    if (start === end) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณากรอกเวลาให้ถูกต้อง",
+      });
+      setEStart(true);
       setEEnd(true);
       showError = true;
     }
@@ -296,7 +307,7 @@ const ExamRound = (props) => {
   return (
     <Container>
       <div className="contents">
-        <h2 className="head">ตั้งค่าเวลาสอบ</h2>
+        <h2 className="head">ตั้งค่ารอบเวลาสอบ</h2>
         <Card>
           <CardBody>
             <Row style={{ marginTop: "30px", marginLeft: "20px" }}>
