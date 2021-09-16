@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, connect } from "react-redux";
+
 import {
   Card,
   CardBody,
@@ -9,13 +11,11 @@ import {
   ButtonGroup,
   TabContent,
   TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-  CardTitle,
-  CardText,
+  FormGroup,
+  Label,
 } from "reactstrap";
 import {
+  SearchSchedulePopup,
   DropdownExamRegion,
   DropdownExamOrganizer,
   Container,
@@ -23,16 +23,23 @@ import {
   EditButton,
   DeleteButton,
   AddButton,
+  CancelButton,
+  SubmitButton,
   FilterCollapse,
   PersonelData,
   Table,
 } from "../../components/shared";
 import { get } from "lodash";
+import { showSearchSchedulePopup } from "../../redux/actions";
 
 import SearchSalesDlg from "./SearchSalesDlg";
+import FormSchedule from "./FormSchedule";
+import FormPayment from "./FormPayment";
 
 const ExamApplication = (props) => {
   const [activeTab, setActiveTab] = useState("1");
+  const dispatch = useDispatch();
+
   const columns = [
     {
       field: "examDateFormat",
@@ -110,6 +117,15 @@ const ExamApplication = (props) => {
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
+
+  const onClickChangeLocation = () => {
+    dispatch(
+      showSearchSchedulePopup({
+        title: "ค้นหาตารางสอบ",
+        description: "",
+      })
+    );
+  };
   return (
     <Container>
       <EditLocationPopup />
@@ -128,8 +144,6 @@ const ExamApplication = (props) => {
           <CardBody>
             <ButtonGroup>
               <Button
-                size="sm"
-                sm="6"
                 outline
                 color="secondary"
                 style={{ width: "12em" }}
@@ -141,7 +155,6 @@ const ExamApplication = (props) => {
                 สมัครสอบ
               </Button>
               <Button
-                size="sm"
                 outline
                 color="secondary"
                 style={{ width: "12em" }}
@@ -154,24 +167,103 @@ const ExamApplication = (props) => {
               </Button>
             </ButtonGroup>
           </CardBody>
-          <CardBody>
-            <div>
-              <TabContent activeTab={activeTab}>
-                <TabPane tabId="1">
-                  <Row>
-                    <Col sm="12">
-                      <h4>Tab 1 Contents</h4>
+          <div>
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId="1">
+                <CardBody>
+                  <Button
+                    size="sm"
+                    outline
+                    color="secondary"
+                    style={{ display: "inline" }}
+                    onClick={() => onClickChangeLocation()}
+                  >
+                    <i class="fas fa-search" type="button"></i> ค้นหาตารางสอบ
+                  </Button>
+                  <FormSchedule />
+                </CardBody>
+                <CardBody>
+                  <FormPayment />
+                </CardBody>
+                <CardBody
+                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                >
+                  <hr />
+                  <Row sm="4">
+                    <Col>
+                      <FormGroup>
+                        <Label>เลขที่นั่งสอบ</Label>
+                        <Input type="text" name="radio1" />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <Label>ผลสอบ</Label>
+                        <Input type="text" name="radio1" />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <Label>เวลาที่ยื่นสมัครสอบ</Label>
+                        <Input readOnly={true} type="text" name="radio1" />
+                      </FormGroup>
                     </Col>
                   </Row>
-                </TabPane>
-                <TabPane tabId="2">
+                  <Row sm="1">
+                    <Col sm="9">
+                      <FormGroup>
+                        <Label>หมายเหตุ</Label>
+                        <Input type="text" name="radio1" />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </CardBody>
+                <CardBody
+                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                >
+                  <Row sm="6">
+                    <Col>
+                      <FormGroup>
+                        <Label>ผู้บันทึก</Label>
+                        <Input readOnly={true} type="text" name="radio1" />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <Label>สาขา</Label>
+                        <Input readOnly={true} type="text" name="radio1" />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <Label>วันที่บันทึก</Label>
+                        <Input readOnly={true} type="text" name="radio1" />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </CardBody>
+                <CardBody style={{ textAlign: "right" }}>
+                  <SubmitButton
+                    // disabled={props.invalid || props.pristine || props.submitting}
+                    title="บันทึก"
+                    onClick={() => console.log("dd")}
+                  />{" "}
+                  <CancelButton
+                    title="ยกเลิก"
+                    onClick={() => console.log("dd")}
+                  />
+                </CardBody>
+              </TabPane>
+              <TabPane tabId="2">
+                <CardBody>
                   <Table data={[]} columns={columns} loading={false} />
-                </TabPane>
-              </TabContent>
-            </div>
-          </CardBody>
+                </CardBody>
+              </TabPane>
+            </TabContent>
+          </div>
         </Card>
       </div>
+      <SearchSchedulePopup onChange={() => console.log("Eee")} />
     </Container>
   );
 };

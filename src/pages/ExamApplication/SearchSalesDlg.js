@@ -15,31 +15,53 @@ import {
   Row,
   Col,
   Input,
+  CardBody,
 } from "reactstrap";
 
-import { InputCitizenID, InputPersonID } from "../../components/shared";
+import {
+  InputCitizenID,
+  InputPersonID,
+  SubmitButton,
+  CancelButton,
+} from "../../components/shared";
 const SearchSalesDlg = (props) => {
-  const [activeTab, setActiveTab] = useState("1");
+  const [searchValue, setSearchValue] = useState({
+    citizenID: "0-0000-000000-00-0",
+  });
+  const [searchItem, setSearchItem] = useState("citizenID");
 
-  const toggle = (tab) => {
-    if (activeTab !== tab) setActiveTab(tab);
+  const onChange = (key, value) => {
+    searchValue[key] = value;
+    console.log(searchValue[key], "searchValue[key]");
+    setSearchValue(searchValue);
+    console.log(searchValue);
   };
-
   return (
     <Container>
       <Row>
         <Col sm={{ size: 2, offset: 2 }}>
           <FormGroup check>
             <Label check>
-              <Input type="radio" name="radio1" /> เลขบัตรประชาชน
+              <Input
+                type="radio"
+                name="searchSele"
+                value="citizenID"
+                checked={searchItem === "citizenID"}
+              />
+              เลขบัตรประชาชน
             </Label>
           </FormGroup>
         </Col>
         <Col sm="4">
-          <Input type="text" name="radio1" />
+          {searchValue["citizenID"]}
+          <InputCitizenID
+            label=""
+            onChange={(v) => onChange("citizenID", v)}
+            value={searchValue["citizenID"]}
+          />
         </Col>
       </Row>
-      <Row>
+      {/*  <Row>
         <Col sm={{ size: 2, offset: 2 }}>
           <FormGroup check>
             <Label check>
@@ -63,7 +85,7 @@ const SearchSalesDlg = (props) => {
           <Input type="text" name="radio1" />
         </Col>
       </Row>
-      <Row>
+       <Row>
         <Col sm={{ size: 2, offset: 2 }}>
           <FormGroup check>
             <Label check>
@@ -98,47 +120,15 @@ const SearchSalesDlg = (props) => {
         <Col sm="4">
           <Input type="text" name="radio1" />
         </Col>
-      </Row>
-      {/* <Nav tabs>
-        <NavItem>
-          <NavLink
-            className={classnames({ active: activeTab === "1" })}
-            onClick={() => {
-              toggle("1");
-            }}
-          >
-            Tab1
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            className={classnames({ active: activeTab === "2" })}
-            onClick={() => {
-              toggle("2");
-            }}
-          >
-            More Tabs
-          </NavLink>
-        </NavItem>
-      </Nav>
-      <TabContent activeTab={activeTab}>
-        <TabPane tabId="1">
-          <Row>
-            <Col sm="12">
-              <h4>Tab 1 Contents</h4>
-              <InputCitizenID />
-              <InputPersonID />
-            </Col>
-          </Row>
-        </TabPane>
-        <TabPane tabId="2">
-          <Row>
-            <Col sm="12">
-              <h4>Tab 2 Contents</h4>
-            </Col>
-          </Row>
-        </TabPane>
-      </TabContent> */}
+      </Row> */}
+      <CardBody style={{ textAlign: "right" }}>
+        <SubmitButton
+          // disabled={props.invalid || props.pristine || props.submitting}
+          title="ค้นหา"
+          onClick={() => alert(searchItem + searchValue[searchItem])}
+        />{" "}
+        <CancelButton title="ยกเลิก" onClick={() => console.log("dd")} />
+      </CardBody>
     </Container>
   );
 };

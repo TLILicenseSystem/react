@@ -6,7 +6,9 @@ import PropTypes from "prop-types";
 //------------------------ ปิดช่อง id ไม่ให้แก้ไข ---------------------
 export const InputCitizenID = ({ label, type, value, width, onChange }) => {
   function autoTab(e) {
+    console.log("key", e.target.value);
     if (e.target.value && /^\d+$/.test(e.target.value.replaceAll("-", ""))) {
+      console.log("if");
       var pattern = new String("_-____-_____-__-_"); // กำหนดรูปแบบในนี้
       var pattern_ex = new String("-"); // กำหนดสัญลักษณ์หรือเครื่องหมายที่ใช้แบ่งในนี้
       var returnText = new String("");
@@ -18,21 +20,25 @@ export const InputCitizenID = ({ label, type, value, width, onChange }) => {
           e.target.value = returnText;
         }
       }
+
+      var match = /^\d{0,1}?\-?\d{0,4}$/.test(e.target.value);
+      if (match) alert(match);
+
       if (obj_l >= pattern.length) {
         e.target.value = e.target.value.substr(0, pattern.length);
       }
     } else e.target.value = null;
+    onChange(e.target.value);
   }
 
   return (
     <div className={styles.div}>
-      <label className={styles.label}>{label} :</label>
+      <label className={styles.label}>{label}</label>
       <Input
         id="citizenID"
-        defaultValue="0-0000-000000-00-0"
         className={styles.input}
         type={"tel"}
-        // value={value}
+        defaultValue={value}
         onChange={autoTab}
       />
     </div>

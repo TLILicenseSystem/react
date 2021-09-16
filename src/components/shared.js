@@ -31,7 +31,9 @@ export { TimeField } from "./InputFieldWithRedux/TimeField";
 export { InputCitizenID } from "./InputFieldWithFormat/InputCitizenID";
 export { InputPersonID } from "./InputFieldWithFormat/InputPersonID";
 
-export { PersonelData } from "./ฺCard/PersonelData";
+export { SearchSchedulePopup } from "./Popup/SearchSchedulePopup";
+
+export { PersonelData } from "./Card/PersonelData";
 
 export { Table } from "./Table/Table";
 export {
