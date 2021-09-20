@@ -31,13 +31,17 @@ import {
 } from "../../components/shared";
 import { get } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
+import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 
 import SearchSalesDlg from "./SearchSalesDlg";
 import FormSchedule from "./FormSchedule";
 import FormPayment from "./FormPayment";
+import moment from "moment";
 
 const ExamApplication = (props) => {
-  const [activeTab, setActiveTab] = useState("1");
+  const [activeTab, setActiveTab] = useState("2");
+  const [scheduleDetail, setScheduleDetail] = useState(null);
+  const [mode, setMode] = useState(null);
   const dispatch = useDispatch();
 
   const columns = [
@@ -45,10 +49,10 @@ const ExamApplication = (props) => {
       field: "examDateFormat",
       headerName: "วันที่สอบ",
       minWidth: 140,
-      // valueGetter: (params) =>
-      //   `${moment(params.getValue(params.id, "examDate")).format(
-      //     "DD/MM/yyyy"
-      //   )}`,
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "examDate")).format(
+          "DD/MM/yyyy"
+        )}`,
       hideSortIcons: "true",
       headerClassName: "header",
       cellClassName: "cellDark",
@@ -58,8 +62,6 @@ const ExamApplication = (props) => {
       headerName: "เวลาสอบ",
       minWidth: 120,
       hideSortIcons: "true",
-      // valueGetter: (params) =>
-      //   `${getExamRoundDetail(params.getValue(params.id, "roundId"))}`,
       headerClassName: "header",
     },
     {
@@ -89,7 +91,7 @@ const ExamApplication = (props) => {
     },
 
     {
-      field: "receiveTime",
+      field: "seatNo",
       headerName: "เลขที่นั่งสอบ",
       minWidth: 120,
       align: "left",
@@ -97,7 +99,7 @@ const ExamApplication = (props) => {
       headerClassName: "header",
     },
     {
-      field: "receiveTime",
+      field: "examResultName",
       headerName: "ผลสอบ",
       minWidth: 120,
       align: "left",
@@ -105,17 +107,37 @@ const ExamApplication = (props) => {
       headerClassName: "header",
     },
     {
-      field: "receiveTime",
+      field: "select",
       headerName: "เลือก",
-      minWidth: 120,
-      align: "left",
+      align: "center",
       hideSortIcons: "true",
       headerClassName: "header",
+      width: 100,
+      renderCell: (cellValues) => {
+        return (
+          <EditButton
+            title="เลือก"
+            onClick={() => onClickEditSchedule(cellValues.row)}
+          />
+        );
+      },
     },
   ];
 
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
+  };
+
+  const onClickEditSchedule = (values) => {
+    setScheduleDetail(values);
+    setActiveTab("1");
+    setMode("edit");
+  };
+
+  const onClickCancel = () => {
+    setScheduleDetail(null);
+    setActiveTab("2");
+    setMode(null);
   };
 
   const onClickChangeLocation = () => {
@@ -180,7 +202,7 @@ const ExamApplication = (props) => {
                   >
                     <i class="fas fa-search" type="button"></i> ค้นหาตารางสอบ
                   </Button>
-                  <FormSchedule />
+                  <FormSchedule scheduleDetail={scheduleDetail} />
                 </CardBody>
                 <CardBody>
                   <FormPayment />
@@ -192,28 +214,52 @@ const ExamApplication = (props) => {
                   <Row sm="4">
                     <Col>
                       <FormGroup>
-                        <Label>เลขที่นั่งสอบ</Label>
-                        <Input type="text" name="radio1" />
+                        <label className={styles.label}>เลขที่นั่งสอบ</label>
+                        <Input
+                          type="text"
+                          name="seatNo"
+                          value={get(scheduleDetail, "seatNo", "")}
+                        />
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup>
-                        <Label>ผลสอบ</Label>
-                        <Input type="text" name="radio1" />
+                        <label className={styles.label}>ผลสอบ</label>
+                        <Input
+                          type="text"
+                          name="examResult"
+                          value={get(scheduleDetail, "examResultName", "")}
+                        />
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup>
-                        <Label>เวลาที่ยื่นสมัครสอบ</Label>
-                        <Input readOnly={true} type="text" name="radio1" />
+                        <label className={styles.label}>
+                          เวลาที่ยื่นสมัครสอบ
+                        </label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          name="applyTime"
+                          value={
+                            scheduleDetail &&
+                            moment(get(scheduleDetail, "applyTime", "")).format(
+                              "DD/MM/yyyy HH:mm:ss"
+                            )
+                          }
+                        />
                       </FormGroup>
                     </Col>
                   </Row>
                   <Row sm="1">
                     <Col sm="9">
                       <FormGroup>
-                        <Label>หมายเหตุ</Label>
-                        <Input type="text" name="radio1" />
+                        <label className={styles.label}>หมายเหตุ</label>
+                        <Input
+                          type="text"
+                          name="remark"
+                          value={get(scheduleDetail, "remark", "")}
+                        />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -224,39 +270,116 @@ const ExamApplication = (props) => {
                   <Row sm="6">
                     <Col>
                       <FormGroup>
-                        <Label>ผู้บันทึก</Label>
-                        <Input readOnly={true} type="text" name="radio1" />
+                        <label className={styles.label}>ผู้บันทึก</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          name="code"
+                          value={
+                            mode === "edit"
+                              ? get(scheduleDetail, "updateUserCode", "")
+                              : get(scheduleDetail, "createUserCode", "")
+                          }
+                        />
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup>
-                        <Label>สาขา</Label>
-                        <Input readOnly={true} type="text" name="radio1" />
+                        <label className={styles.label}>สาขา</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          // name="provinceName"
+                          // value={get(scheduleDetail, "provinceName", "")}
+                        />
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup>
-                        <Label>วันที่บันทึก</Label>
-                        <Input readOnly={true} type="text" name="radio1" />
+                        <label className={styles.label}>วันที่บันทึก</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          name="time"
+                          value={
+                            scheduleDetail &&
+                            (mode === "edit"
+                              ? moment(
+                                  get(scheduleDetail, "lastUpdate", "")
+                                ).format("DD/MM/yyyy")
+                              : moment(
+                                  get(scheduleDetail, "createTime", "")
+                                ).format("DD/MM/yyyy"))
+                          }
+                        />
                       </FormGroup>
                     </Col>
                   </Row>
                 </CardBody>
                 <CardBody style={{ textAlign: "right" }}>
                   <SubmitButton
-                    // disabled={props.invalid || props.pristine || props.submitting}
+                    // disabled={
+                    //   props.invalid || props.pristine || props.submitting
+                    // }
                     title="บันทึก"
                     onClick={() => console.log("dd")}
                   />{" "}
-                  <CancelButton
-                    title="ยกเลิก"
-                    onClick={() => console.log("dd")}
-                  />
+                  <CancelButton title="ยกเลิก" onClick={onClickCancel} />
                 </CardBody>
               </TabPane>
               <TabPane tabId="2">
                 <CardBody>
-                  <Table data={[]} columns={columns} loading={false} />
+                  <Table
+                    id="scheduleId"
+                    data={[
+                      {
+                        id: 4,
+                        citizenId: "1122334455667",
+                        scheduleId: 4,
+                        examDate: "2021-09-28T17:00:00.000+00:00",
+                        timeStr: "15:30-17:31",
+                        locationId: "6",
+                        provinceName: "ระยอง",
+                        orgName: "สมาคมประกันชีวิตไทย",
+                        locationDetail: "test โดยชานน",
+                        applyTime: "2021-08-06T17:00:00.000+00:00",
+                        applicantType: 1,
+                        seatNo: 1,
+                        examResult: "2",
+                        examResultName: "ทุจริต",
+                        remark: "ทดสอบประวัติสอบ2",
+                        createUserCode: "2901133",
+                        createTime: "2021-09-14T17:00:00.000+00:00",
+                        updateUserCode: "2901133",
+                        lastUpdate: "2021-09-14T17:00:00.000+00:00",
+                        referenceNo: 1,
+                      },
+                      {
+                        id: 5,
+                        citizenId: "1122334455667",
+                        scheduleId: 5,
+                        examDate: "2021-04-30T17:00:00.000+00:00",
+                        timeStr: "15:00-17:00",
+                        locationId: "2",
+                        provinceName: "กรุงเทพมหานคร",
+                        orgName: "สำนักงานใหญ่",
+                        locationDetail: "ทดสอบโดยชานน2",
+                        applyTime: "2021-08-06T17:00:00.000+00:00",
+                        applicantType: 1,
+                        seatNo: 1,
+                        examResult: "1",
+                        examResultName: "ไม่เข้าสอบ",
+                        remark: "ทดสอบประวัติสอบ",
+                        createUserCode: "2901133",
+                        createTime: "2021-09-14T17:00:00.000+00:00",
+                        updateUserCode: "2901133",
+                        lastUpdate: "2021-09-14T17:00:00.000+00:00",
+                        referenceNo: 1,
+                      },
+                    ]}
+                    columns={columns}
+                    loading={false}
+                  />
                 </CardBody>
               </TabPane>
             </TabContent>

@@ -20,6 +20,7 @@ import {
 
 import {
   InputCitizenID,
+  InputDepositCode,
   InputPersonID,
   SubmitButton,
   CancelButton,
@@ -27,6 +28,7 @@ import {
 const SearchSalesDlg = (props) => {
   const [searchValue, setSearchValue] = useState({
     citizenID: "0-0000-000000-00-0",
+    depositCode: "000MOOK2",
   });
   const [searchItem, setSearchItem] = useState("citizenID");
 
@@ -47,13 +49,13 @@ const SearchSalesDlg = (props) => {
                 name="searchSele"
                 value="citizenID"
                 checked={searchItem === "citizenID"}
+                onChange={() => setSearchItem("citizenID")}
               />
               เลขบัตรประชาชน
             </Label>
           </FormGroup>
         </Col>
         <Col sm="4">
-          {searchValue["citizenID"]}
           <InputCitizenID
             label=""
             onChange={(v) => onChange("citizenID", v)}
@@ -61,6 +63,30 @@ const SearchSalesDlg = (props) => {
           />
         </Col>
       </Row>
+      <Row>
+        <Col sm={{ size: 2, offset: 2 }}>
+          <FormGroup check>
+            <Label check>
+              <Input
+                type="radio"
+                name="searchSele"
+                value="depositCode"
+                checked={searchItem === "depositCode"}
+                onChange={() => setSearchItem("depositCode")}
+              />
+              โค้ดฝากค้ำ
+            </Label>
+          </FormGroup>
+        </Col>
+        <Col sm="4">
+          <InputDepositCode
+            label=""
+            onChange={(v) => onChange("depositCode", v)}
+            value={searchValue["depositCode"]}
+          />
+        </Col>
+      </Row>
+
       {/*  <Row>
         <Col sm={{ size: 2, offset: 2 }}>
           <FormGroup check>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, FormGroup, Input, Label, FormText } from "reactstrap";
+import { Form, FormGroup, Input, Label, FormText, Col } from "reactstrap";
 // import FormControl from "@material-ui/core/FormControl";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import PropTypes from "prop-types";
@@ -7,7 +7,13 @@ import styles from "../InputWithLabel/InputWithLabel.module.css";
 import RSDatePicker from "reactstrap-date-picker";
 import moment from "moment";
 
-export const DatePicker = ({ label, value, onChange, showError }) => {
+export const DatePicker = ({
+  label,
+  value,
+  onChange,
+  showError,
+  textboxSize,
+}) => {
   const handleChange = (value, formattedValue) => {
     onChange(value);
   };
@@ -30,6 +36,7 @@ export const DatePicker = ({ label, value, onChange, showError }) => {
           dateFormat="DD/MM/YYYY"
           onChange={(v, f) => handleChange(v, f)}
         />
+
         {/* <KeyboardDatePicker
           error={showError}
           autoOk
@@ -66,7 +73,9 @@ export const DatePicker = ({ label, value, onChange, showError }) => {
 
 DatePicker.defaultProps = {
   showError: false,
+  textboxSize: 9,
 };
 DatePicker.propTypes = {
   showError: PropTypes.bool,
+  textboxSize: PropTypes.string,
 };

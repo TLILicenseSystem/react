@@ -30,6 +30,7 @@ export { DateField } from "./InputFieldWithRedux/DateField";
 export { TimeField } from "./InputFieldWithRedux/TimeField";
 export { InputCitizenID } from "./InputFieldWithFormat/InputCitizenID";
 export { InputPersonID } from "./InputFieldWithFormat/InputPersonID";
+export { InputDepositCode } from "./InputFieldWithFormat/InputDepositCode";
 
 export { SearchSchedulePopup } from "./Popup/SearchSchedulePopup";
 

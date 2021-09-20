@@ -26,7 +26,7 @@ AddButton.propTypes = {
   onClick: PropTypes.func,
 };
 
-export const EditButton = ({ onClick }) => {
+export const EditButton = ({ title, onClick }) => {
   return (
     <Button
       id="editButton"
@@ -37,14 +37,18 @@ export const EditButton = ({ onClick }) => {
         border: `${colors.SECONDARYBLUE}`,
       }}
     >
-      แก้ไข
+      {title}
     </Button>
   );
 };
 EditButton.defaultProps = {
+  title: "เพิ่ม",
+
   onClick: () => {},
 };
 EditButton.propTypes = {
+  title: PropTypes.string,
+
   onClick: PropTypes.func,
 };
 
@@ -73,7 +77,7 @@ DeleteButton.propTypes = {
   onClick: PropTypes.func,
 };
 
-export const SubmitButton = ({ type, disabled, onClick }) => {
+export const SubmitButton = ({ type, title, disabled, onClick }) => {
   return (
     <Button
       id="submitButton"
@@ -85,18 +89,20 @@ export const SubmitButton = ({ type, disabled, onClick }) => {
         border: `${colors.SECONDARYBLUE}`,
       }}
     >
-      บันทึก
+      {title}
     </Button>
   );
 };
 
 SubmitButton.defaultProps = {
   type: "submit",
+  title: "บันทึก",
   disabled: false,
   onClick: () => {},
 };
 SubmitButton.propTypes = {
   type: PropTypes.string,
+  title: PropTypes.string,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
 };

@@ -3,7 +3,6 @@ import { Input } from "reactstrap";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 
-//------------------------ ปิดช่อง id ไม่ให้แก้ไข ---------------------
 export const InputCitizenID = ({ label, type, value, width, onChange }) => {
   function autoTab(e) {
     console.log("key", e.target.value);
@@ -21,8 +20,8 @@ export const InputCitizenID = ({ label, type, value, width, onChange }) => {
         }
       }
 
-      var match = /^\d{0,1}?\-?\d{0,4}$/.test(e.target.value);
-      if (match) alert(match);
+      // var match = /^\d{0,1}?\-?\d{0,4}$/.test(e.target.value);
+      // if (match) alert(match);
 
       if (obj_l >= pattern.length) {
         e.target.value = e.target.value.substr(0, pattern.length);

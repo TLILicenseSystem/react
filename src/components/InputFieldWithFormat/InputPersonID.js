@@ -3,7 +3,6 @@ import { Input } from "reactstrap";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 
-//------------------------ ปิดช่อง id ไม่ให้แก้ไข ---------------------
 export const InputPersonID = ({ label, type, value, width, onChange }) => {
   function autoTab(e) {
     if (e.target.value && /^\d+$/.test(e.target.value.replaceAll("-", ""))) {

@@ -13,6 +13,9 @@ import {
   DropdownExamOrganizer,
   DropdownExamTime,
   LocationTable,
+  DatePicker,
+  SubmitButton,
+  CancelButton,
 } from "../shared";
 import { useSelector, useDispatch } from "react-redux";
 import { hideSearchSchedulePopup } from "../../redux/actions";
@@ -107,6 +110,35 @@ export const SearchSchedulePopup = ({ onChange }) => {
     <Modal isOpen={isShow} size="xl" toggle={toggle}>
       <ModalHeader>{title}</ModalHeader>
       <ModalBody>
+        <Row style={{ paddingBottom: "12px" }}>
+          <Col sm={{ size: 4, offset: 2 }}>
+            <DatePicker
+              label="วันที่สอบ"
+              value={"0000-00-00"}
+              // onChange={(date) => setSelectedDate(date)}
+              onChange={(date) => console.log(date)}
+            />
+          </Col>
+          <Col
+            sm="1"
+            style={{
+              textAlign: "center",
+              margin: "auto",
+              marginBottom: 0,
+              marginRight: 0,
+            }}
+          >
+            -
+          </Col>
+          <Col sm="4" style={{ margin: "auto", marginBottom: 0 }}>
+            <DatePicker
+              label=" "
+              value={"0000-00-00"}
+              // onChange={(date) => setSelectedDate(date)}
+              onChange={(date) => console.log(date)}
+            />
+          </Col>
+        </Row>
         <Row>
           <Col sm={{ size: 4, offset: 2 }}>
             <DropdownExamOrganizer
@@ -138,6 +170,16 @@ export const SearchSchedulePopup = ({ onChange }) => {
                 onClickRoundButton(e);
               }}
             />
+          </Col>
+        </Row>
+        <Row>
+          <Col sm="12" style={{ textAlign: "right" }}>
+            <SubmitButton
+              // disabled={props.invalid || props.pristine || props.submitting}
+              title="ค้นหา"
+              onClick={() => alert("fdsfr")}
+            />{" "}
+            <CancelButton title="ยกเลิก" onClick={toggle} />
           </Col>
         </Row>
       </ModalBody>
