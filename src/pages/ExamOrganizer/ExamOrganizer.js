@@ -99,7 +99,6 @@ const ExamOrganizer = (props) => {
       //alert("บันทึกข้อมูลเรียบร้อยแล้ว");
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -158,7 +157,7 @@ const ExamOrganizer = (props) => {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "พบข้อมูลซ้ำในระบบ กรุณาบันทึกชื่อสถานที่สอบใหม่!",
+        text: "พบข้อมูลซ้ำในระบบ กรุณาบันทึกชื่อสถานที่สอบใหม่ใหม่!",
       });
       canInsert = false;
     } else canInsert = true;
