@@ -21,6 +21,7 @@ import {
   deleteExamRound,
 } from "./ModelExamRound";
 import Swal from "sweetalert2";
+import moment  from "moment";
 
 const ExamRound = (props) => {
   // const history = useHistory();
@@ -215,6 +216,16 @@ const ExamRound = (props) => {
       showError = true;
     }
     if (start === end) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณากรอกเวลาให้ถูกต้อง",
+      });
+      setEStart(true);
+      setEEnd(true);
+      showError = true;
+    }
+    if (start.length !== 5 || end.length !== 5) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",

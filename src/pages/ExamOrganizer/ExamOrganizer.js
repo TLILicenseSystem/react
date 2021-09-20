@@ -99,12 +99,13 @@ const ExamOrganizer = (props) => {
       //alert("บันทึกข้อมูลเรียบร้อยแล้ว");
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
     } catch (err) {
+      let { data } = err.response
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "พบข้อผิดพลาดในการบันทึกข้อมูล!",
+        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการบันทึกข้อมูล!",
       });
-      throw new Error("พบข้อผิดพลาดในการบันทึกข้อมูล! ", err);
+      //throw new Error("พบข้อผิดพลาดในการบันทึกข้อมูล! ", err);
 
       // throw err;
     }
@@ -123,12 +124,13 @@ const ExamOrganizer = (props) => {
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
       //alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
     } catch (err) {
+      let { data } = err.response
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
+        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการแก้ไขข้อมูล!",
       });
-      throw new Error("พบข้อผิดพลาดในการแก้ไขข้อมูล! ", err);
+    //  throw new Error("พบข้อผิดพลาดในการแก้ไขข้อมูล! ", err);
       // throw err;
     }
   };
@@ -145,7 +147,7 @@ const ExamOrganizer = (props) => {
         title: "เกิดข้อผิดพลาด",
         text: "พบข้อผิดพลาดในการลบข้อมูล!",
       });
-      throw new Error("พบข้อผิดพลาดในการลบข้อมูล! ", err);
+     // throw new Error("พบข้อผิดพลาดในการลบข้อมูล! ", err);
       // throw err;
     }
   };
@@ -157,7 +159,7 @@ const ExamOrganizer = (props) => {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "พบข้อมูลซ้ำในระบบ กรุณาบันทึกชื่อสถานที่สอบใหม่ใหม่!",
+        text: "พบข้อมูลซ้ำในระบบ กรุณาบันทึกชื่อสถานที่สอบใหม่!",
       });
       canInsert = false;
     } else canInsert = true;

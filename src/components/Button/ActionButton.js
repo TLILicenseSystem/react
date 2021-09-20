@@ -42,8 +42,7 @@ export const EditButton = ({ title, onClick }) => {
   );
 };
 EditButton.defaultProps = {
-  title: "เพิ่ม",
-
+  title: "แก้ไข",
   onClick: () => {},
 };
 EditButton.propTypes = {
