@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "reactstrap";
+import { Input, Row, Col } from "reactstrap";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 
@@ -14,7 +14,6 @@ export const InputDepositCode = ({ label, type, value, width, onChange }) => {
       first: value.substr(0, 3),
       second: value.substr(3, value.length),
     });
-    console.log(value, "899789789798798");
   }, []);
   const autoTab_first = (e) => {
     if (e.target.value && /^\d+$/.test(e.target.value)) {
@@ -22,33 +21,41 @@ export const InputDepositCode = ({ label, type, value, width, onChange }) => {
         e.target.value = e.target.value.substr(0, 3);
       }
     } else e.target.value = null;
+    onChange(e.target.value + depositCode.second);
   };
   const autoTab_second = (e) => {
-    if (e.target.value && /([A-Z0-9])/.test(e.target.value)) {
+    if (e.target.value && /^([A-Z0-9 _-]+)$/.test(e.target.value)) {
       if (e.target.value.length > 5) {
         e.target.value = e.target.value.substr(0, 5);
       }
     } else e.target.value = null;
+    onChange(depositCode.first + e.target.value);
   };
   return (
     <div className={styles.div}>
       <label className={styles.label}>{label}</label>
-      <Input
-        id="depositCode_first"
-        defaultValue={depositCode.first}
-        className={styles.input}
-        type={"tel"}
-        // value={value}
-        onChange={autoTab_first}
-      />
-      <Input
-        id="depositCode_second"
-        defaultValue={depositCode.second}
-        className={styles.input}
-        type={"tel"}
-        // value={value}
-        onChange={autoTab_second}
-      />
+      <Row>
+        <Col md={6}>
+          <Input
+            id="depositCode_first"
+            defaultValue={depositCode.first}
+            className={styles.input}
+            type={"tel"}
+            // value={value}
+            onChange={autoTab_first}
+          />
+        </Col>
+        <Col md={6}>
+          <Input
+            id="depositCode_second"
+            defaultValue={depositCode.second}
+            className={styles.input}
+            type={"tel"}
+            // value={value}
+            onChange={autoTab_second}
+          />
+        </Col>
+      </Row>
     </div>
   );
 };

@@ -56,7 +56,9 @@ const validate = (values) => {
   if (!values.orgCode) {
     errors.orgCode = "กรุณาเลือกข้อมูล";
   }
-
+  if (!values.locationType) {
+    errors.locationType = "กรุณาเลือกข้อมูล";
+  }
   return errors;
 };
 
@@ -236,6 +238,7 @@ export let EditLocationPopup = (props) => {
                   label: row.examTypeName,
                 };
               })}
+              requiredField={true}
               isClearable={true}
             />
           </Row>
