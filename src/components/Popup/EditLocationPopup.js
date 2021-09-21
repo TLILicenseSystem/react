@@ -116,20 +116,25 @@ export let EditLocationPopup = (props) => {
       });
       return;
     }
-    let examlocation = { createUserCode: "2901133", ...data };
-    let response = await addExamLocation(examlocation);
-    if (response !== "error") {
-      Swal.fire("Added!", "บันทึกข้อมูลแล้ว", "success");
-      toggle();
-      action();
-    } else {
+
+    try {
+      let examlocation = { createUserCode: "2901133", ...data };
+      let response = await addExamLocation(examlocation);
+        Swal.fire("Added!", "บันทึกข้อมูลแล้ว", "success");
+        toggle();
+        action();
+    } catch (err) {
+      let { data } = err.response
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "ไม่สามารถแก้ไขข้อมูลได้",
+        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการบันทึกข้อมูล!",
       });
+      //throw new Error("พบข้อผิดพลาดในการบันทึกข้อมูล! ", err);
+
+      // throw err;
     }
-    toggle();
+  //  toggle();
   };
   const onClickEditLocationData = async (data) => {
     if (props.invalid) {
@@ -140,21 +145,25 @@ export let EditLocationPopup = (props) => {
       });
       return;
     }
-    let examlocation = { createUserCode: "2901133", ...data };
 
-    let response = await updateExamLocation(examlocation);
-    if (response !== "error") {
+    try {
+      let examlocation = { createUserCode: "2901133", ...data };
+
+      let response = await updateExamLocation(examlocation);
       Swal.fire("Updated!", "แก้ไขข้อมูลแล้ว", "success");
       toggle();
       action();
-    } else {
+    } catch (err) {
+      let { data } = err.response
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "ไม่สามารถแก้ไขข้อมูลได้",
+        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการแก้ไขข้อมูล!",
       });
+      //throw new Error("พบข้อผิดพลาดในการบันทึกข้อมูล! ", err);
+
+      // throw err;
     }
-    toggle();
   };
   const toggle = () => {
     props.initialize();

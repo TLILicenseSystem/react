@@ -8,15 +8,13 @@ export const addExamLocation = async (examLocation) => {
             console.log('addExamLocation response ', response.data);
             return response.data;
         }
-        else {
-            console.log('addExamLocation response ', response.data);
-            return "error";
+        else 
+        throw new Error();
+    }
+        catch (err) 
+        {  
+            throw err;
         }
-    }
-    catch (err) {
-        console.log("msg", err);
-        return "error";
-    }
 }
 
 export const updateExamLocation = async (examLocation) => {
@@ -27,15 +25,12 @@ export const updateExamLocation = async (examLocation) => {
             console.log('updateExamLocation response ', response.data);
             return response.data;
         }
-        else {
-            console.log('updateExamLocation response ', response.data);
-            return "error";
+        else  throw new Error();
+    }
+        catch (err) 
+        {  
+            throw err;
         }
-    }
-    catch (err) {
-        console.log("msg", err);
-        return "error";
-    }
 }
 
 export const deleteExamLocation = async (examLocation) => {
@@ -53,6 +48,6 @@ export const deleteExamLocation = async (examLocation) => {
     }
     catch (err) {
         console.log("msg", err);
-        return "error";
+        return err;
     }
 }

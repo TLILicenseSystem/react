@@ -305,16 +305,17 @@ const ExamSchedule = () => {
                       }}
                     />
                   </Col>
-                  <Col xs="12" sm="2" md="2">
-                    <div style={{ marginTop: "34px", marginLeft: "0px" }}>
-                      <Button
+                  <Col xs="12" sm="2" md="2" style={{display: 'flex',
+alignItems: 'flex-end',
+paddingBottom: '12px'}}>
+                       <Button
                         color="primary"
                         style={{ fontFamily: "Prompt-Regular" }}
                         onClick={() => onClickSearchSchedule()}
                       >
                         ค้นหา
                       </Button>
-                    </div>
+                     
                   </Col>
                 </Row>
               </MuiPickersUtilsProvider>
