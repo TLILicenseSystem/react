@@ -17,7 +17,7 @@ const FormApplication = ({ scheduleDetail }) => {
               type="text"
               name="examDate"
               value={
-                scheduleDetail &&
+                get(scheduleDetail, "examDate", "") &&
                 moment(get(scheduleDetail, "examDate", "")).format("DD/MM/yyyy")
               }
             />

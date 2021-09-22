@@ -29,9 +29,12 @@ import {
   PersonelData,
   Table,
 } from "../../components/shared";
-import { get } from "lodash";
+import { get, values } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
+import { getExamApplication , insertExamOrganizer,updateExamApplication} from "./ModelExamApplication"
+// import { getExamResult} from "../../api/apiGetConfig"
+import Swal from "sweetalert2";
 
 import SearchSalesDlg from "./SearchSalesDlg";
 import FormSchedule from "./FormSchedule";
@@ -39,10 +42,15 @@ import FormPayment from "./FormPayment";
 import moment from "moment";
 
 const ExamApplication = (props) => {
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("2");
   const [scheduleDetail, setScheduleDetail] = useState(null);
-  const [mode, setMode] = useState(null);
+  const [mode, setMode] = useState("edit");
+  const [application, setApplication] = useState([]);
+
   const dispatch = useDispatch();
+  const examresult =  []
+  //getExamResult()
 
   const columns = [
     {
@@ -101,7 +109,7 @@ const ExamApplication = (props) => {
     {
       field: "examResultName",
       headerName: "ผลสอบ",
-      minWidth: 120,
+      minWidth: 100,
       align: "left",
       hideSortIcons: "true",
       headerClassName: "header",
@@ -117,27 +125,72 @@ const ExamApplication = (props) => {
         return (
           <EditButton
             title="เลือก"
-            onClick={() => onClickEditSchedule(cellValues.row)}
+            onClick={() => onClickEditExamApplication(cellValues.row)}
           />
         );
       },
     },
   ];
 
+  useEffect(() => {
+    fetchData();
+  },[])
+
+  
+  const fetchData = async () => {
+    setLoading(true);
+    const response = await getExamApplication("1122334455667");
+    setApplication(response);
+    setLoading(false);
+  };
+
+  const rows = application.map((row) => {
+    return { id: row.scheduleId,  ...row };
+  });
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const onClickEditSchedule = (values) => {
+  const onClickAddExamApplication = () => {
+    setScheduleDetail(null);
+    setActiveTab("1");
+    setMode("add");
+  };
+
+  const onClickShowExamApplication = () => {
+    setScheduleDetail(null);
+    setActiveTab("2");
+    setMode("edit");
+  };
+
+  const onClickChangeSchedule = (values) => {
+    setScheduleDetail({
+      ...scheduleDetail,
+      "alteredLocationId": values.alteredLocationId,
+      "examDate": values.examDate,
+      "locationId" :values.locationId,
+      "locationDetail": values.locationDetail,
+      "orgCode": values.orgCode,
+      "orgName": values.orgName,
+      "provinceCode": values.provinceCode,
+      "provinceName": values.provinceName,
+      "regionCode": values.regionCode,
+      "regionName": values.regionName,
+      "roundId": values.roundId,
+      "scheduleId": values.scheduleId,
+      "timeStr": values.timeStr
+    })
+
+  }
+  const onClickEditExamApplication = (values) => {
     setScheduleDetail(values);
     setActiveTab("1");
     setMode("edit");
   };
-
   const onClickCancel = () => {
     setScheduleDetail(null);
-    setActiveTab("2");
-    setMode(null);
+    //setActiveTab("2");
+   // setMode(null);
   };
 
   const onClickChangeLocation = () => {
@@ -148,6 +201,39 @@ const ExamApplication = (props) => {
       })
     );
   };
+  const onClickSave = async () => {
+    scheduleDetail.citizenId = "1122334455667"
+    scheduleDetail.createUserCode = "2901133"
+    console.log(scheduleDetail)
+    try {
+      let response = await insertExamOrganizer(scheduleDetail);
+       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+    } catch (err) {
+      let { data } = err.response
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการบันทึกข้อมูล!",
+      });
+    }
+  
+  };
+
+  const onClickUpdate = async () => {
+    try {
+      let response = await updateExamApplication(scheduleDetail);
+      Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+    } catch (err) {
+      let { data } = err.response
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการแก้ไขข้อมูล!",
+      });
+    }
+  }
+
+  console.log(examresult,"examresult")
   return (
     <Container>
       <EditLocationPopup />
@@ -169,10 +255,8 @@ const ExamApplication = (props) => {
                 outline
                 color="secondary"
                 style={{ width: "12em" }}
-                active={activeTab === "1"}
-                onClick={() => {
-                  toggle("1");
-                }}
+                active={mode === "add"}
+                onClick={onClickAddExamApplication}
               >
                 สมัครสอบ
               </Button>
@@ -180,10 +264,8 @@ const ExamApplication = (props) => {
                 outline
                 color="secondary"
                 style={{ width: "12em" }}
-                active={activeTab === "2"}
-                onClick={() => {
-                  toggle("2");
-                }}
+                active={mode === "edit"}
+                onClick={onClickShowExamApplication}
               >
                 ประวัติ
               </Button>
@@ -207,7 +289,7 @@ const ExamApplication = (props) => {
                 <CardBody>
                   <FormPayment />
                 </CardBody>
-                <CardBody
+                  <CardBody
                   style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                 >
                   <hr />
@@ -216,9 +298,10 @@ const ExamApplication = (props) => {
                       <FormGroup>
                         <label className={styles.label}>เลขที่นั่งสอบ</label>
                         <Input
-                          type="text"
+                          type="tel"
                           name="seatNo"
                           value={get(scheduleDetail, "seatNo", "")}
+                          onChange={(e) => setScheduleDetail({...scheduleDetail,"seatNo":e.target.value})}
                         />
                       </FormGroup>
                     </Col>
@@ -229,6 +312,7 @@ const ExamApplication = (props) => {
                           type="text"
                           name="examResult"
                           value={get(scheduleDetail, "examResultName", "")}
+                          onChange={(e) => setScheduleDetail({...scheduleDetail,"examResultName":e.target.value})}
                         />
                       </FormGroup>
                     </Col>
@@ -259,11 +343,13 @@ const ExamApplication = (props) => {
                           type="text"
                           name="remark"
                           value={get(scheduleDetail, "remark", "")}
+                          onChange={(e) => setScheduleDetail({...scheduleDetail,"remark":e.target.value})}
                         />
                       </FormGroup>
                     </Col>
                   </Row>
                 </CardBody>
+                 
                 <CardBody
                   style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                 >
@@ -302,14 +388,12 @@ const ExamApplication = (props) => {
                           type="text"
                           name="time"
                           value={
-                            scheduleDetail &&
+                            get(scheduleDetail, "lastUpdate", "") && get(scheduleDetail, "createTime", "") &&
                             (mode === "edit"
                               ? moment(
                                   get(scheduleDetail, "lastUpdate", "")
                                 ).format("DD/MM/yyyy")
-                              : moment(
-                                  get(scheduleDetail, "createTime", "")
-                                ).format("DD/MM/yyyy"))
+                              : moment().format("DD/MM/yyyy"))
                           }
                         />
                       </FormGroup>
@@ -318,11 +402,11 @@ const ExamApplication = (props) => {
                 </CardBody>
                 <CardBody style={{ textAlign: "right" }}>
                   <SubmitButton
-                    // disabled={
-                    //   props.invalid || props.pristine || props.submitting
-                    // }
+                     disabled={
+                      scheduleDetail === null || scheduleDetail === ""
+                     }
                     title="บันทึก"
-                    onClick={() => console.log("dd")}
+                    onClick={mode === "edit" ? onClickUpdate: onClickSave}
                   />{" "}
                   <CancelButton title="ยกเลิก" onClick={onClickCancel} />
                 </CardBody>
@@ -331,52 +415,7 @@ const ExamApplication = (props) => {
                 <CardBody>
                   <Table
                     id="scheduleId"
-                    data={[
-                      {
-                        id: 4,
-                        citizenId: "1122334455667",
-                        scheduleId: 4,
-                        examDate: "2021-09-28T17:00:00.000+00:00",
-                        timeStr: "15:30-17:31",
-                        locationId: "6",
-                        provinceName: "ระยอง",
-                        orgName: "สมาคมประกันชีวิตไทย",
-                        locationDetail: "test โดยชานน",
-                        applyTime: "2021-08-06T17:00:00.000+00:00",
-                        applicantType: 1,
-                        seatNo: 1,
-                        examResult: "2",
-                        examResultName: "ทุจริต",
-                        remark: "ทดสอบประวัติสอบ2",
-                        createUserCode: "2901133",
-                        createTime: "2021-09-14T17:00:00.000+00:00",
-                        updateUserCode: "2901133",
-                        lastUpdate: "2021-09-14T17:00:00.000+00:00",
-                        referenceNo: 1,
-                      },
-                      {
-                        id: 5,
-                        citizenId: "1122334455667",
-                        scheduleId: 5,
-                        examDate: "2021-04-30T17:00:00.000+00:00",
-                        timeStr: "15:00-17:00",
-                        locationId: "2",
-                        provinceName: "กรุงเทพมหานคร",
-                        orgName: "สำนักงานใหญ่",
-                        locationDetail: "ทดสอบโดยชานน2",
-                        applyTime: "2021-08-06T17:00:00.000+00:00",
-                        applicantType: 1,
-                        seatNo: 1,
-                        examResult: "1",
-                        examResultName: "ไม่เข้าสอบ",
-                        remark: "ทดสอบประวัติสอบ",
-                        createUserCode: "2901133",
-                        createTime: "2021-09-14T17:00:00.000+00:00",
-                        updateUserCode: "2901133",
-                        lastUpdate: "2021-09-14T17:00:00.000+00:00",
-                        referenceNo: 1,
-                      },
-                    ]}
+                    data={rows}
                     columns={columns}
                     loading={false}
                   />
@@ -386,7 +425,7 @@ const ExamApplication = (props) => {
           </div>
         </Card>
       </div>
-      <SearchSchedulePopup onChange={() => console.log("Eee")} />
+      <SearchSchedulePopup onChange={onClickChangeSchedule} />
     </Container>
   );
 };

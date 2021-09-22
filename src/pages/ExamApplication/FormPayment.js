@@ -35,7 +35,8 @@ const FormPayment = (props) => {
             <Input readOnly={true} type="text" name="radio1" />
           </FormGroup>
         </Col>
-        <Col style={{ margintop: "2.7em" }}>
+        <Col style={{ margintop: "2.7em",display: 'flex',
+alignItems: 'flex-end' }}>
           <AddButton
             title="ชำระค่าธรรมเนียม"
             onClick={() => console.log("dddd")}

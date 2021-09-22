@@ -12,20 +12,23 @@ import {
   DropdownExamRegion,
   DropdownExamOrganizer,
   DropdownExamTime,
-  LocationTable,
   DatePicker,
   SubmitButton,
+  EditButton,
   CancelButton,
+  Table
 } from "../shared";
 import { useSelector, useDispatch } from "react-redux";
 import { hideSearchSchedulePopup } from "../../redux/actions";
 import { getProvinceCode } from "../../api/apiGetProvinceCode";
 import { getOrganizer } from "../../api/apiGetExamOrganizer";
-import { getExamLocationZone } from "../../api/apiGetConfig";
+import { getExamLocationZone , getExamType } from "../../api/apiGetConfig";
 import { getExamLocation } from "../../api/apiGetExamLocation";
+import { getExamScheduleByDetails} from "../../api/apiGetExamSchedule"
+
 import { get } from "lodash";
 import PropTypes from "prop-types";
-
+import moment from "moment"
 export const SearchSchedulePopup = ({ onChange }) => {
   const [region, setRegion] = useState("");
   const [regionName, setRegionName] = useState("");
@@ -35,13 +38,117 @@ export const SearchSchedulePopup = ({ onChange }) => {
   const [examOrganizerName, setExamOrganizerName] = useState("");
   const [searchProvince, setSearchProvince] = useState({});
   const [examLocationList, setExamLocationList] = useState([]);
-  const [roundId, setRoundId] = useState([]);
+  const [examRound, setExamRound] = useState([]);
+  const [selectedDate ,setSelectedDate] = useState(null)
+  const [examScheduleList,setExamScheduleList] = useState([]);
+  const examType = getExamType();
 
   const examZoneResonse = getExamLocationZone();
   const dispatch = useDispatch();
   const { isShow, title, description, action } = useSelector(
     (state) => state.searchSchedulePopup
   );
+
+
+  const columns = [
+    {
+      field: "examDateFormat",
+      headerName: "วันที่สอบ",
+      minWidth: 140,
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "examDate")).format(
+          "DD/MM/yyyy"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+      cellClassName: "cellDark",
+    },
+    {
+      field: "timeStr",
+      headerName: "เวลาสอบ",
+      minWidth: 120,
+      hideSortIcons: "true",
+      // valueGetter: (params) =>
+      //   `${getExamRoundDetail(params.getValue(params.id, "roundId"))}`,
+      headerClassName: "header",
+    },
+    {
+      field: "applyCloseDateFormat",
+      headerName: "วันที่ปิดรับสมัคร",
+      minWidth: 140,
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "applyCloseDate")).format(
+          "DD/MM/yyyy"
+        )}`,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+
+    
+    {
+      field: "provinceName",
+      headerName: "สนามสอบ",
+      width: 160,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+   
+    {
+      field: "locationDetail",
+      headerName: "สถานที่ตั้งสอบ",
+      width: 160,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "applyOpenDateFormat",
+      headerName: "วันที่ได้รับหนังสือ",
+      minWidth: 140,
+      align: "left",
+      valueGetter: (params) =>
+        `${moment(params.getValue(params.id, "applyOpenDate")).format(
+          "DD/MM/yyyy"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "receiveTime",
+      headerName: "เวลาที่ได้รับหนังสือ",
+      minWidth: 120,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },{
+      field: "remainCandidate",
+      headerName: "คงเหลือ",
+      minWidth: 120,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },{
+      field: "select",
+      headerName: "เลือก",
+      align: "center",
+      hideSortIcons: "true",
+      headerClassName: "header",
+      width: 100,
+      renderCell: (cellValues) => {
+        return (
+          <EditButton
+            title="เลือก"
+            onClick={() => handleAction(cellValues.row)}
+          />
+        );
+      },
+    },
+   
+  ];
+
+
   const handleAction = (e) => {
     //call back function
     console.log("SearchSchedulePopup ", e);
@@ -53,7 +160,6 @@ export const SearchSchedulePopup = ({ onChange }) => {
     fetchProvinceData(get(e, "provinceCode", ""));
   };
   const onClickExamOrganizerButton = (e) => {
-    console.log("onClickExamOrganizerButton ", e);
     setExamOrganizerCode(get(e, "orgCode", ""));
     fetchExamOrganizer(get(e, "orgCode", ""));
     setSearchProvince({
@@ -66,9 +172,23 @@ export const SearchSchedulePopup = ({ onChange }) => {
   const fetchData = async () => {
     const responseLocation = await getExamLocation("A");
     setExamLocationList(get(responseLocation, "data", []));
+    const responseSchedule = await getExamScheduleByDetails(
+      selectedDate === null ? "" : moment(selectedDate).format("YYYY-MM-DD"),
+      examRound,
+      examOrganizerCode,
+      provinceCode
+    );
+    
+    setExamScheduleList(get(responseSchedule, "data", []));
+    
   };
+
+  const rows = examScheduleList.map((row) => {
+    return { id: row.scheduleId, ...row };
+  });
+
+
   useEffect(() => {
-    console.log("LocationTable inital ");
     fetchData();
   }, []);
 
@@ -101,10 +221,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
     }
   };
 
-  const rows = examLocationList.map((row) => {
-    const { locationId, ...rest } = row;
-    return { id: locationId, locationId, ...rest };
-  });
+
 
   return (
     <Modal isOpen={isShow} size="xl" toggle={toggle}>
@@ -115,8 +232,8 @@ export const SearchSchedulePopup = ({ onChange }) => {
             <DatePicker
               label="วันที่สอบ"
               value={"0000-00-00"}
-              // onChange={(date) => setSelectedDate(date)}
-              onChange={(date) => console.log(date)}
+              onChange={(date) => setSelectedDate(date)}
+              //onChange={(date) => console.log(date)}
             />
           </Col>
           <Col
@@ -165,7 +282,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
           <Col sm={{ size: 4, offset: 2 }}>
             <DropdownExamTime
               label="เวลาสอบ"
-              value={roundId}
+              value={examRound}
               onClick={(e) => {
                 onClickRoundButton(e);
               }}
@@ -184,13 +301,15 @@ export const SearchSchedulePopup = ({ onChange }) => {
         </Row>
       </ModalBody>
       <ModalFooter>
-        <LocationTable
+      <Table data={rows} columns={columns} loading={false}/>
+       {/* <LocationTable
           provinceCode={provinceCode}
           examOrganizerCode={examOrganizerCode}
           examLocationList={rows}
           event={{ event: "search" }}
           onClick={handleAction}
         />
+        */}
       </ModalFooter>
     </Modal>
   );
