@@ -20,7 +20,7 @@ export const DateRangePicker = ({
   };
   return (
     <Form>
-      <FormGroup row>
+      <FormGroup row  >
         <label className={styles.label} style={{paddingLeft: 0}}>{label}</label>
         <DatePicker 
           initialSettings={{ 
