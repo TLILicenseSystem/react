@@ -3,6 +3,10 @@ import AppRoute from "./routes";
 import { Row, Col } from "reactstrap";
 import "./App.css";
 import MainSidebar from "./themes/Sidebar/MainSidebar";
+
+import moment from "moment-timezone";
+moment.tz.setDefault("Asia/Bangkok");
+
 const App = () => {
   return (
     // แบ่ง layout เป็น 2 คอลั่ม Sidebar กับ content ที่จะเปลี่ยนหน้าตาม Route ที่เรียก

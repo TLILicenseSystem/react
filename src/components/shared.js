@@ -38,6 +38,7 @@ export { SearchSchedulePopup } from "./Popup/SearchSchedulePopup";
 
 export { PersonelData } from "./Card/PersonelData";
 
+export { DateRangePicker} from "./DatePicker/DateRangePicker"
 export { Table } from "./Table/Table";
 export {
   AddButton,

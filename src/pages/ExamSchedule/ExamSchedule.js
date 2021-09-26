@@ -9,6 +9,7 @@ import {
   SearchLocationPopup,
   LocationTable,
   DatePicker,
+  DateRangePicker,
   DropdownExamTime,
   DropdownExamOrganizer,
   DropdownExamRegion,
@@ -55,7 +56,8 @@ const ExamSchedule = () => {
   const [examRound, setExamRound] = useState("");
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(moment());
+  const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [examScheduleList, setExamScheduleList] = useState([]);
   const examType = getExamType();
   const [loading, setLoading] = useState(false);
@@ -150,12 +152,12 @@ const ExamSchedule = () => {
       headerClassName: "header",
     },
     {
-      field: "applyOpenDateFormat",
+      field: "receiveDateFormat",
       headerName: "วันที่ได้รับหนังสือ",
       minWidth: 140,
       align: "left",
       valueGetter: (params) =>
-        `${moment(params.getValue(params.id, "applyOpenDate")).format(
+        `${moment(params.getValue(params.id, "receiveDate")).format(
           "DD/MM/yyyy"
         )}`,
       hideSortIcons: "true",
@@ -195,8 +197,10 @@ const ExamSchedule = () => {
 
   const fetchData = async () => {
     setLoading(true);
+
     const responseSchedule = await getExamScheduleByDetails(
-      selectedDate === null ? "" : moment(selectedDate).format("YYYY-MM-DD"),
+      moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
+      moment(selectedEndDate).isValid() ? moment(selectedEndDate).format("YYYY-MM-DD"):"",
       examRound,
       examOrganizerCode,
       provinceCode
@@ -269,11 +273,14 @@ const ExamSchedule = () => {
             <FilterCollapse title="ตัวกรองข้อมูล">
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Row>
-                  <Col xs="12" sm="2" md="2">
-                    <DatePicker
+                  <Col xs="12" sm="3" md="3">
+                    <DateRangePicker
                       label="วันที่สอบ"
                       value={selectedDate}
-                      onChange={(date) => setSelectedDate(date)}
+                      onChange={(start,end) =>{ 
+                        setSelectedDate(start)
+                       setSelectedEndDate(end)
+                        }}
                       // onChange={(date) => console.log(date)}
                     />
                   </Col>
@@ -305,9 +312,11 @@ const ExamSchedule = () => {
                       }}
                     />
                   </Col>
-                  <Col xs="12" sm="2" md="2" style={{display: 'flex',
-alignItems: 'flex-end',
-paddingBottom: '12px'}}>
+                  <Col xs="12" sm="1" md="1" style={{display: 'flex',
+                      alignItems: 'flex-end',
+                      paddingBottom: '12px',
+                      paddingLeft: 0,
+                      paddingRight: 0}}>
                        <Button
                         color="primary"
                         style={{ fontFamily: "Prompt-Regular" }}
