@@ -2,19 +2,17 @@ import { useState, useEffect } from "react";
 import apiSpring from "../../api/apiSpring";
 import axios from "axios";
 
- const baseURL = "http://10.102.60.80:8080/wsSearchSalesByName/rest";
-//const baseURL = "http://localhost:8080/licenseexam/";
-//const baseURL = "https://dev-smws.thailife.com:8443/wsLicenseAgentSpring/licenseexam";
+ //const baseURL = "https://dev-smws.thailife.com:8443/wsSearchSalesByName/rest";
+const baseURL = "https://dev-smws.thailife.com:8443/wsLicenseAgentSpring/licenseexam";
 
 const defaultOptions = {
-  baseURL,
-  method: "GET",
-  headers: {
-   // Accept: "application/json",
-    "Content-Type": "application/json",
- //charset=utf-8",
- "Access-Control-Allow-Origin":"*",
-  },
+    baseURL,
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json; charset=utf-8",
+     // "Access-Control-Allow-Origin":"*",
+    },
 };
 
 const api = axios.create(defaultOptions);
@@ -51,7 +49,8 @@ export const searchSalesbyname = async (firstName,lastName) => {
         "branchBound" :""
          }
          };
-        const response = await api.post(`searchsalesbyname/search`, inputPost);
+        const response = await api.get(`searchsalesbyname/search`);
+       
         if (response.status === 200) {
             return response.data;
         }

@@ -15,8 +15,8 @@ export const DateRangePicker = ({
   showError,
   textboxSize,
 }) => {
-  const handleChange = (value, formattedValue) => {
-    onChange(value);
+  const handleChange = (s,e) => {
+    onChange(s,e);
   };
   return (
     <Form>
@@ -31,7 +31,7 @@ export const DateRangePicker = ({
               format :'DD/MM/YYYY'
             }
           }}
-          onCallback={(v, f) => handleChange(v, f)}
+          onCallback={(s,e) => handleChange(s,e)}
         >
           <input id="date-picker" type="text" className="form-control"         />
         </DatePicker>
