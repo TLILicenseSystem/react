@@ -3,15 +3,10 @@ import AppRoute from "./routes";
 import { Row, Col } from "reactstrap";
 import "./App.css";
 import MainSidebar from "./themes/Sidebar/MainSidebar";
-<<<<<<< HEAD
-import Login from "./themes/Login";
-import Layout from "./themes/Layout";
-=======
 
 import moment from "moment-timezone";
 moment.tz.setDefault("Asia/Bangkok");
 
->>>>>>> 8f89f3883913da6af81adccc79f7fe0e58b96e1f
 const App = () => {
   const [login, setLogin] = useState(sessionStorage.getItem("login"));
 
