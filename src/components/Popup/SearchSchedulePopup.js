@@ -54,7 +54,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
     {
       field: "examDateFormat",
       headerName: "วันที่สอบ",
-      minWidth: 140,
+      minWidth: 120,
       valueGetter: (params) =>
         `${moment(params.getValue(params.id, "examDate")).format(
           "DD/MM/yyyy"
@@ -66,7 +66,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
     {
       field: "timeStr",
       headerName: "เวลาสอบ",
-      minWidth: 120,
+      minWidth: 100,
       hideSortIcons: "true",
       // valueGetter: (params) =>
       //   `${getExamRoundDetail(params.getValue(params.id, "roundId"))}`,
@@ -75,7 +75,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
     {
       field: "applyCloseDateFormat",
       headerName: "วันที่ปิดรับสมัคร",
-      minWidth: 140,
+      minWidth: 120,
       valueGetter: (params) =>
         `${moment(params.getValue(params.id, "applyCloseDate")).format(
           "DD/MM/yyyy"
@@ -125,10 +125,20 @@ export const SearchSchedulePopup = ({ onChange }) => {
     },{
       field: "remainCandidate",
       headerName: "คงเหลือ",
-      minWidth: 120,
+      minWidth: 100,
       align: "left",
+      renderCell: (cellValues) => {
+        if(cellValues.row.remainCandidate > 0 ){
+          return `${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`
+        }else{
+          return (
+            "เต็ม"
+          );
+        }
+      },
       hideSortIcons: "true",
       headerClassName: "header",
+      
     },{
       field: "select",
       headerName: "เลือก",
@@ -174,11 +184,13 @@ export const SearchSchedulePopup = ({ onChange }) => {
     setExamLocationList(get(responseLocation, "data", []));
     const responseSchedule = await getExamScheduleByDetails(
       selectedDate === null ? "" : moment(selectedDate).format("YYYY-MM-DD"),
+     // selectedDate === null ? "" : moment(selectedDate).format("YYYY-MM-DD"),
+     "",
       examRound,
       examOrganizerCode,
       provinceCode
     );
-    
+    console.log("cccdewf")
     setExamScheduleList(get(responseSchedule, "data", []));
     
   };
@@ -236,18 +248,9 @@ export const SearchSchedulePopup = ({ onChange }) => {
               //onChange={(date) => console.log(date)}
             />
           </Col>
-          <Col
-            sm="1"
-            style={{
-              textAlign: "center",
-              margin: "auto",
-              marginBottom: 0,
-              marginRight: 0,
-            }}
-          >
-            -
-          </Col>
-          <Col sm="4" style={{ margin: "auto", marginBottom: 0 }}>
+          
+          <Col sm="4" style={{ margin: "auto",marginLeft:0, marginBottom: 0 }}>
+             
             <DatePicker
               label=" "
               value={"0000-00-00"}

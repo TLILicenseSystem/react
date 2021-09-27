@@ -1,11 +1,57 @@
 import { useState, useEffect } from "react";
 import apiSpring from "../../api/apiSpring";
+import axios from "axios";
 
+ const baseURL = "http://10.102.60.80:8080/wsSearchSalesByName/rest";
+//const baseURL = "http://localhost:8080/licenseexam/";
+//const baseURL = "https://dev-smws.thailife.com:8443/wsLicenseAgentSpring/licenseexam";
+
+const defaultOptions = {
+  baseURL,
+  method: "GET",
+  headers: {
+   // Accept: "application/json",
+    "Content-Type": "application/json",
+ //charset=utf-8",
+ "Access-Control-Allow-Origin":"*",
+  },
+};
+
+const api = axios.create(defaultOptions);
 
 export const getExamApplication = async (citizenID) => {
     try {
-        const inputPost = {};
-        const response = await apiSpring.get(`examapplication/search?citizenID=${citizenID}`, inputPost);
+        const response = await apiSpring.get(`examapplication/search?citizenID=${citizenID}`);
+        if (response.status === 200) {
+            return response.data;
+        }
+        else {
+            throw new Error();
+        }
+    }
+    catch (err) {
+        console.log("msg", err);
+        throw err;
+    }
+}
+
+export const searchSalesbyname = async (firstName,lastName) => {
+    try {
+        const inputPost = 
+        {"headerData":{
+        "messageId": "3fe0a3c63603b7ea",
+                    "sentDateTime": "31-03-2020 13:47:01"
+        },
+        "requestRecord" :{
+        "fileType" : "all",
+        "firstName" : firstName,
+        "lastName" : lastName ,
+        "searchOldName" :"true",
+        "parentStridBound" :"",
+        "branchBound" :""
+         }
+         };
+        const response = await api.post(`searchsalesbyname/search`, inputPost);
         if (response.status === 200) {
             return response.data;
         }

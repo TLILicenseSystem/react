@@ -70,6 +70,7 @@ export const getExamSchedule = async () => {
 
 export const getExamScheduleByDetails = async (
   examDate,
+  examEndDate,
   roundId,
   examOrganizerCode,
   provinceCode
@@ -77,7 +78,7 @@ export const getExamScheduleByDetails = async (
   try {
     console.log("examDate = ", examDate);
     const response = await api.get(
-      `examschedule/searchDetail?examDate=${examDate}&roundId=${roundId}&examOrg=${examOrganizerCode}&provinceCode=${provinceCode}`
+      `examschedule/searchDetail?examDate=${examDate}&examEndDate=${examEndDate}&roundId=${roundId}&examOrg=${examOrganizerCode}&provinceCode=${provinceCode}`
     );
     if (response.status === 200) {
       console.log("getExamSchedule response ", response.data);

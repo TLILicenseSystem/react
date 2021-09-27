@@ -35,8 +35,10 @@ const SearchSalesDlg = (props) => {
     personID: "",
     licenseNo: "0000000000",
     strid: "",
+    firstName:"",
+    lastName:""
   });
-  const [searchItem, setSearchItem] = useState("citizenID");
+  const [searchItem, setSearchItem] = useState("name");
   const [activeTab, setActiveTab] = useState("1");
 
   const onChange = (key, value) => {
@@ -46,7 +48,7 @@ const SearchSalesDlg = (props) => {
   const toggle = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
-      setSearchItem("citizenID");
+      setSearchItem("name");
     }
   };
   return (
@@ -81,7 +83,7 @@ const SearchSalesDlg = (props) => {
       <div>
         <TabContent activeTab={activeTab}>
           <TabPane tabId="1">
-            <Row>
+          {/*  <Row>
               <Col sm={{ size: 2, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
@@ -196,6 +198,7 @@ const SearchSalesDlg = (props) => {
                 />
               </Col>
             </Row>
+             */}
             <Row>
               <Col sm={{ size: 2, offset: 2 }}>
                 <FormGroup check>
@@ -213,25 +216,23 @@ const SearchSalesDlg = (props) => {
               </Col>
               <Col sm="4">
                 <Row>
-                  <Col md={6}>
+                  <Col md={6}> 
                     <Input
                       type="text"
-                      onChange={(v) => onChange("firstName", v)}
-                      value={searchValue["firstName"]}
+                      onChange={(e) => onChange("firstName", e.target.value)}
                     />
                   </Col>
                   <Col md={6}>
                     <Input
                       type="text"
-                      onChange={(v) => onChange("lastName", v)}
-                      value={searchValue["lastName"]}
+                      onChange={(e) => onChange("lastName", e.target.value)}
                     />
                   </Col>
                 </Row>
               </Col>
             </Row>
           </TabPane>
-          <TabPane tabId="2">
+          <TabPane tabId="2-">
             <Row>
               <Col sm={{ size: 2, offset: 2 }}>
                 <FormGroup check>
@@ -372,7 +373,7 @@ const SearchSalesDlg = (props) => {
         <SubmitButton
           // disabled={props.invalid || props.pristine || props.submitting}
           title="ค้นหา"
-          onClick={() => alert(searchItem + searchValue[searchItem])}
+          onClick={() => props.onSearch(searchItem,searchValue)}
         />{" "}
         <CancelButton title="ยกเลิก" onClick={() => console.log("dd")} />
       </CardBody>

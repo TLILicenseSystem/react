@@ -32,7 +32,7 @@ import {
 import { get, values } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
-import { getExamApplication , insertExamOrganizer,updateExamApplication} from "./ModelExamApplication"
+import { getExamApplication ,searchSalesbyname, insertExamOrganizer,updateExamApplication} from "./ModelExamApplication"
 // import { getExamResult} from "../../api/apiGetConfig"
 import Swal from "sweetalert2";
 
@@ -68,7 +68,7 @@ const ExamApplication = (props) => {
     {
       field: "timeStr",
       headerName: "เวลาสอบ",
-      minWidth: 120,
+      minWidth: 100,
       hideSortIcons: "true",
       headerClassName: "header",
     },
@@ -139,7 +139,7 @@ const ExamApplication = (props) => {
   
   const fetchData = async () => {
     setLoading(true);
-    const response = await getExamApplication("1122334455667");
+   const response = await getExamApplication("1122334455667");
     setApplication(response);
     setLoading(false);
   };
@@ -233,6 +233,15 @@ const ExamApplication = (props) => {
     }
   }
 
+  const onSearchSale = async (key ,value) => {
+    console.log(key,value)
+    if(key === "name"){
+      console.log(value.firstName,value.lastName)
+     let response = await searchSalesbyname(value.fisrtName,value.lastName);
+      console.log(response)
+    }
+  }
+
   console.log(examresult,"examresult")
   return (
     <Container>
@@ -242,7 +251,7 @@ const ExamApplication = (props) => {
         <Card>
           <CardBody>
             <FilterCollapse title="ตัวกรองข้อมูล">
-              <SearchSalesDlg />
+              <SearchSalesDlg  onSearch={onSearchSale}/>
             </FilterCollapse>
           </CardBody>
 

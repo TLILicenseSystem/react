@@ -117,14 +117,15 @@ let EditSchedule = (props) => {
 
     if (props.history.location) {
       let { state } = props.history.location;
-      props.change("roundId", state.roundId);
-      props.change("scheduleId", get(state, "scheduleId", null));
-      props.change("examDate", state.examDate);
-      props.change("applyCloseDate", state.applyCloseDate);
-      props.change("receiveDate", state.receiveDate);
-      props.change("receiveDate", state.receiveDate);
-      props.change("receiveTime", state.receiveTime);
-      props.change("maxApplicant", state.maxApplicant);
+      if(state){
+        props.change("roundId", state.roundId);
+        props.change("scheduleId", get(state, "scheduleId", null));
+        props.change("examDate", state.examDate ?  state.examDate : moment());
+        props.change("applyCloseDate", state.applyCloseDate ? state.applyCloseDate : moment().subtract(1,'days'));
+        props.change("receiveDate", state.receiveDate ? state.receiveDate : moment().subtract(1,'days'));
+        props.change("receiveTime", state.receiveTime );
+        props.change("maxApplicant", state.maxApplicant);
+      }else props.history.push("/examSchedule")
     }
   }, []);
 
@@ -254,7 +255,7 @@ let EditSchedule = (props) => {
                             label="วันที่ปิดรับสมัคร"
                             name="applyCloseDate"
                             component={DateField}
-                            mindate={props.examDate}
+                            maxdate={props.examDate}
                           />
                         </Col>
                         <Col>
@@ -285,7 +286,7 @@ let EditSchedule = (props) => {
                             label="วันที่ได้รับหนังสือ"
                             name="receiveDate"
                             component={DateField}
-                            mindate={props.examDate}
+                            maxdate={props.examDate}
                           />
                         </Col>
                         <Col>

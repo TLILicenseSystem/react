@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { isValid } from "./TimeValidate";
-import styles from "../InputWithLabel/InputWithLabel.module.css";
+import styles from "./InputWithLabel.module.css";
 import { Input, Col, FormFeedback } from "reactstrap";
 
 export const TimePicker = ({
@@ -62,7 +62,7 @@ export const TimePicker = ({
 
   return (
     <div>
-      <label className={styles.label}>{label}</label>
+      <label className={styles.label} >{label}</label>
       <Col xs={textboxSize}>
         <Input
           id={id}
