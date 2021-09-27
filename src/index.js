@@ -13,9 +13,9 @@ import { BrowserRouter } from "react-router-dom";
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter basename={"/salesmanagement/license"}>
-      <React.Fragment>
-        <App />
-      </React.Fragment>
+      {/* <React.Fragment> */}
+      <App />
+      {/* </React.Fragment> */}
     </BrowserRouter>
   </Provider>,
   document.getElementById("root")

@@ -1,26 +1,16 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AppRoute from "./routes";
 import { Row, Col } from "reactstrap";
 import "./App.css";
 import MainSidebar from "./themes/Sidebar/MainSidebar";
+import Login from "./themes/Login";
+import Layout from "./themes/Layout";
 const App = () => {
+  const [login, setLogin] = useState(sessionStorage.getItem("login"));
+
   return (
     // แบ่ง layout เป็น 2 คอลั่ม Sidebar กับ content ที่จะเปลี่ยนหน้าตาม Route ที่เรียก
-    <div>
-      {/* <Row>
-        <Col xs="12" sm="12" md="12" style={{ padding: 0, height: "10%" }}>
-          retret
-        </Col>
-      </Row> */}
-      <Row>
-        <Col xs="12" sm="2" md="2" style={{ padding: 0 }}>
-          <MainSidebar />
-        </Col>
-        <Col xs="12" sm="10" md="10" style={{ padding: 0 }}>
-          <AppRoute />
-        </Col>
-      </Row>
-    </div>
+    <div>{login === "Y" ? <Layout /> : <Login />}</div>
   );
 };
 

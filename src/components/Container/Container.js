@@ -5,12 +5,11 @@ export const Container = styled.div`
   background-color: #dbdbdb;
   background-color: ${colors.BG};
   // width: 100vw;
-  height: 100vh;
   display: flex;
   justify-content: center;
   // align-items: center;
   overflow: auto;
-  height: 100vh;
+  height: 95vh;
 }
 `;
 

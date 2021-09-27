@@ -2,10 +2,10 @@ import styled from "styled-components";
 import { colors } from "../style";
 
 export const SideBar = styled.div`
-  padding-top: 1rem;
+  // padding-top: 1rem;
   background-color: ${colors.SECONDARYBLUE};
   font-family: "Prompt-Regular";
-  height: 100vh;
+  height: 95vh;
 `;
 
 export const MainMenu = styled.div`

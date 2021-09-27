@@ -11,22 +11,41 @@ import PropTypes from "prop-types";
 
 // { label, type, value, onChange } คือ props
 
-export const InputWithLabelRow = ({ label, type, value, onChange, disabled, textboxSize, labelSize, requiredField }) => {
+export const InputWithLabelRow = ({
+  id,
+  label,
+  type,
+  value,
+  onChange,
+  disabled,
+  textboxSize,
+  invalid,
+  labelSize,
+  requiredField,
+}) => {
   return (
     <div>
       {/* ใส่ colon ที่ label เพื่อไม่ต้องใส่ที่หน้า login */}
       <Form>
         <FormGroup row>
-          <label className={styles.label}>{label}<label className={styles.required}>{(value === "" && requiredField) ? "*" : ""}</label></label>
-          
+          <label className={styles.label}>
+            {label}
+            <label className={styles.required}>
+              {value === "" && requiredField ? "*" : ""}
+            </label>
+          </label>
+
           <Col xs={textboxSize}>
-          <Input
-            className={styles.input}
-            type={type}
-            value={value}
-            onChange={onChange}
-            disabled={disabled}
-          />
+            <Input
+              id={id}
+              name={id}
+              className={styles.input}
+              type={type}
+              // value={value}
+              onChange={onChange}
+              disabled={disabled}
+              invalid={invalid}
+            />
           </Col>
         </FormGroup>
       </Form>
@@ -36,6 +55,7 @@ export const InputWithLabelRow = ({ label, type, value, onChange, disabled, text
 
 // กำหนดค่าเริ่มต้นของ InputWithLabel
 InputWithLabelRow.defaultProps = {
+  id: "input-text",
   label: "",
   type: "text",
   value: "",
@@ -45,15 +65,18 @@ InputWithLabelRow.defaultProps = {
   textboxSize: 9,
   labelSize: 3,
   requiredField: false,
+  invalid: false,
 };
 
 InputWithLabelRow.propTypes = {
+  id: PropTypes.string,
   label: PropTypes.string,
   type: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   textboxSize: PropTypes.number,
-  labelSize:PropTypes.number,
+  labelSize: PropTypes.number,
   requiredField: PropTypes.bool,
+  invalid: PropTypes.bool,
 };
