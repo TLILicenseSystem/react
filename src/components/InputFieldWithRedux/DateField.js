@@ -22,20 +22,27 @@ export const DateField = ({ input, textboxSize, label, meta, mindate,maxdate }) 
     }
   })
  
-  const keyRef =useRef(moment())
+  const keyRef = useRef(moment())
   useEffect(() => {
-    keyRef.current = input.value ? moment( input.value) : moment();
+    keyRef.current = moment();
     setInitialSettings({
       ...initialSettings,
-      maxDate :  maxdate ? moment(maxdate) : null,
       startDate:  input.value ? moment( input.value) : moment()
     })
   },[input])
+  useEffect(() => {
+    keyRef.current = moment();
+    setInitialSettings({
+      ...initialSettings,
+      maxDate :  maxdate ? moment(maxdate) : null
+    })
+  },[maxdate])
 
   const handleChange = (value) => {
     input.onChange(value);
   };
  
+  console.log(maxdate,"mook",moment(maxdate))
   return (
     <Form>
       <FormGroup row>
@@ -53,6 +60,7 @@ export const DateField = ({ input, textboxSize, label, meta, mindate,maxdate }) 
             onChange={(v, f) => handleChange(v, f)}
           />
            */}
+             
           <SingleDatePicker 
           key={keyRef.current}
           initialSettings={initialSettings}
