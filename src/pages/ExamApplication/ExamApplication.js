@@ -18,6 +18,7 @@ import {
   SearchSchedulePopup,
   DropdownExamRegion,
   DropdownExamOrganizer,
+  DropdownExamResult,
   Container,
   EditLocationPopup,
   EditButton,
@@ -32,7 +33,7 @@ import {
 import { get, values } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
-import { getExamApplication ,searchSalesbyname, insertExamOrganizer,updateExamApplication} from "./ModelExamApplication"
+import { getExamApplication ,searchSalesbyname, insertExamApplication,updateExamApplication} from "./ModelExamApplication"
 // import { getExamResult} from "../../api/apiGetConfig"
 import Swal from "sweetalert2";
 
@@ -49,7 +50,6 @@ const ExamApplication = (props) => {
   const [application, setApplication] = useState([]);
 
   const dispatch = useDispatch();
-  const examresult =  []
   //getExamResult()
 
   const columns = [
@@ -177,7 +177,7 @@ const ExamApplication = (props) => {
       "regionCode": values.regionCode,
       "regionName": values.regionName,
       "roundId": values.roundId,
-      "scheduleId": values.scheduleId,
+      "newScheduleId": values.scheduleId,
       "timeStr": values.timeStr
     })
 
@@ -189,8 +189,8 @@ const ExamApplication = (props) => {
   };
   const onClickCancel = () => {
     setScheduleDetail(null);
-    //setActiveTab("2");
-   // setMode(null);
+    setActiveTab("2");
+    setMode('edit');
   };
 
   const onClickChangeLocation = () => {
@@ -206,7 +206,7 @@ const ExamApplication = (props) => {
     scheduleDetail.createUserCode = "2901133"
     console.log(scheduleDetail)
     try {
-      let response = await insertExamOrganizer(scheduleDetail);
+      let response = await insertExamApplication(scheduleDetail);
        Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
     } catch (err) {
       let { data } = err.response
@@ -221,8 +221,22 @@ const ExamApplication = (props) => {
 
   const onClickUpdate = async () => {
     try {
+      let data = {
+        "citizenId" : scheduleDetail.citizenId,
+        "scheduleId" : scheduleDetail.scheduleId,
+        "applyTime" : scheduleDetail.applyTime,
+        "applicantType" : scheduleDetail.applicantType,
+        "seatNo" : scheduleDetail.seatNo,
+        "examResult" : scheduleDetail.examResult,
+        "remark" : scheduleDetail.remark,
+        "createUserCode" : scheduleDetail.createUserCode,
+        "updateUserCode" : scheduleDetail.updateUserCode,
+        "referenceNo" : scheduleDetail.referenceNo
+      }
       let response = await updateExamApplication(scheduleDetail);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+      onClickCancel();
+      fetchData();
     } catch (err) {
       let { data } = err.response
       Swal.fire({
@@ -242,7 +256,6 @@ const ExamApplication = (props) => {
     }
   }
 
-  console.log(examresult,"examresult")
   return (
     <Container>
       <EditLocationPopup />
@@ -315,14 +328,14 @@ const ExamApplication = (props) => {
                       </FormGroup>
                     </Col>
                     <Col>
-                      <FormGroup>
-                        <label className={styles.label}>ผลสอบ</label>
-                        <Input
-                          type="text"
-                          name="examResult"
-                          value={get(scheduleDetail, "examResultName", "")}
-                          onChange={(e) => setScheduleDetail({...scheduleDetail,"examResultName":e.target.value})}
+                      <FormGroup  style={{paddingTop:'10px'}}>
+                        <DropdownExamResult 
+                       
+                        label="ผลสอบ"
+                        value={get(scheduleDetail, "examResult", "")} 
+                        onClick={(v) => setScheduleDetail({...scheduleDetail,"examResult":v.resultId})}
                         />
+                       
                       </FormGroup>
                     </Col>
                     <Col>
@@ -335,7 +348,7 @@ const ExamApplication = (props) => {
                           type="text"
                           name="applyTime"
                           value={
-                            scheduleDetail &&
+                            scheduleDetail && get(scheduleDetail, "applyTime", "") && 
                             moment(get(scheduleDetail, "applyTime", "")).format(
                               "DD/MM/yyyy HH:mm:ss"
                             )

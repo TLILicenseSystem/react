@@ -12,6 +12,8 @@ export { EditSchedulePopup } from "./Popup/EditSchedulePopup";
 export { DropdownExamOrganizer } from "./DropdownWithLabel/DropdownExamOrganizer";
 export { DropdownExamRegion } from "./DropdownWithLabel/DropdownExamRegion";
 export { DropdownLocationType } from "./DropdownWithLabel/DropdownLocationType";
+export {DropdownExamResult} from "./DropdownWithLabel/DropdownExamResult"
+
 export { LocationTable } from "./Table/LocationTable";
 export { ScheduleTable } from "./Table/ScheduleTable";
 export { SearchPopup } from "./Popup/SearchPopup";
@@ -23,7 +25,7 @@ export { TimePicker } from "./DatePicker/TimePicker";
 export { DropdownExamTime } from "./DropdownWithLabel/DropdownExamTime";
 export { EditLocationTable } from "./Table/EditLocationTable";
 
-// mook
+ 
 export { InputField } from "./InputFieldWithRedux/InputField";
 export { SelectField } from "./InputFieldWithRedux/SelectField";
 export { DateField } from "./InputFieldWithRedux/DateField";

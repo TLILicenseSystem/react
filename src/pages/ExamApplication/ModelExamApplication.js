@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import apiSpring from "../../api/apiSpring";
 import axios from "axios";
 
- //const baseURL = "https://dev-smws.thailife.com:8443/wsSearchSalesByName/rest";
-const baseURL = "https://dev-smws.thailife.com:8443/wsLicenseAgentSpring/licenseexam";
+ const baseURL = "https://dev-smws.thailife.com:8443/wsSearchSalesByName/rest";
+//const baseURL = "https://dev-smws.thailife.com:8443/wsLicenseAgentSpring/licenseexam";
 
 const defaultOptions = {
     baseURL,
@@ -17,6 +17,7 @@ const defaultOptions = {
 
 const api = axios.create(defaultOptions);
 
+ 
 export const getExamApplication = async (citizenID) => {
     try {
         const response = await apiSpring.get(`examapplication/search?citizenID=${citizenID}`);
@@ -64,12 +65,11 @@ export const searchSalesbyname = async (firstName,lastName) => {
     }
 }
 
-export const insertExamOrganizer = async (request) => {
+export const insertExamApplication = async (request) => {
 
     try
     {
-    const response = await apiSpring.post("/examapplication/add",request);   
-    console.log("insertExamOrganizer response=",response.data);
+    const response = await apiSpring.post("examapplication/add",request);   
     if (response.status === 200) //data=success
         return response.data;
     else 

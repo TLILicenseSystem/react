@@ -7,11 +7,14 @@ import {
   ModalFooter,
   Row,
   Col,
+  Card,
+  CardBody,
 } from "reactstrap";
 import {
   DropdownExamRegion,
   DropdownExamOrganizer,
   DropdownExamTime,
+  DateRangePicker,
   DatePicker,
   SubmitButton,
   EditButton,
@@ -39,7 +42,9 @@ export const SearchSchedulePopup = ({ onChange }) => {
   const [searchProvince, setSearchProvince] = useState({});
   const [examLocationList, setExamLocationList] = useState([]);
   const [examRound, setExamRound] = useState([]);
-  const [selectedDate ,setSelectedDate] = useState(null)
+  const [selectedDate ,setSelectedDate] = useState(moment())
+  const [selectedEndDate, setSelectedEndDate] = useState(null);
+
   const [examScheduleList,setExamScheduleList] = useState([]);
   const examType = getExamType();
 
@@ -126,9 +131,9 @@ export const SearchSchedulePopup = ({ onChange }) => {
       field: "remainCandidate",
       headerName: "คงเหลือ",
       minWidth: 100,
-      align: "left",
+      align: "center",
       renderCell: (cellValues) => {
-        if(cellValues.row.remainCandidate > 0 ){
+        if(cellValues.row.remainCandidate < cellValues.row.maxApplicant ){
           return `${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`
         }else{
           return (
@@ -147,12 +152,17 @@ export const SearchSchedulePopup = ({ onChange }) => {
       headerClassName: "header",
       width: 100,
       renderCell: (cellValues) => {
-        return (
-          <EditButton
-            title="เลือก"
-            onClick={() => handleAction(cellValues.row)}
-          />
-        );
+        if(cellValues.row.remainCandidate < cellValues.row.maxApplicant ){
+          return <EditButton
+          title="เลือก"
+          onClick={() => handleAction(cellValues.row)}
+        />
+        }else{
+          return (
+            ""
+          );
+        }
+        
       },
     },
    
@@ -165,27 +175,13 @@ export const SearchSchedulePopup = ({ onChange }) => {
     dispatch(hideSearchSchedulePopup());
     onChange(e);
   };
-  const onClickProvinceButton = (e) => {
-    setProvinceCode(get(e, "provinceCode", ""));
-    fetchProvinceData(get(e, "provinceCode", ""));
-  };
-  const onClickExamOrganizerButton = (e) => {
-    setExamOrganizerCode(get(e, "orgCode", ""));
-    fetchExamOrganizer(get(e, "orgCode", ""));
-    setSearchProvince({
-      provinceCode: provinceCode,
-      examOrganizerCode: examOrganizerCode,
-    });
-  };
 
-  const onClickRoundButton = (e) => {};
   const fetchData = async () => {
     const responseLocation = await getExamLocation("A");
     setExamLocationList(get(responseLocation, "data", []));
     const responseSchedule = await getExamScheduleByDetails(
-      selectedDate === null ? "" : moment(selectedDate).format("YYYY-MM-DD"),
-     // selectedDate === null ? "" : moment(selectedDate).format("YYYY-MM-DD"),
-     "",
+      moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
+      moment(selectedEndDate).isValid() ? moment(selectedEndDate).format("YYYY-MM-DD"): moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
       examRound,
       examOrganizerCode,
       provinceCode
@@ -239,80 +235,68 @@ export const SearchSchedulePopup = ({ onChange }) => {
     <Modal isOpen={isShow} size="xl" toggle={toggle}>
       <ModalHeader>{title}</ModalHeader>
       <ModalBody>
-        <Row style={{ paddingBottom: "12px" }}>
-          <Col sm={{ size: 4, offset: 2 }}>
-            <DatePicker
-              label="วันที่สอบ"
-              value={"0000-00-00"}
-              onChange={(date) => setSelectedDate(date)}
-              //onChange={(date) => console.log(date)}
-            />
-          </Col>
-          
-          <Col sm="4" style={{ margin: "auto",marginLeft:0, marginBottom: 0 }}>
-             
-            <DatePicker
-              label=" "
-              value={"0000-00-00"}
-              // onChange={(date) => setSelectedDate(date)}
-              onChange={(date) => console.log(date)}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col sm={{ size: 4, offset: 2 }}>
-            <DropdownExamOrganizer
-              label="สถานที่สอบ "
-              value={examOrganizerCode}
-              onClick={(e) => {
-                onClickExamOrganizerButton(e);
-              }}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col sm={{ size: 4, offset: 2 }}>
-            <DropdownExamRegion
-              label="สนามสอบ"
-              value={provinceCode}
-              onClick={(e) => {
-                onClickProvinceButton(e);
-              }}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col sm={{ size: 4, offset: 2 }}>
-            <DropdownExamTime
-              label="เวลาสอบ"
-              value={examRound}
-              onClick={(e) => {
-                onClickRoundButton(e);
-              }}
-            />
-          </Col>
-        </Row>
-        <Row>
+        <Card style={{border:'none'}}>
+          <CardBody>
+          <Row>
+                  <Col xs="12" md={{offset:'3',size:'3'}} >
+                    <DateRangePicker
+                      label="วันที่สอบ"
+                      value={selectedDate}
+                      onChange={(start,end) =>{ 
+                        setSelectedDate(start)
+                        setSelectedEndDate(end)
+                        }}
+                    />
+                  </Col>
+                  <Col xs="12" sm="3" md="3">
+                    <DropdownExamTime
+                      label="เวลาสอบ"
+                      value={examRound}
+                      isClearable={true}
+                      onClick={(e) => setExamRound(get(e, "roundId", ""))}
+                    />
+                  </Col>
+              </Row>
+              <Row>
+                  <Col xs="12" md={{offset:'3',size:'3'}}>
+                    <DropdownExamOrganizer
+                      label="สถานที่สอบ"
+                      value={examOrganizerCode}
+                      isClearable={true}
+                      onClick={(e) => {
+                        setExamOrganizerCode(get(e, "orgCode", ""));
+                      }}
+                    />
+                  </Col>
+                  <Col xs="12" sm="3" md="3">
+                    <DropdownExamRegion
+                      label="สนามสอบ"
+                      value={provinceCode}
+                      isClearable={true}
+                      onClick={(e) => {
+                        setProvinceCode(get(e, "provinceCode", ""));
+                      }}
+                    />
+                  </Col>
+                  
+                </Row>
+       
+                <Row>
           <Col sm="12" style={{ textAlign: "right" }}>
             <SubmitButton
               // disabled={props.invalid || props.pristine || props.submitting}
               title="ค้นหา"
-              onClick={() => alert("fdsfr")}
+              onClick={() => fetchData()}
             />{" "}
             <CancelButton title="ยกเลิก" onClick={toggle} />
           </Col>
         </Row>
+          </CardBody>
+          </Card>
+         
       </ModalBody>
       <ModalFooter>
       <Table data={rows} columns={columns} loading={false}/>
-       {/* <LocationTable
-          provinceCode={provinceCode}
-          examOrganizerCode={examOrganizerCode}
-          examLocationList={rows}
-          event={{ event: "search" }}
-          onClick={handleAction}
-        />
-        */}
       </ModalFooter>
     </Modal>
   );
