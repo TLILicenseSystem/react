@@ -24,17 +24,21 @@ export const DateField = ({ input, textboxSize, label, meta, mindate,maxdate }) 
  
   const keyRef = useRef(moment())
   useEffect(() => {
-    keyRef.current = moment();
+    keyRef.current = moment()
     setInitialSettings({
       ...initialSettings,
-      startDate:  input.value ? moment( input.value) : moment()
+      maxDate :  maxdate ? moment(maxdate) : null,
+      startDate:  input.value && moment( input.value)
     })
+
   },[input])
+
   useEffect(() => {
-    keyRef.current = moment();
+    keyRef.current = moment() 
     setInitialSettings({
       ...initialSettings,
-      maxDate :  maxdate ? moment(maxdate) : null
+      maxDate :  maxdate ? moment(maxdate) : null,
+      startDate:  input.value && moment( input.value)
     })
   },[maxdate])
 
@@ -42,7 +46,6 @@ export const DateField = ({ input, textboxSize, label, meta, mindate,maxdate }) 
     input.onChange(value);
   };
  
-  console.log(maxdate,"mook",moment(maxdate))
   return (
     <Form>
       <FormGroup row>
@@ -68,7 +71,7 @@ export const DateField = ({ input, textboxSize, label, meta, mindate,maxdate }) 
         //  onApply={(v, f) => handleChange(v)}
         >
           <input id={input.name}
-              value={ input.value &&  moment( input.value).format("DD/MM/YYYY")}
+             // value={ input.value &&  moment( input.value).format("DD/MM/YYYY")}
               className={ error ? "is-invalid form-control" : "form-control"}
               type="text"            
        />

@@ -198,10 +198,9 @@ const ExamSchedule = () => {
   const fetchData = async () => {
     setLoading(true);
 
-    console.log(selectedEndDate,"selectedEndDate")
     const responseSchedule = await getExamScheduleByDetails(
       moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
-      moment(selectedEndDate).isValid() ? moment(selectedEndDate).format("YYYY-MM-DD"):"",
+      moment(selectedEndDate).isValid() ? moment(selectedEndDate).format("YYYY-MM-DD"): moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
       examRound,
       examOrganizerCode,
       provinceCode

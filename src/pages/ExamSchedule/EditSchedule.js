@@ -121,8 +121,8 @@ let EditSchedule = (props) => {
         props.change("roundId", state.roundId);
         props.change("scheduleId", get(state, "scheduleId", null));
         props.change("examDate", state.examDate ?  state.examDate : moment());
-        props.change("applyCloseDate", state.applyCloseDate ? state.applyCloseDate : moment().subtract(1,'days'));
-        props.change("receiveDate", state.receiveDate ? state.receiveDate : moment().subtract(1,'days'));
+        props.change("applyCloseDate", state.applyCloseDate ? state.applyCloseDate : moment());
+        props.change("receiveDate", state.receiveDate ? state.receiveDate : moment());
         props.change("receiveTime", state.receiveTime );
         props.change("maxApplicant", state.maxApplicant);
       }else props.history.push("/examSchedule")
