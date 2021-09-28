@@ -117,15 +117,23 @@ let EditSchedule = (props) => {
 
     if (props.history.location) {
       let { state } = props.history.location;
-      if(state){
+      if (state) {
         props.change("roundId", state.roundId);
         props.change("scheduleId", get(state, "scheduleId", null));
-        props.change("examDate", state.examDate ?  state.examDate : moment());
-        props.change("applyCloseDate", state.applyCloseDate ? state.applyCloseDate : moment().subtract(1,'days'));
-        props.change("receiveDate", state.receiveDate ? state.receiveDate : moment().subtract(1,'days'));
-        props.change("receiveTime", state.receiveTime );
+        props.change("examDate", state.examDate ? state.examDate : moment());
+        props.change(
+          "applyCloseDate",
+          state.applyCloseDate
+            ? state.applyCloseDate
+            : moment().subtract(1, "days")
+        );
+        props.change(
+          "receiveDate",
+          state.receiveDate ? state.receiveDate : moment().subtract(1, "days")
+        );
+        props.change("receiveTime", state.receiveTime);
         props.change("maxApplicant", state.maxApplicant);
-      }else props.history.push("/examSchedule")
+      } else props.history.push("/examSchedule");
     }
   }, []);
 
@@ -222,7 +230,7 @@ let EditSchedule = (props) => {
   const toggle = () => {
     props.initialize();
     props.reset();
-    history.push("/examSchedule", null);
+    history.push("/setting/examSchedule", null);
   };
 
   return (

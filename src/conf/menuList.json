@@ -6,19 +6,19 @@
      
         {
             "title":"ตั้งค่ารอบเวลาสอบ",
-            "path" : "/examRound"	
+            "path" : "/setting/examRound"	
         },
         {
             "title":"ตั้งค่าสถานที่สอบ",
-            "path" : "/examOrganizer"	
+            "path" : "/setting/examOrganizer"	
         },
         {
             "title":"ตั้งค่าสถานที่ตั้งสอบ",
-            "path" : "/examLocation"
+            "path" : "/setting/examLocation"
         }
         ,{
             "title":"ตั้งค่าตารางสอบ",
-            "path" : "/examSchedule"	
+            "path" : "/setting/examSchedule"	
         }
     ]
     }

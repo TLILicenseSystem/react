@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, FormFeedback } from "reactstrap";
 import { InputWithLabelRow, SubmitButton } from "../components/shared";
 import { useHistory } from "react-router-dom";
+import Logo from "../assets/images/logo.png";
 
 const Login = () => {
   const [data, setData] = useState({
@@ -61,7 +62,7 @@ const Login = () => {
 
     if (!error) {
       sessionStorage.setItem("login", "Y");
-      history.push("/");
+      window.location.reload();
       //   let postdata = {
       //     username: data.username.value,
       //     password: data.password.value
@@ -100,7 +101,7 @@ const Login = () => {
     }
     setData(data);
   };
-  console.log(data);
+
   return (
     <Container>
       <Row style={{ height: "100vh" }}>
@@ -110,7 +111,7 @@ const Login = () => {
           md="6"
           style={{ textAlign: "center", margin: "auto" }}
         >
-          lk
+          <img src={Logo} />
         </Col>
         <Col
           xs="12"

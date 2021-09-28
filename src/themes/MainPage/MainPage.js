@@ -11,14 +11,18 @@ const MainPage = () => {
       <Row>
         <Col sm="4">
           <Card>
-            <CardBody onClick={() => history.push("/examSchedule", null)}>
+            <CardBody
+              onClick={() => history.push("/setting/examSchedule", null)}
+            >
               <h5>License System </h5>
             </CardBody>
           </Card>
         </Col>
         <Col sm="4">
           <Card>
-            <CardBody>
+            <CardBody
+              onClick={() => history.push("/support/examSchedule", null)}
+            >
               <h5>Support License</h5>
             </CardBody>
           </Card>

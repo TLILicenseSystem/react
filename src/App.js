@@ -3,13 +3,38 @@ import AppRoute from "./routes";
 import { Row, Col } from "reactstrap";
 import "./App.css";
 import MainSidebar from "./themes/Sidebar/MainSidebar";
+import Layout from "./themes/Layout";
+import Login from "./themes/Login";
+import { useHistory } from "react-router-dom";
 
 import moment from "moment-timezone";
 moment.tz.setDefault("Asia/Bangkok");
 
-const App = () => {
+const App = (props) => {
   const [login, setLogin] = useState(sessionStorage.getItem("login"));
 
+  const [locationKeys, setLocationKeys] = useState([]);
+  const history = useHistory();
+
+  useEffect(() => {
+    return history.listen((location) => {
+      if (history.action === "PUSH") {
+        setLocationKeys([location.key]);
+      }
+
+      if (history.action === "POP") {
+        if (locationKeys[1] === location.key) {
+          setLocationKeys(([_, ...keys]) => keys);
+
+          // Handle forward event
+        } else {
+          setLocationKeys((keys) => [location.key, ...keys]);
+
+          // Handle back event
+        }
+      }
+    });
+  }, [locationKeys]);
   return (
     // แบ่ง layout เป็น 2 คอลั่ม Sidebar กับ content ที่จะเปลี่ยนหน้าตาม Route ที่เรียก
     <div>{login === "Y" ? <Layout /> : <Login />}</div>

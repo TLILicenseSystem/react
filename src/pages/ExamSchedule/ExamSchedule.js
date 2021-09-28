@@ -198,10 +198,14 @@ const ExamSchedule = () => {
   const fetchData = async () => {
     setLoading(true);
 
-    console.log(selectedEndDate,"selectedEndDate")
+    console.log(selectedEndDate, "selectedEndDate");
     const responseSchedule = await getExamScheduleByDetails(
-      moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
-      moment(selectedEndDate).isValid() ? moment(selectedEndDate).format("YYYY-MM-DD"):"",
+      moment(selectedDate).isValid()
+        ? moment(selectedDate).format("YYYY-MM-DD")
+        : "",
+      moment(selectedEndDate).isValid()
+        ? moment(selectedEndDate).format("YYYY-MM-DD")
+        : "",
       examRound,
       examOrganizerCode,
       provinceCode
@@ -220,7 +224,7 @@ const ExamSchedule = () => {
   });
 
   const onClickEditSchedule = (scheduleDetail) => {
-    history.push("/examSchedule-edit", scheduleDetail);
+    history.push("/setting/examSchedule-edit", scheduleDetail);
   };
 
   const onClickSearchSchedule = async () => {
@@ -265,7 +269,6 @@ const ExamSchedule = () => {
     }
   };
 
-
   return (
     <Container>
       <div className="contents">
@@ -279,10 +282,10 @@ const ExamSchedule = () => {
                     <DateRangePicker
                       label="วันที่สอบ"
                       value={selectedDate}
-                      onChange={(start,end) =>{ 
-                        setSelectedDate(start)
-                        setSelectedEndDate(end)
-                        }}
+                      onChange={(start, end) => {
+                        setSelectedDate(start);
+                        setSelectedEndDate(end);
+                      }}
                       // onChange={(date) => console.log(date)}
                     />
                   </Col>
@@ -314,19 +317,25 @@ const ExamSchedule = () => {
                       }}
                     />
                   </Col>
-                  <Col xs="12" sm="1" md="1" style={{display: 'flex',
-                      alignItems: 'flex-end',
-                      paddingBottom: '12px',
+                  <Col
+                    xs="12"
+                    sm="1"
+                    md="1"
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-end",
+                      paddingBottom: "12px",
                       paddingLeft: 0,
-                      paddingRight: 0}}>
-                       <Button
-                        color="primary"
-                        style={{ fontFamily: "Prompt-Regular" }}
-                        onClick={() => onClickSearchSchedule()}
-                      >
-                        ค้นหา
-                      </Button>
-                     
+                      paddingRight: 0,
+                    }}
+                  >
+                    <Button
+                      color="primary"
+                      style={{ fontFamily: "Prompt-Regular" }}
+                      onClick={() => onClickSearchSchedule()}
+                    >
+                      ค้นหา
+                    </Button>
                   </Col>
                 </Row>
               </MuiPickersUtilsProvider>

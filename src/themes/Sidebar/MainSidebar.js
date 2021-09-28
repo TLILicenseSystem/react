@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { List } from "reactstrap";
 import { withRouter, Link } from "react-router-dom";
-import menu from "../../conf/menuList.json";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleUp, faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { SideBar, MainMenu, SubMenu } from "./MainSidebarStyles";
 
-const MainSidebar = () => {
+const MainSidebar = (props) => {
+  const [menu, setMenu] = useState(props.menu);
   const [isOpen, setIsOpen] = useState(false);
   const [indexOpen, setIndexOpen] = useState(0);
 
@@ -18,6 +18,7 @@ const MainSidebar = () => {
   };
   return (
     <SideBar>
+      <h5 style={{ textAlign: "center", color: "#fff" }}>{props.title}</h5>
       <List type="unstyled">
         {menu.map((item, index) => (
           <div key={index}>

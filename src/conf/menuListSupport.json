@@ -1,0 +1,32 @@
+[
+    {
+    "main": "สมัครสอบ",
+    "path" : "#",
+    "submenu":null
+    },
+    {
+        "main": "ขอรับ/ขอต่อใบอนุญาต",
+        "path" : "#",
+        "submenu":[
+         
+            {
+                "title":"ใบอนุญาต",
+                "path" : "/setting/examRound"	
+            },
+            {
+                "title":"ใบอนุญาต UL",
+                "path" : "/setting/examOrganizer"	
+            },
+            {
+                "title":"ใบอนุญาต UK",
+                "path" : "/setting/examLocation"
+            }
+             
+        ]
+    },
+    {
+            "main": "ค่าธรรมเนียม",
+            "path" : "#",
+            "submenu":null
+    }
+]
