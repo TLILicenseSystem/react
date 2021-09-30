@@ -7,8 +7,7 @@ import { Route, useHistory } from "react-router-dom";
 import MainPage from "./MainPage/MainPage";
 import menu1 from "../conf/menuList.json";
 import menu2 from "../conf/menuListSupport.json";
-
-import Abc from "../routesSupport";
+import AppRoute2 from "../routesSupport";
 
 const Layout = () => {
   const history = useHistory();
@@ -24,18 +23,20 @@ const Layout = () => {
       {history.location.pathname.indexOf("setting/") > 0 ? (
         <Row>
           <Col xs="12" sm="2" md="2" style={{ padding: 0 }}>
-            <MainSidebar title="ระบบ" menu={menu1} />
+            <MainSidebar title="ระบบงาน Support ใบอนุญาต" menu={menu1} />
           </Col>
           <Col xs="12" sm="10" md="10" style={{ padding: 0 }}>
             <AppRoute />
           </Col>
         </Row>
-      ) : history.location.pathname.indexOf("support/") > 0 ? (
+      ) : history.location.pathname.indexOf("license/") > 0 ? (
         <Row>
           <Col xs="12" sm="2" md="2" style={{ padding: 0 }}>
             <MainSidebar title="ระบบงานใบอนุญาต" menu={menu2} />
           </Col>
-          <Col xs="12" sm="10" md="10" style={{ padding: 0 }}></Col>
+          <Col xs="12" sm="10" md="10" style={{ padding: 0 }}>
+            <AppRoute2 />
+          </Col>
         </Row>
       ) : (
         <Route path="*" render={(props) => <MainPage {...props} />} />

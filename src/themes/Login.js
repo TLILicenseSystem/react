@@ -3,6 +3,7 @@ import { Container, Row, Col, FormFeedback } from "reactstrap";
 import { InputWithLabelRow, SubmitButton } from "../components/shared";
 import { useHistory } from "react-router-dom";
 import Logo from "../assets/images/logo.png";
+import { colors } from "./style";
 
 const Login = () => {
   const [data, setData] = useState({
@@ -62,6 +63,7 @@ const Login = () => {
 
     if (!error) {
       sessionStorage.setItem("login", "Y");
+      sessionStorage.setItem("login_name", "firstName lastName");
       window.location.reload();
       //   let postdata = {
       //     username: data.username.value,
@@ -111,7 +113,9 @@ const Login = () => {
           md="6"
           style={{ textAlign: "center", margin: "auto" }}
         >
-          <img src={Logo} />
+          <h5 style={{ fontWeight: "bold", color: colors.PRIMARYRED }}>
+            <img src={Logo} /> Admin And View{" "}
+          </h5>
         </Col>
         <Col
           xs="12"

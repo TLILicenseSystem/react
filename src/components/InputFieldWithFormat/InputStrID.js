@@ -3,7 +3,7 @@ import { Input, FormFeedback, FormGroup } from "reactstrap";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 
-export const InputStrID = ({ label, type, value, width, onChange }) => {
+export const InputStrID = ({ label, disabled, value, width, onChange }) => {
   const [error, setError] = useState(false);
 
   function autoTab(e) {
@@ -31,8 +31,6 @@ export const InputStrID = ({ label, type, value, width, onChange }) => {
         }
       }
     }
-    console.log("fefef", e.target.value);
-    // onChange(e.target.value);
   }
 
   return (
@@ -46,7 +44,7 @@ export const InputStrID = ({ label, type, value, width, onChange }) => {
           invalid={error}
           className={styles.input}
           type={"tel"}
-          // value={value}
+          disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
           onBlur={autoTab}
         />
@@ -63,6 +61,7 @@ InputStrID.defaultProps = {
   value: "",
   width: "100px",
   height: "",
+  disabled: false,
   onChange: () => {},
 };
 
@@ -72,5 +71,6 @@ InputStrID.propTypes = {
   value: PropTypes.string,
   width: PropTypes.string,
   height: PropTypes.string,
+  disabled: PropTypes.bool,
   onChange: PropTypes.func,
 };

@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { colors } from "../../themes/style";
 
 export const Container = styled.div`
-  background-color: #dbdbdb;
   background-color: ${colors.BG};
   // width: 100vw;
   display: flex;

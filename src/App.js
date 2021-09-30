@@ -17,6 +17,10 @@ const App = (props) => {
   const history = useHistory();
 
   useEffect(() => {
+    console.log(history, "history");
+  }, [history]);
+
+  useEffect(() => {
     return history.listen((location) => {
       if (history.action === "PUSH") {
         setLocationKeys([location.key]);

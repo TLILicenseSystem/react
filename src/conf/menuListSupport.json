@@ -1,32 +1,12 @@
 [
     {
     "main": "สมัครสอบ",
-    "path" : "#",
+    "path" : "/license/examApplication",
     "submenu":null
     },
     {
-        "main": "ขอรับ/ขอต่อใบอนุญาต",
-        "path" : "#",
-        "submenu":[
-         
-            {
-                "title":"ใบอนุญาต",
-                "path" : "/setting/examRound"	
-            },
-            {
-                "title":"ใบอนุญาต UL",
-                "path" : "/setting/examOrganizer"	
-            },
-            {
-                "title":"ใบอนุญาต UK",
-                "path" : "/setting/examLocation"
-            }
-             
-        ]
-    },
-    {
-            "main": "ค่าธรรมเนียม",
-            "path" : "#",
-            "submenu":null
+        "main": "ค่าธรรมเนียม",
+        "path" :"/license/examPayment",
+        "submenu":null
     }
 ]

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Container, Row, Col } from "reactstrap";
-import { Card, CardBody } from "./MainPageStyle";
+import { Row, Col } from "reactstrap";
+import { Container, Card, CardBody } from "./MainPageStyle";
 import { useHistory } from "react-router-dom";
 
 const MainPage = () => {
@@ -12,7 +12,7 @@ const MainPage = () => {
         <Col sm="4">
           <Card>
             <CardBody
-              onClick={() => history.push("/setting/examSchedule", null)}
+              onClick={() => history.push("/license/examApplication", null)}
             >
               <h5>License System </h5>
             </CardBody>
@@ -21,7 +21,7 @@ const MainPage = () => {
         <Col sm="4">
           <Card>
             <CardBody
-              onClick={() => history.push("/support/examSchedule", null)}
+              onClick={() => history.push("/setting/examSchedule", null)}
             >
               <h5>Support License</h5>
             </CardBody>

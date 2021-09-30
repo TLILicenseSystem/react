@@ -2,8 +2,9 @@ import React from "react";
 import { Input } from "reactstrap";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
+import InputMask from "react-input-mask";
 
-export const InputLicenseNo = ({ label, type, value, width, onChange }) => {
+export const InputLicenseNo = ({ label, disabled, value, width, onChange }) => {
   function autoTab(e) {
     if (e.target.value && /^\d+$/.test(e.target.value.replaceAll("-", ""))) {
       var pattern = new String("__________"); // กำหนดรูปแบบในนี้
@@ -19,13 +20,24 @@ export const InputLicenseNo = ({ label, type, value, width, onChange }) => {
   return (
     <div className={styles.div}>
       <label className={styles.label}>{label}</label>
-      <Input
+      {/* <Input
         id="InputLicenseNo"
         defaultValue="0000000000"
         className={styles.input}
         type={"tel"}
-        // value={value}
+        disabled={disabled}
         onChange={autoTab}
+      /> */}
+      <InputMask
+        mask="9999999999"
+        maskChar=" "
+        className="form-control"
+        style={{ marginBottom: "20px" }}
+        id="InputLicenseNo"
+        type={"tel"}
+        defaultValue={value}
+        disabled={disabled}
+        onChange={onChange}
       />
     </div>
   );
@@ -37,6 +49,7 @@ InputLicenseNo.defaultProps = {
   value: "",
   width: "100px",
   height: "",
+  disabled: false,
   onChange: () => {},
 };
 
@@ -46,5 +59,6 @@ InputLicenseNo.propTypes = {
   value: PropTypes.string,
   width: PropTypes.string,
   height: PropTypes.string,
+  disabled: PropTypes.bool,
   onChange: PropTypes.func,
 };

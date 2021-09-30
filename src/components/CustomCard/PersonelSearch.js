@@ -2,14 +2,8 @@ import React, { useState } from "react";
 import {
   TabContent,
   TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-  Card,
   Button,
   ButtonGroup,
-  CardTitle,
-  CardText,
   Container,
   FormGroup,
   Label,
@@ -21,23 +15,25 @@ import {
 
 import {
   InputCitizenID,
-  InputDepositCode,
   InputPersonID,
   InputLicenseNo,
-  InputStrID,
   SubmitButton,
   CancelButton,
-} from "../../components/shared";
-const SearchSalesDlg = (props) => {
-  const [searchValue, setSearchValue] = useState({
+  InputDepositCode,
+  InputStrID,
+} from "../shared";
+
+export const PersonelSearch = (props) => {
+  const initivalSearch = {
     citizenID: "0-0000-000000-00-0",
     depositCode: "000",
     personID: "",
     licenseNo: "0000000000",
     strid: "",
-    firstName:"",
-    lastName:""
-  });
+    firstName: "",
+    lastName: "",
+  };
+  const [searchValue, setSearchValue] = useState(initivalSearch);
   const [searchItem, setSearchItem] = useState("name");
   const [activeTab, setActiveTab] = useState("1");
 
@@ -83,7 +79,7 @@ const SearchSalesDlg = (props) => {
       <div>
         <TabContent activeTab={activeTab}>
           <TabPane tabId="1">
-          {/*  <Row>
+            <Row>
               <Col sm={{ size: 2, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
@@ -101,6 +97,7 @@ const SearchSalesDlg = (props) => {
               <Col sm="4">
                 <InputCitizenID
                   label=""
+                  disabled={searchItem !== "citizenID"}
                   onChange={(v) => onChange("citizenID", v)}
                   value={searchValue["citizenID"]}
                 />
@@ -124,6 +121,7 @@ const SearchSalesDlg = (props) => {
               <Col sm="4">
                 <InputDepositCode
                   label=""
+                  disabled={searchItem !== "depositCode"}
                   onChange={(v) => onChange("depositCode", v)}
                   value={searchValue["depositCode"]}
                 />
@@ -147,8 +145,9 @@ const SearchSalesDlg = (props) => {
               <Col sm="4">
                 <InputPersonID
                   label=""
-                  onChange={(v) => onChange("depositCode", v)}
-                  value={searchValue["depositCode"]}
+                  disabled={searchItem !== "personID"}
+                  onChange={(v) => onChange("personID", v)}
+                  value={searchValue["personID"]}
                 />
               </Col>
             </Row>
@@ -170,6 +169,7 @@ const SearchSalesDlg = (props) => {
               <Col sm="4">
                 <InputStrID
                   label=""
+                  disabled={searchItem !== "strid"}
                   onChange={(v) => onChange("strid", v)}
                   value={searchValue["strid"]}
                 />
@@ -193,12 +193,13 @@ const SearchSalesDlg = (props) => {
               <Col sm="4">
                 <InputLicenseNo
                   label=""
+                  disabled={searchItem !== "licenseNo"}
                   onChange={(v) => onChange("licenseNo", v)}
                   value={searchValue["licenseNo"]}
                 />
               </Col>
             </Row>
-             */}
+
             <Row>
               <Col sm={{ size: 2, offset: 2 }}>
                 <FormGroup check>
@@ -216,15 +217,17 @@ const SearchSalesDlg = (props) => {
               </Col>
               <Col sm="4">
                 <Row>
-                  <Col md={6}> 
+                  <Col sm={6} md={6}>
                     <Input
                       type="text"
+                      disabled={searchItem !== "name"}
                       onChange={(e) => onChange("firstName", e.target.value)}
                     />
                   </Col>
-                  <Col md={6}>
+                  <Col sm={6} md={6}>
                     <Input
                       type="text"
+                      disabled={searchItem !== "name"}
                       onChange={(e) => onChange("lastName", e.target.value)}
                     />
                   </Col>
@@ -373,12 +376,13 @@ const SearchSalesDlg = (props) => {
         <SubmitButton
           // disabled={props.invalid || props.pristine || props.submitting}
           title="ค้นหา"
-          onClick={() => props.onSearch(searchItem,searchValue)}
+          onClick={() => props.onSearch(searchItem, searchValue)}
         />{" "}
-        <CancelButton title="ยกเลิก" onClick={() => console.log("dd")} />
+        <CancelButton
+          title="ยกเลิก"
+          // onClick={() => setSearchValue({ ...initivalSearch, searchItem: "" })}
+        />
       </CardBody>
     </Container>
   );
 };
-
-export default SearchSalesDlg;

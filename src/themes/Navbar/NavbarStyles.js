@@ -4,7 +4,7 @@ import { colors } from "../style";
 export const NavigationBar = styled.div`
   background-color: #fff;
   min-height: 7vh;
-  z-index: 9999;
+  z-index: 1;
   position: fixed; /* Set the navbar to fixed position */
   top: 0; /* Position the navbar at the top of the page */
   width: 100%; /* Full width */
@@ -28,4 +28,10 @@ export const MenuDiv = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
+  color: ${colors.PRIMARYBLUE};
+`;
+
+export const Item = styled.div`
+  font-weight: bold;
+  color: ${colors.SECONDARYBLUE};
 `;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, connect } from "react-redux";
-
+import { useDispatch } from "react-redux";
 import {
   Card,
   CardBody,
@@ -12,32 +11,31 @@ import {
   TabContent,
   TabPane,
   FormGroup,
-  Label,
 } from "reactstrap";
 import {
   SearchSchedulePopup,
-  DropdownExamRegion,
-  DropdownExamOrganizer,
   DropdownExamResult,
   Container,
   EditLocationPopup,
   EditButton,
-  DeleteButton,
-  AddButton,
   CancelButton,
   SubmitButton,
   FilterCollapse,
   PersonelData,
   Table,
+  SearchSales,
 } from "../../components/shared";
-import { get, values } from "lodash";
+import { get } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
-import { getExamApplication ,searchSalesbyname, insertExamApplication,updateExamApplication} from "./ModelExamApplication"
+import {
+  getExamApplication,
+  insertExamApplication,
+  updateExamApplication,
+} from "./ModelExamApplication";
 // import { getExamResult} from "../../api/apiGetConfig"
 import Swal from "sweetalert2";
 
-import SearchSalesDlg from "./SearchSalesDlg";
 import FormSchedule from "./FormSchedule";
 import FormPayment from "./FormPayment";
 import moment from "moment";
@@ -46,7 +44,7 @@ const ExamApplication = (props) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("2");
   const [scheduleDetail, setScheduleDetail] = useState(null);
-  const [mode, setMode] = useState("edit");
+  const [mode, setMode] = useState("history");
   const [application, setApplication] = useState([]);
 
   const dispatch = useDispatch();
@@ -134,18 +132,17 @@ const ExamApplication = (props) => {
 
   useEffect(() => {
     fetchData();
-  },[])
+  }, []);
 
-  
   const fetchData = async () => {
     setLoading(true);
-   const response = await getExamApplication("1122334455667");
+    const response = await getExamApplication("1122334455667");
     setApplication(response);
     setLoading(false);
   };
 
   const rows = application.map((row) => {
-    return { id: row.scheduleId,  ...row };
+    return { id: row.scheduleId, ...row };
   });
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -160,37 +157,36 @@ const ExamApplication = (props) => {
   const onClickShowExamApplication = () => {
     setScheduleDetail(null);
     setActiveTab("2");
-    setMode("edit");
+    setMode("history");
   };
 
   const onClickChangeSchedule = (values) => {
     setScheduleDetail({
       ...scheduleDetail,
-      "alteredLocationId": values.alteredLocationId,
-      "examDate": values.examDate,
-      "locationId" :values.locationId,
-      "locationDetail": values.locationDetail,
-      "orgCode": values.orgCode,
-      "orgName": values.orgName,
-      "provinceCode": values.provinceCode,
-      "provinceName": values.provinceName,
-      "regionCode": values.regionCode,
-      "regionName": values.regionName,
-      "roundId": values.roundId,
-      "newScheduleId": values.scheduleId,
-      "timeStr": values.timeStr
-    })
-
-  }
+      alteredLocationId: values.alteredLocationId,
+      examDate: values.examDate,
+      locationId: values.locationId,
+      locationDetail: values.locationDetail,
+      orgCode: values.orgCode,
+      orgName: values.orgName,
+      provinceCode: values.provinceCode,
+      provinceName: values.provinceName,
+      regionCode: values.regionCode,
+      regionName: values.regionName,
+      roundId: values.roundId,
+      newScheduleId: values.scheduleId,
+      timeStr: values.timeStr,
+    });
+  };
   const onClickEditExamApplication = (values) => {
     setScheduleDetail(values);
     setActiveTab("1");
-    setMode("edit");
+    setMode("history");
   };
   const onClickCancel = () => {
     setScheduleDetail(null);
     setActiveTab("2");
-    setMode('edit');
+    setMode("history");
   };
 
   const onClickChangeLocation = () => {
@@ -202,59 +198,53 @@ const ExamApplication = (props) => {
     );
   };
   const onClickSave = async () => {
-    scheduleDetail.citizenId = "1122334455667"
-    scheduleDetail.createUserCode = "2901133"
-    console.log(scheduleDetail)
+    scheduleDetail.citizenId = "1122334455667";
+    scheduleDetail.createUserCode = "2901133";
+    console.log(scheduleDetail);
     try {
       let response = await insertExamApplication(scheduleDetail);
-       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+      Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
     } catch (err) {
-      let { data } = err.response
+      let { data } = err.response;
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการบันทึกข้อมูล!",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการบันทึกข้อมูล!",
       });
     }
-  
   };
 
   const onClickUpdate = async () => {
     try {
       let data = {
-        "citizenId" : scheduleDetail.citizenId,
-        "scheduleId" : scheduleDetail.scheduleId,
-        "applyTime" : scheduleDetail.applyTime,
-        "applicantType" : scheduleDetail.applicantType,
-        "seatNo" : scheduleDetail.seatNo,
-        "examResult" : scheduleDetail.examResult,
-        "remark" : scheduleDetail.remark,
-        "createUserCode" : scheduleDetail.createUserCode,
-        "updateUserCode" : scheduleDetail.updateUserCode,
-        "referenceNo" : scheduleDetail.referenceNo
-      }
+        citizenId: scheduleDetail.citizenId,
+        scheduleId: scheduleDetail.scheduleId,
+        applyTime: scheduleDetail.applyTime,
+        applicantType: scheduleDetail.applicantType,
+        seatNo: scheduleDetail.seatNo,
+        examResult: scheduleDetail.examResult,
+        remark: scheduleDetail.remark,
+        createUserCode: scheduleDetail.createUserCode,
+        updateUserCode: scheduleDetail.updateUserCode,
+        referenceNo: scheduleDetail.referenceNo,
+      };
       let response = await updateExamApplication(scheduleDetail);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
       onClickCancel();
       fetchData();
     } catch (err) {
-      let { data } = err.response
+      let { data } = err.response;
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการแก้ไขข้อมูล!",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
       });
     }
-  }
-
-  const onSearchSale = async (key ,value) => {
-    console.log(key,value)
-    if(key === "name"){
-      console.log(value.firstName,value.lastName)
-     let response = await searchSalesbyname(value.fisrtName,value.lastName);
-      console.log(response)
-    }
-  }
+  };
 
   return (
     <Container>
@@ -262,15 +252,16 @@ const ExamApplication = (props) => {
       <div className="contents">
         <h2 className="head">สมัครสอบ</h2>
         <Card>
-          <CardBody>
+          {/* <CardBody>
             <FilterCollapse title="ตัวกรองข้อมูล">
-              <SearchSalesDlg  onSearch={onSearchSale}/>
-            </FilterCollapse>
+              <SearchSales onSearch={onSearchSale} />  
           </CardBody>
 
           <CardBody>
             <PersonelData />
-          </CardBody>
+          </CardBody> */}
+          <SearchSales />
+
           <CardBody>
             <ButtonGroup>
               <Button
@@ -286,7 +277,7 @@ const ExamApplication = (props) => {
                 outline
                 color="secondary"
                 style={{ width: "12em" }}
-                active={mode === "edit"}
+                active={mode === "history"}
                 onClick={onClickShowExamApplication}
               >
                 ประวัติ
@@ -311,7 +302,7 @@ const ExamApplication = (props) => {
                 <CardBody>
                   <FormPayment />
                 </CardBody>
-                  <CardBody
+                <CardBody
                   style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                 >
                   <hr />
@@ -323,19 +314,27 @@ const ExamApplication = (props) => {
                           type="tel"
                           name="seatNo"
                           value={get(scheduleDetail, "seatNo", "")}
-                          onChange={(e) => setScheduleDetail({...scheduleDetail,"seatNo":e.target.value})}
+                          onChange={(e) =>
+                            setScheduleDetail({
+                              ...scheduleDetail,
+                              seatNo: e.target.value,
+                            })
+                          }
                         />
                       </FormGroup>
                     </Col>
                     <Col>
-                      <FormGroup  style={{paddingTop:'10px'}}>
-                        <DropdownExamResult 
-                       
-                        label="ผลสอบ"
-                        value={get(scheduleDetail, "examResult", "")} 
-                        onClick={(v) => setScheduleDetail({...scheduleDetail,"examResult":v.resultId})}
+                      <FormGroup style={{ paddingTop: "10px" }}>
+                        <DropdownExamResult
+                          label="ผลสอบ"
+                          value={get(scheduleDetail, "examResult", "")}
+                          onClick={(v) =>
+                            setScheduleDetail({
+                              ...scheduleDetail,
+                              examResult: v.resultId,
+                            })
+                          }
                         />
-                       
                       </FormGroup>
                     </Col>
                     <Col>
@@ -348,7 +347,8 @@ const ExamApplication = (props) => {
                           type="text"
                           name="applyTime"
                           value={
-                            scheduleDetail && get(scheduleDetail, "applyTime", "") && 
+                            scheduleDetail &&
+                            get(scheduleDetail, "applyTime", "") &&
                             moment(get(scheduleDetail, "applyTime", "")).format(
                               "DD/MM/yyyy HH:mm:ss"
                             )
@@ -365,13 +365,18 @@ const ExamApplication = (props) => {
                           type="text"
                           name="remark"
                           value={get(scheduleDetail, "remark", "")}
-                          onChange={(e) => setScheduleDetail({...scheduleDetail,"remark":e.target.value})}
+                          onChange={(e) =>
+                            setScheduleDetail({
+                              ...scheduleDetail,
+                              remark: e.target.value,
+                            })
+                          }
                         />
                       </FormGroup>
                     </Col>
                   </Row>
                 </CardBody>
-                 
+
                 <CardBody
                   style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                 >
@@ -384,7 +389,7 @@ const ExamApplication = (props) => {
                           type="text"
                           name="code"
                           value={
-                            mode === "edit"
+                            mode === "history"
                               ? get(scheduleDetail, "updateUserCode", "")
                               : get(scheduleDetail, "createUserCode", "")
                           }
@@ -410,8 +415,9 @@ const ExamApplication = (props) => {
                           type="text"
                           name="time"
                           value={
-                            get(scheduleDetail, "lastUpdate", "") && get(scheduleDetail, "createTime", "") &&
-                            (mode === "edit"
+                            get(scheduleDetail, "lastUpdate", "") &&
+                            get(scheduleDetail, "createTime", "") &&
+                            (mode === "history"
                               ? moment(
                                   get(scheduleDetail, "lastUpdate", "")
                                 ).format("DD/MM/yyyy")
@@ -424,11 +430,9 @@ const ExamApplication = (props) => {
                 </CardBody>
                 <CardBody style={{ textAlign: "right" }}>
                   <SubmitButton
-                     disabled={
-                      scheduleDetail === null || scheduleDetail === ""
-                     }
+                    disabled={scheduleDetail === null || scheduleDetail === ""}
                     title="บันทึก"
-                    onClick={mode === "edit" ? onClickUpdate: onClickSave}
+                    onClick={mode === "history" ? onClickUpdate : onClickSave}
                   />{" "}
                   <CancelButton title="ยกเลิก" onClick={onClickCancel} />
                 </CardBody>

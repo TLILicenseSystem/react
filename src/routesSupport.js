@@ -1,16 +1,18 @@
 import React, { Component } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
-
-const Mook = () => {
-  return "ddd";
-};
+import ExamApplication from "./pages/ExamApplication/ExamApplication";
+import ExamPayment from "./pages/ExamPayment/ExamPayment";
 
 const AppRoute = () => {
   return (
     <Switch>
       <Route
-        path="/support/examApplication"
-        render={(props) => <Mook {...props} />}
+        path="/license/examApplication"
+        render={(props) => <ExamApplication {...props} />}
+      />
+      <Route
+        path="/license/examPayment"
+        render={(props) => <ExamPayment {...props} />}
       />
     </Switch>
   );

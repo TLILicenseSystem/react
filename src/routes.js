@@ -11,27 +11,38 @@ const AppRoute = () => {
   return (
     <Switch>
       <Route
+        exact
+        title="License System"
         path="/setting/examSchedule"
         render={(props) => <ExamSchedulePage {...props} />}
       />
       <Route
+        exact
+        title="License System"
         path="/setting/examSchedule-edit"
         render={(props) => <EditSchedulePage {...props} />}
       />
       <Route
+        exact
+        title="License System"
         path="/setting/examOrganizer"
         render={(props) => <ExamOrganizerPage {...props} />}
       />
       <Route
+        exact
+        title="License System"
         path="/setting/examRound"
         render={(props) => <ExamRoundPage {...props} />}
       />
       <Route
+        exact
+        title="License System"
         path="/setting/examLocation"
         render={(props) => <FormExamLocation {...props} />}
       />
       <Route
         exact
+        title="License System"
         path="/setting/examApplication"
         render={(props) => <ExamApplication {...props} />}
       />

@@ -6,6 +6,7 @@ import editLocationPopup from "./editLocationPopup.reducer";
 import snackBar from "./snackBar.reducer";
 
 import searchSchedulePopup from "./searchSchedulePopup.reducer";
+import selectSalePopup from "./selectSalePopup.reducer";
 
 import { reducer as formReducer } from "redux-form";
 
@@ -16,5 +17,6 @@ export default combineReducers({
   editLocationPopup,
   snackBar,
   searchSchedulePopup,
+  selectSalePopup,
   form: formReducer,
 });

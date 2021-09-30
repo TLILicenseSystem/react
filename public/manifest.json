@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "License System",
+  "name":  "License System",
   "icons": [
     {
       "src": "logo.png",

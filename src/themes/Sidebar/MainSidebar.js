@@ -18,7 +18,9 @@ const MainSidebar = (props) => {
   };
   return (
     <SideBar>
-      <h5 style={{ textAlign: "center", color: "#fff" }}>{props.title}</h5>
+      <h6 style={{ color: "#fff", margin: "14px", paddingLeft: "4px" }}>
+        {props.title}
+      </h6>
       <List type="unstyled">
         {menu.map((item, index) => (
           <div key={index}>
