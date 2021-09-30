@@ -16,11 +16,9 @@ export const SelectSalePopup = ({ onChange }) => {
 
   const columns = [
     {
-      field: "firstName",
+      field: "name",
       headerName: "ชื่อ-นามสกุล",
-      minWidth: 160,
-      // valueGetter: (params) =>
-      //   `${params.getValue(params.id, "firstName") || ""}`,
+      minWidth: 200,
       hideSortIcons: "true",
       headerClassName: "header",
       cellClassName: "cellDark",

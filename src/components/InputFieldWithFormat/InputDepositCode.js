@@ -12,7 +12,7 @@ export const InputDepositCode = ({
 }) => {
   const [depositCode, setDpositCode] = useState({
     first: "000",
-    second: "",
+    second: "00000",
   });
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export const InputDepositCode = ({
         e.target.value = e.target.value.substr(0, 3);
       }
     } else e.target.value = null;
-    onChange(e.target.value + depositCode.second);
+    onChange(e.target.value +""+ depositCode.second);
   };
   const autoTab_second = (e) => {
     if (e.target.value && /^([A-Z0-9 _-]+)$/.test(e.target.value)) {
@@ -35,7 +35,7 @@ export const InputDepositCode = ({
         e.target.value = e.target.value.substr(0, 5);
       }
     } else e.target.value = null;
-    onChange(depositCode.first + e.target.value);
+    onChange(depositCode.first +""+ e.target.value);
   };
   return (
     <div className={styles.div}>

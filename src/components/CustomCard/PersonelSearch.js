@@ -80,7 +80,7 @@ export const PersonelSearch = (props) => {
         <TabContent activeTab={activeTab}>
           <TabPane tabId="1">
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -104,7 +104,7 @@ export const PersonelSearch = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -128,7 +128,7 @@ export const PersonelSearch = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -152,7 +152,7 @@ export const PersonelSearch = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -176,7 +176,7 @@ export const PersonelSearch = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -201,7 +201,7 @@ export const PersonelSearch = (props) => {
             </Row>
 
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -237,7 +237,7 @@ export const PersonelSearch = (props) => {
           </TabPane>
           <TabPane tabId="2-">
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -261,7 +261,7 @@ export const PersonelSearch = (props) => {
             </Row>
 
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -285,7 +285,7 @@ export const PersonelSearch = (props) => {
             </Row>
 
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -308,7 +308,7 @@ export const PersonelSearch = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col sm={{ size: 2, offset: 2 }}>
+              <Col sm={{ size: 3, offset: 2 }}>
                 <FormGroup check>
                   <Label check>
                     <Input
@@ -348,7 +348,7 @@ export const PersonelSearch = (props) => {
       {/*  
      
        <Row>
-        <Col sm={{ size: 2, offset: 2 }}>
+        <Col sm={{ size: 3, offset: 2 }}>
           <FormGroup check>
             <Label check>
               <Input type="radio" name="radio1" /> รหัสตำแหน่ง
@@ -360,7 +360,7 @@ export const PersonelSearch = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col sm={{ size: 2, offset: 2 }}>
+        <Col sm={{ size: 3, offset: 2 }}>
           <FormGroup check>
             <Label check>
               <Input type="radio" name="radio1" /> เลขที่ใบอนุญาต

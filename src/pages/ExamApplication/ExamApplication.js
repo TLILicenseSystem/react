@@ -46,7 +46,11 @@ const ExamApplication = (props) => {
   const [scheduleDetail, setScheduleDetail] = useState(null);
   const [mode, setMode] = useState("history");
   const [application, setApplication] = useState([]);
-
+  const [saleData, setSaleData] = useState(
+    sessionStorage.getItem("sale")
+      ? JSON.parse(sessionStorage.getItem("sale"))
+      : null
+  );
   const dispatch = useDispatch();
   //getExamResult()
 
@@ -131,12 +135,14 @@ const ExamApplication = (props) => {
   ];
 
   useEffect(() => {
-    fetchData();
+    if(saleData && saleData.citizenID){
+      fetchData();
+    }
   }, []);
 
   const fetchData = async () => {
     setLoading(true);
-    const response = await getExamApplication("1122334455667");
+    const response = await getExamApplication(saleData.citizenID);
     setApplication(response);
     setLoading(false);
   };
@@ -174,6 +180,7 @@ const ExamApplication = (props) => {
       regionCode: values.regionCode,
       regionName: values.regionName,
       roundId: values.roundId,
+      scheduleId : scheduleDetail.scheduleId,
       newScheduleId: values.scheduleId,
       timeStr: values.timeStr,
     });
@@ -198,12 +205,23 @@ const ExamApplication = (props) => {
     );
   };
   const onClickSave = async () => {
-    scheduleDetail.citizenId = "1122334455667";
-    scheduleDetail.createUserCode = "2901133";
-    console.log(scheduleDetail);
     try {
-      let response = await insertExamApplication(scheduleDetail);
+      const inputPost = {
+        "citizenId":saleData.citizenID,
+        "scheduleId":scheduleDetail.scheduleId,    
+        "applyTime":"2021-09-15T12:47:56",
+        "applicantType":"0",
+        "seatNo":scheduleDetail.seatNo,
+        "examResult":scheduleDetail.examResult,
+        "remark": scheduleDetail.remark,
+        "createUserCode":"2901133",
+        "updateUserCode":"2901133",
+        "referenceNo":""
+    } 
+      let response = await insertExamApplication(inputPost);
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+      onClickCancel();
+      fetchData();
     } catch (err) {
       let { data } = err.response;
       Swal.fire({
@@ -218,20 +236,22 @@ const ExamApplication = (props) => {
 
   const onClickUpdate = async () => {
     try {
-      let data = {
-        citizenId: scheduleDetail.citizenId,
-        scheduleId: scheduleDetail.scheduleId,
-        applyTime: scheduleDetail.applyTime,
-        applicantType: scheduleDetail.applicantType,
-        seatNo: scheduleDetail.seatNo,
-        examResult: scheduleDetail.examResult,
-        remark: scheduleDetail.remark,
-        createUserCode: scheduleDetail.createUserCode,
-        updateUserCode: scheduleDetail.updateUserCode,
-        referenceNo: scheduleDetail.referenceNo,
-      };
-      let response = await updateExamApplication(scheduleDetail);
+      const inputPost = {
+        "citizenId":saleData.citizenID,
+        "scheduleId":scheduleDetail.scheduleId,   
+        "newScheduleId"  : scheduleDetail.newScheduleId,   
+        "applyTime":"2021-09-15T12:47:56",
+        "applicantType":"0",
+        "seatNo":scheduleDetail.seatNo,
+        "examResult":scheduleDetail.examResult,
+        "remark": scheduleDetail.remark,
+        "createUserCode":"2901133",
+        "updateUserCode":"2901133",
+        "referenceNo":""
+    } 
+      let response = await updateExamApplication(inputPost);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+      
       onClickCancel();
       fetchData();
     } catch (err) {
@@ -348,10 +368,10 @@ const ExamApplication = (props) => {
                           name="applyTime"
                           value={
                             scheduleDetail &&
-                            get(scheduleDetail, "applyTime", "") &&
+                            get(scheduleDetail, "applyTime", "") ?
                             moment(get(scheduleDetail, "applyTime", "")).format(
                               "DD/MM/yyyy HH:mm:ss"
-                            )
+                            ) :  null
                           }
                         />
                       </FormGroup>

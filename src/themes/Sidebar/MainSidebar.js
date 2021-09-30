@@ -18,7 +18,7 @@ const MainSidebar = (props) => {
   };
   return (
     <SideBar>
-      <h6 style={{ color: "#fff", margin: "14px", paddingLeft: "4px" }}>
+      <h6 style={{ color: "#fff",margin: "14px 0 14px 14px"}}>
         {props.title}
       </h6>
       <List type="unstyled">

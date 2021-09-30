@@ -17,7 +17,7 @@ export const InputCitizenID = ({ label, disabled, value, width, onChange }) => {
         type={"tel"}
         defaultValue={value}
         disabled={disabled}
-        onChange={onChange}
+        onChange={(e) =>onChange(e.target.value)}
       />
     </div>
   );
