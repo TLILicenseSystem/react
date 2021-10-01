@@ -8,7 +8,7 @@ import {
 } from "../shared";
 import { showSelectSalePopup } from "../../redux/actions";
 import { useDispatch } from "react-redux";
-import {searchSalesbyname,searchPersonset} from "../../api/apiSearchSale"
+import {searchSalesbyname,searchPersonset,searchLicenseNo} from "../../api/apiSearchSale"
 import Swal from "sweetalert2";
 
 
@@ -18,6 +18,7 @@ export const SearchSales = () => {
       ? JSON.parse(sessionStorage.getItem("sale"))
       : null
   );
+  const [isOpen,setIsOpen] = useState(null)
   const dispatch = useDispatch();
 
   const onSearchSale = async (key, value) => {
@@ -41,7 +42,21 @@ export const SearchSales = () => {
           text: response.data.responseStatus.errorMessage || "ไม่พบข้อมูลที่ต้องการ",
         });
       }
-    } else{
+    } else if(key === "licenseNo"){
+      let response = await searchLicenseNo(value[key].replaceAll("-",""));
+      if(response.data && response.data.responseStatus.errorCode ==="200" ){
+        setSaleData(response.data.responseRecord)
+        setIsOpen(false)
+        sessionStorage.setItem("sale", JSON.stringify(response.data.responseRecord));
+      }else if(response.data && response.data.responseStatus.errorCode !== "200"){
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: response.data.responseStatus.errorMessage || "ไม่พบข้อมูลที่ต้องการ",
+        });
+      }
+    }else{
+
       let type = ""
       switch (key) {
         case "citizenID":
@@ -53,13 +68,16 @@ export const SearchSales = () => {
         case "depositCode":
             type = "D";
             break; 
+        case "strid":
+            type = "H";
+            break; 
         default:
           break;
       }
-     alert(value[key])
      let response = await searchPersonset(type, value[key].replaceAll("-",""));
       if(response.data && response.data.responseStatus.errorCode ==="200" ){
         setSaleData(response.data.responseRecord)
+        setIsOpen(false)
         sessionStorage.setItem("sale", JSON.stringify(response.data.responseRecord));
       }else if(response.data && response.data.responseStatus.errorCode !== "200"){
         Swal.fire({
@@ -73,7 +91,11 @@ export const SearchSales = () => {
     
   };
 
+
+
   const selectSale =  async (data) => {
+    setIsOpen(false)
+    setSaleData(null)
     let response = await searchPersonset("C", data.citizenID.replaceAll("-",""));
     if(response.data && response.data.responseStatus.errorCode ==="200" ){
       setSaleData(response.data.responseRecord)
@@ -90,7 +112,7 @@ export const SearchSales = () => {
   return (
     <Card style={{ border: "none" }}>
       <CardBody>
-        <FilterCollapse title="ตัวกรองข้อมูล">
+        <FilterCollapse open={isOpen} title="ตัวกรองข้อมูล">
           <PersonelSearch onSearch={onSearchSale} />
         </FilterCollapse>
       </CardBody>

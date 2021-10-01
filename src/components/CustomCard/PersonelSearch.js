@@ -380,7 +380,7 @@ export const PersonelSearch = (props) => {
         />{" "}
         <CancelButton
           title="ยกเลิก"
-          // onClick={() => setSearchValue({ ...initivalSearch, searchItem: "" })}
+         onClick={() => setSearchValue(initivalSearch)}
         />
       </CardBody>
     </Container>

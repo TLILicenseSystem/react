@@ -20,22 +20,36 @@ export const InputDepositCode = ({
       first: value.substr(0, 3),
       second: value.substr(3, value.length),
     });
-  }, []);
+    console.log("eff",{
+      first: value.substr(0, 3),
+      second: value.substr(3, value.length),
+    })
+    console.log("eff",value)
+  }, [value]);
   const autoTab_first = (e) => {
     if (e.target.value && /^\d+$/.test(e.target.value)) {
       if (e.target.value.length > 3) {
         e.target.value = e.target.value.substr(0, 3);
       }
-    } else e.target.value = null;
+    } else e.target.value = "000";
     onChange(e.target.value +""+ depositCode.second);
+    setDpositCode({
+      first: e.target.value ,
+      second: depositCode.second,
+    });
   };
   const autoTab_second = (e) => {
     if (e.target.value && /^([A-Z0-9 _-]+)$/.test(e.target.value)) {
       if (e.target.value.length > 5) {
         e.target.value = e.target.value.substr(0, 5);
       }
-    } else e.target.value = null;
-    onChange(depositCode.first +""+ e.target.value);
+    } else e.target.value = "00000";
+    onChange(depositCode.first +""+ e.target.value  );
+    setDpositCode({
+      first:depositCode.first,
+      second: e.target.value  ,
+    });
+    console.log(depositCode.first +""+ e.target.value )
   };
   return (
     <div className={styles.div}>

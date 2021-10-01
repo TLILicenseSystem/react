@@ -81,3 +81,32 @@ export const searchPersonset = async (queryType ,key) => {
         throw err;
     }
 }
+
+
+
+export const searchLicenseNo = async (licenseNo ,agentType = "S") => {
+    const baseURL = process.env.REACT_APP_SERVER_URL;
+    const defaultOptions = {
+        baseURL,
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json; charset=utf-8",
+        // "Access-Control-Allow-Origin":"*",
+        },
+    };
+
+    const api = axios.create(defaultOptions);
+    try {
+        const response = await api.get(`sales/search?licenseNo=${licenseNo}&agentType=${agentType}`);
+        if (response.status === 200) {
+            return response;
+        }
+        else {
+            throw new Error();
+        }
+    }
+    catch (err) {
+        throw err;
+    }
+}

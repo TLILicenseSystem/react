@@ -5,6 +5,8 @@ import PropTypes from "prop-types";
 import InputMask from "react-input-mask";
 
 export const InputPersonID = ({ label, disabled, value, width, onChange }) => {
+
+
   return (
     <div className={styles.div}>
       <label className={styles.label}>{label}</label>
@@ -17,7 +19,7 @@ export const InputPersonID = ({ label, disabled, value, width, onChange }) => {
         type={"tel"}
         defaultValue={value}
         disabled={disabled}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
       />
     </div>
   );

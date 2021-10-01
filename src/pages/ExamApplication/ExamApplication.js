@@ -166,24 +166,43 @@ const ExamApplication = (props) => {
     setMode("history");
   };
 
-  const onClickChangeSchedule = (values) => {
-    setScheduleDetail({
-      ...scheduleDetail,
-      alteredLocationId: values.alteredLocationId,
-      examDate: values.examDate,
-      locationId: values.locationId,
-      locationDetail: values.locationDetail,
-      orgCode: values.orgCode,
-      orgName: values.orgName,
-      provinceCode: values.provinceCode,
-      provinceName: values.provinceName,
-      regionCode: values.regionCode,
-      regionName: values.regionName,
-      roundId: values.roundId,
-      scheduleId : scheduleDetail.scheduleId,
-      newScheduleId: values.scheduleId,
-      timeStr: values.timeStr,
-    });
+  const onClickChangeSchedule =  (values) => {
+    if(scheduleDetail){
+      setScheduleDetail({
+        ...scheduleDetail,
+        alteredLocationId: values.alteredLocationId,
+        examDate: values.examDate,
+        locationId: values.locationId,
+        locationDetail: values.locationDetail,
+        orgCode: values.orgCode,
+        orgName: values.orgName,
+        provinceCode: values.provinceCode,
+        provinceName: values.provinceName,
+        regionCode: values.regionCode,
+        regionName: values.regionName,
+        roundId: values.roundId,
+        scheduleId : scheduleDetail.scheduleId,
+        newScheduleId: values.scheduleId,
+        timeStr: values.timeStr,
+      });
+    }else{
+      setScheduleDetail({
+        alteredLocationId: values.alteredLocationId,
+        examDate: values.examDate,
+        locationId: values.locationId,
+        locationDetail: values.locationDetail,
+        orgCode: values.orgCode,
+        orgName: values.orgName,
+        provinceCode: values.provinceCode,
+        provinceName: values.provinceName,
+        regionCode: values.regionCode,
+        regionName: values.regionName,
+        roundId: values.roundId,
+        scheduleId : values.scheduleId,
+        timeStr: values.timeStr,
+      });
+    }
+     
   };
   const onClickEditExamApplication = (values) => {
     setScheduleDetail(values);
@@ -238,8 +257,7 @@ const ExamApplication = (props) => {
     try {
       const inputPost = {
         "citizenId":saleData.citizenID,
-        "scheduleId":scheduleDetail.scheduleId,   
-        "newScheduleId"  : scheduleDetail.newScheduleId,   
+        "scheduleId":scheduleDetail.scheduleId,     
         "applyTime":"2021-09-15T12:47:56",
         "applicantType":"0",
         "seatNo":scheduleDetail.seatNo,
@@ -249,6 +267,9 @@ const ExamApplication = (props) => {
         "updateUserCode":"2901133",
         "referenceNo":""
     } 
+      if(scheduleDetail.newScheduleId !== scheduleDetail.scheduleId)
+      inputPost["newScheduleId"] =scheduleDetail.newScheduleId
+
       let response = await updateExamApplication(inputPost);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
       

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Collapse, Card, CardBody } from "reactstrap";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,15 +19,20 @@ const collapse = {
   alignItems: "flex-end",
 };
 
-export const FilterCollapse = ({ title, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const FilterCollapse = ({ open,title, children }) => {
+  const [isOpen, setIsOpen] = useState(open);
 
   const toggle = () => setIsOpen(!isOpen);
+
+  useEffect(()=>{
+    toggle()
+    console.log("mook",open)
+  },[open])
   return (
     <Card>
       <CardBody>
         <h3 onClick={toggle} style={header}>
-          {title}
+          {title} {isOpen+"o"}
           <FontAwesomeIcon
             icon={isOpen ? faAngleUp : faAngleDown}
             className="float-right"
@@ -43,11 +48,13 @@ export const FilterCollapse = ({ title, children }) => {
 
 FilterCollapse.defaultProps = {
   title: "ตัวกรองข้อมูล",
+  open:false,
   children: "",
   onClick: () => {},
 };
 FilterCollapse.propTypes = {
   title: PropTypes.string,
+  open:PropTypes.bool,
   children: PropTypes.object,
   onClick: PropTypes.func,
 };

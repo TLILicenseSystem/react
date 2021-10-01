@@ -265,7 +265,7 @@ const ExamPayment = (props) => {
                   />
                 </CardBody>
               </TabPane>
-              <TabPane tabId="2">deferf</TabPane>
+              <TabPane tabId="2">...</TabPane>
             </TabContent>
           </div>
         </Card>
