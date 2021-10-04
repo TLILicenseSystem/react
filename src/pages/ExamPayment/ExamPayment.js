@@ -37,7 +37,8 @@ import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import Swal from "sweetalert2";
 
 import moment from "moment";
-
+import FormPayment from "./FormPayment";
+import FormRefundPayment from "./FormRefundPayment";
 const ExamPayment = (props) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
@@ -265,7 +266,127 @@ const ExamPayment = (props) => {
                   />
                 </CardBody>
               </TabPane>
-              <TabPane tabId="2">...</TabPane>
+              <TabPane tabId="2">
+                <CardBody>
+                  <FormPayment />
+                </CardBody>
+                <CardBody
+                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                >
+                  <Row sm="6">
+                    <Col>
+                      <FormGroup>
+                        <label className={styles.label}>ผู้บันทึก</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          name="code"
+                          // value={
+                          //   mode === "history"
+                          //     ? get(scheduleDetail, "updateUserCode", "")
+                          //     : get(scheduleDetail, "createUserCode", "")
+                          // }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <label className={styles.label}>สาขา</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          // name="provinceName"
+                          // value={get(scheduleDetail, "provinceName", "")}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <label className={styles.label}>วันที่บันทึก</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          name="time"
+                          // value={
+                          //   get(scheduleDetail, "lastUpdate", "") &&
+                          //   get(scheduleDetail, "createTime", "") &&
+                          //   (mode === "history"
+                          //     ? moment(
+                          //         get(scheduleDetail, "lastUpdate", "")
+                          //       ).format("DD/MM/yyyy")
+                          //     : moment().format("DD/MM/yyyy"))
+                          // }
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </CardBody>
+                <CardBody>
+                  <FormRefundPayment />
+                </CardBody>
+                <CardBody
+                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                >
+                  <Row sm="6">
+                    <Col>
+                      <FormGroup>
+                        <label className={styles.label}>ผู้บันทึก</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          name="code"
+                          // value={
+                          //   mode === "history"
+                          //     ? get(scheduleDetail, "updateUserCode", "")
+                          //     : get(scheduleDetail, "createUserCode", "")
+                          // }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <label className={styles.label}>สาขา</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          // name="provinceName"
+                          // value={get(scheduleDetail, "provinceName", "")}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <label className={styles.label}>วันที่บันทึก</label>
+                        <Input
+                          readOnly={true}
+                          type="text"
+                          name="time"
+                          // value={
+                          //   get(scheduleDetail, "lastUpdate", "") &&
+                          //   get(scheduleDetail, "createTime", "") &&
+                          //   (mode === "history"
+                          //     ? moment(
+                          //         get(scheduleDetail, "lastUpdate", "")
+                          //       ).format("DD/MM/yyyy")
+                          //     : moment().format("DD/MM/yyyy"))
+                          // }
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </CardBody>
+                <CardBody style={{ textAlign: "right" }}>
+                  <SubmitButton
+                    disabled={true}
+                    title="บันทึก"
+                    // onClick={mode === "history" ? onClickUpdate : onClickSave}
+                  />{" "}
+                  <CancelButton
+                    title="ยกเลิก"
+                    //onClick={onClickCancel}
+                  />
+                </CardBody>
+              </TabPane>
             </TabContent>
           </div>
         </Card>
