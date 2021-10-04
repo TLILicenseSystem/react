@@ -150,7 +150,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
       headerClassName: "header",
       width: 100,
       renderCell: (cellValues) => {
-        if(cellValues.row.remainCandidate !== 0 ||  cellValues.row.remainCandidate !== "0" ){
+        if(cellValues.row.remainCandidate !== 0 ||  cellValues.row.remainCandidate !== 0 ){
           return <EditButton
           title="เลือก"
           onClick={() => handleAction(cellValues.row)}
