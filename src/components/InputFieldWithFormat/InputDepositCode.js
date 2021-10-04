@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input, Row, Col } from "reactstrap";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
+import InputMask from "react-input-mask";
 
 export const InputDepositCode = ({
   label,
@@ -19,19 +20,14 @@ export const InputDepositCode = ({
     setDpositCode({
       first: value.substr(0, 3),
       second: value.substr(3, value.length),
-    });
-    console.log("eff",{
-      first: value.substr(0, 3),
-      second: value.substr(3, value.length),
-    })
-    console.log("eff",value)
+    }); 
   }, [value]);
   const autoTab_first = (e) => {
     if (e.target.value && /^\d+$/.test(e.target.value)) {
       if (e.target.value.length > 3) {
         e.target.value = e.target.value.substr(0, 3);
       }
-    } else e.target.value = "000";
+    } else e.target.value = "";
     onChange(e.target.value +""+ depositCode.second);
     setDpositCode({
       first: e.target.value ,
@@ -43,19 +39,18 @@ export const InputDepositCode = ({
       if (e.target.value.length > 5) {
         e.target.value = e.target.value.substr(0, 5);
       }
-    } else e.target.value = "00000";
+    } else e.target.value = "";
     onChange(depositCode.first +""+ e.target.value  );
     setDpositCode({
       first:depositCode.first,
       second: e.target.value  ,
     });
-    console.log(depositCode.first +""+ e.target.value )
-  };
+   };
   return (
     <div className={styles.div}>
       <label className={styles.label}>{label}</label>
       <Row>
-        <Col md={4}>
+        <Col md={4}>    
           <Input
             id="depositCode_first"
             defaultValue={depositCode.first}
