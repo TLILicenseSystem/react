@@ -131,7 +131,7 @@ let EditSchedule = (props) => {
         );
         props.change("receiveTime", state.receiveTime);
         props.change("maxApplicant", state.maxApplicant);
-      } else props.history.push("/examSchedule");
+      } else props.history.push("/setting/examSchedule");
     }
   }, []);
 
@@ -141,7 +141,7 @@ let EditSchedule = (props) => {
   };
 
   const changeToSchedulePage = () => {
-    history.push("/examSchedule", null);
+    history.push("/setting/examSchedule", null);
   };
   const onClickSave = async (data) => {
     if (!isShowMainLocation) {

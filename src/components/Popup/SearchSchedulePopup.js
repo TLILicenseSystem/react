@@ -133,12 +133,10 @@ export const SearchSchedulePopup = ({ onChange }) => {
       minWidth: 100,
       align: "center",
       renderCell: (cellValues) => {
-        if(cellValues.row.remainCandidate < cellValues.row.maxApplicant ){
-          return <div  style={{backgroundColor: 'lime', width: '100%',color: 'white'}}>{`${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`} </div>
+        if(cellValues.row.remainCandidate === 0 ||  cellValues.row.remainCandidate === "0"){
+          return <div style={{backgroundColor: 'red', width: '100%',color: 'white'}}>เต็ม</div> 
         }else{
-          return (
-           <div style={{backgroundColor: 'red', width: '100%',color: 'white'}}>เต็ม</div> 
-          );
+            return <div  style={{backgroundColor: 'lime', width: '100%',color: 'white'}}>{`${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`} </div> 
         }
       },
       hideSortIcons: "true",
@@ -152,7 +150,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
       headerClassName: "header",
       width: 100,
       renderCell: (cellValues) => {
-        if(cellValues.row.remainCandidate < cellValues.row.maxApplicant ){
+        if(cellValues.row.remainCandidate !== 0 ||  cellValues.row.remainCandidate !== "0" ){
           return <EditButton
           title="เลือก"
           onClick={() => handleAction(cellValues.row)}

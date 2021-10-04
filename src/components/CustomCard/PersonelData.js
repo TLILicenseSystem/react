@@ -103,7 +103,17 @@ export const PersonelData = ({ data }) => {
           <Row style={{ marginBottom: "0" }}>
             <Col sm="5">เลขที่ฝากค้ำ</Col>
             <Col sm="7" style={{paddingLeft :'0'}} >
-              <Input label="" disabled={true} value={get(data, "branchCode", "") +"-"+ get(data, "depositNo", "")}/>
+            <InputMask
+                mask="999-*****"
+                maskChar={null}
+                className="form-control"
+                style={{ marginBottom: "20px" }}
+                id="personID"
+                type={"tel"}
+                value={get(data, "branchCode", "") +"-"+ get(data, "depositNo", "")}
+                disabled={true}
+              />
+             {/* // <Input label="" disabled={true} value={get(data, "branchCode", "") +"-"+ get(data, "depositNo", "")}/> */}
             </Col>
           </Row>
         </Col>
