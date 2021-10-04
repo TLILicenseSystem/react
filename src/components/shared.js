@@ -38,6 +38,7 @@ export { InputStrID } from "./InputFieldWithFormat/InputStrID";
 export { SearchSchedulePopup } from "./Popup/SearchSchedulePopup";
 export { PersonelData } from "./CustomCard/PersonelData";
 export { PersonelSearch } from "./CustomCard/PersonelSearch";
+export { StructData } from "./CustomCard/StructData";
 export { SearchSales } from "./SearchSale/SearchSale";
 export { SelectSalePopup } from "./Popup/SelectSalePopup";
 
