@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useRef} from "react";
 import {
   TabContent,
   TabPane,
@@ -37,6 +37,8 @@ export const PersonelSearch = (props) => {
   const [searchItem, setSearchItem] = useState("name");
   const [activeTab, setActiveTab] = useState("1");
 
+  const formRef = useRef(null)
+
   const onChange = (key, value) => {
     searchValue[key] = value;
     setSearchValue(searchValue);
@@ -47,9 +49,174 @@ export const PersonelSearch = (props) => {
       setSearchItem("name");
     }
   };
+
+  const onClickCancel = () => {
+    setSearchItem("name");
+    setSearchValue(initivalSearch)
+    formRef.current.reset();
+  }
   return (
     <Container>
       <Container style={{ textAlign: "center" }}>
+        <form style={{textAlign:'left'}} ref={formRef}>
+        <Row>
+              <Col sm={{ size: 3, offset: 2 }}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="searchSele"
+                      value="citizenID"
+                      checked={searchItem === "citizenID"}
+                      onChange={() => setSearchItem("citizenID")}
+                    />
+                    เลขบัตรประชาชน
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col sm="4">
+                <InputCitizenID
+                  label=""
+                  disabled={searchItem !== "citizenID"}
+                  onChange={(v) => onChange("citizenID", v)}
+                  value={searchValue["citizenID"]}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={{ size: 3, offset: 2 }}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="searchSele"
+                      value="depositCode"
+                      checked={searchItem === "depositCode"}
+                      onChange={() => setSearchItem("depositCode")}
+                    />
+                    โค้ดฝากค้ำ
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col sm="4">
+                <InputDepositCode
+                  label=""
+                  disabled={searchItem !== "depositCode"}
+                  onChange={(v) => onChange("depositCode", v)}
+                  value={searchValue["depositCode"]}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={{ size: 3, offset: 2 }}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="searchSele"
+                      value="personID"
+                      checked={searchItem === "personID"}
+                      onChange={() => setSearchItem("personID")}
+                    />{" "}
+                    รหัสประจำตัว
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col sm="4">
+                <InputPersonID
+                  label=""
+                  disabled={searchItem !== "personID"}
+                  onChange={(v) => onChange("personID", v)}
+                  value={searchValue["personID"]}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={{ size: 3, offset: 2 }}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="searchSele"
+                      value="strid"
+                      checked={searchItem === "strid"}
+                      onChange={() => setSearchItem("strid")}
+                    />{" "}
+                    รหัสตำแหน่ง
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col sm="4">
+                <InputStrID
+                  label=""
+                  disabled={searchItem !== "strid"}
+                  onChange={(v) => onChange("strid", v)}
+                  value={searchValue["strid"]}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={{ size: 3, offset: 2 }}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="searchSele"
+                      value="licenseNo"
+                      checked={searchItem === "licenseNo"}
+                      onChange={() => setSearchItem("licenseNo")}
+                    />{" "}
+                    เลขที่ใบอนุญาต
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col sm="4">
+                <InputLicenseNo
+                  label=""
+                  disabled={searchItem !== "licenseNo"}
+                  onChange={(v) => onChange("licenseNo", v)}
+                  value={searchValue["licenseNo"]}
+                />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col sm={{ size: 3, offset: 2 }}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="searchSele"
+                      value="name"
+                      checked={searchItem === "name"}
+                      onChange={() => setSearchItem("name")}
+                    />{" "}
+                    ชื่อ-นามสกุล
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col sm="4">
+                <Row>
+                  <Col sm={6} md={6}>
+                    <Input
+                      type="text"
+                      disabled={searchItem !== "name"}
+                      onChange={(e) => onChange("firstName", e.target.value)}
+                    />
+                  </Col>
+                  <Col sm={6} md={6}>
+                    <Input
+                      type="text"
+                      disabled={searchItem !== "name"}
+                      onChange={(e) => onChange("lastName", e.target.value)}
+                    />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+        </form>
+
+{/*      
         <ButtonGroup style={{ marginBottom: "2em" }}>
           <Button
             outline
@@ -74,9 +241,11 @@ export const PersonelSearch = (props) => {
             ค้นหาพนักงาน
           </Button>
         </ButtonGroup>
+     
+      */}
       </Container>
 
-      <div>
+      {/* <div>
         <TabContent activeTab={activeTab}>
           <TabPane tabId="1">
             <Row>
@@ -343,7 +512,7 @@ export const PersonelSearch = (props) => {
             </Row>
           </TabPane>
         </TabContent>
-      </div>
+      </div> */}
 
       {/*  
      
@@ -380,7 +549,7 @@ export const PersonelSearch = (props) => {
         />{" "}
         <CancelButton
           title="ยกเลิก"
-         onClick={() => setSearchValue(initivalSearch)}
+         onClick={onClickCancel}
         />
       </CardBody>
     </Container>

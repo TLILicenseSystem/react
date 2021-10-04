@@ -111,7 +111,7 @@ const ExamApplication = (props) => {
     {
       field: "examResultName",
       headerName: "ผลสอบ",
-      minWidth: 100,
+      minWidth: 140,
       align: "left",
       hideSortIcons: "true",
       headerClassName: "header",
@@ -224,11 +224,36 @@ const ExamApplication = (props) => {
     );
   };
   const onClickSave = async () => {
+    console.log(scheduleDetail,"scheduleDetail")
+    if(!scheduleDetail.seatNo || scheduleDetail.seatNo === null || scheduleDetail.seatNo === ""){
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาระบุเลขที่นั่งสอบ",
+      });
+      return;
+    }
+    if(!scheduleDetail.examResult || scheduleDetail.examResult === null || scheduleDetail.examResult === ""){
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาเลือกข้อมูลผลสอบ",
+      });
+      return;
+    }
+    if(!scheduleDetail.remark || scheduleDetail.remark === null || scheduleDetail.remark === ""){
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาระบุหมายเหตุ",
+      });
+      return;
+    }
     try {
       const inputPost = {
         "citizenId":saleData.citizenID,
         "scheduleId":scheduleDetail.scheduleId,    
-        "applyTime":"2021-09-15T12:47:56",
+        "applyTime":moment().format("YYYY-MM-DDTHH:mm:ss"),
         "applicantType":"0",
         "seatNo":scheduleDetail.seatNo,
         "examResult":scheduleDetail.examResult,
@@ -254,11 +279,36 @@ const ExamApplication = (props) => {
   };
 
   const onClickUpdate = async () => {
+
+    if(scheduleDetail.seatNo === null || scheduleDetail.seatNo === ""){
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาระบุเลขที่นั่งสอบ",
+      });
+      return;
+    }
+    if(scheduleDetail.examResult === null || scheduleDetail.examResult === ""){
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาเลือกข้อมูลผลสอบ",
+      });
+      return;
+    }
+    if(scheduleDetail.remark === null || scheduleDetail.remark === ""){
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาระบุหมายเหตุ",
+      });
+      return;
+    }
     try {
       const inputPost = {
         "citizenId":saleData.citizenID,
-        "scheduleId":scheduleDetail.scheduleId,     
-        "applyTime":"2021-09-15T12:47:56",
+        "scheduleId":scheduleDetail.scheduleId,  
+        "applyTime":scheduleDetail.applyTime,
         "applicantType":"0",
         "seatNo":scheduleDetail.seatNo,
         "examResult":scheduleDetail.examResult,
@@ -350,7 +400,7 @@ const ExamApplication = (props) => {
                   <Row sm="4">
                     <Col>
                       <FormGroup>
-                        <label className={styles.label}>เลขที่นั่งสอบ</label>
+                        <label className={styles.label}>เลขที่นั่งสอบ  <label className={styles.required}> *</label></label>
                         <Input
                           type="tel"
                           name="seatNo"
@@ -369,6 +419,7 @@ const ExamApplication = (props) => {
                         <DropdownExamResult
                           label="ผลสอบ"
                           value={get(scheduleDetail, "examResult", "")}
+                          requiredField={true}
                           onClick={(v) =>
                             setScheduleDetail({
                               ...scheduleDetail,
@@ -401,7 +452,7 @@ const ExamApplication = (props) => {
                   <Row sm="1">
                     <Col sm="9">
                       <FormGroup>
-                        <label className={styles.label}>หมายเหตุ</label>
+                        <label className={styles.label}>หมายเหตุ  <label className={styles.required}> *</label></label>
                         <Input
                           type="text"
                           name="remark"
@@ -471,7 +522,7 @@ const ExamApplication = (props) => {
                 </CardBody>
                 <CardBody style={{ textAlign: "right" }}>
                   <SubmitButton
-                    disabled={scheduleDetail === null || scheduleDetail === ""}
+                    disabled={scheduleDetail === null || scheduleDetail === "" || saleData === null}
                     title="บันทึก"
                     onClick={mode === "history" ? onClickUpdate : onClickSave}
                   />{" "}

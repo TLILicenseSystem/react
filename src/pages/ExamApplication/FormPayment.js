@@ -36,8 +36,9 @@ const FormPayment = (props) => {
           </FormGroup>
         </Col>
         <Col style={{ margintop: "2.7em",display: 'flex',
-alignItems: 'flex-end' }}>
+          alignItems: 'flex-end' }}>
           <AddButton
+            
             title="ชำระค่าธรรมเนียม"
             onClick={() => console.log("dddd")}
           />

@@ -55,7 +55,7 @@ export const DropdownExamResult = ({
     <div>
       <Form>
         <FormGroup row>
-          <label className={styles.labelDropdown}>
+          <label className={styles.labelDropdown} style={{ marginTop: 0}}>
             {label} 
             <label className={styles.required}>
               {value === "" && requiredField ? "*" : ""}

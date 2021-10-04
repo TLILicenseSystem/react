@@ -18,7 +18,7 @@ export const SelectSalePopup = ({ onChange }) => {
     {
       field: "name",
       headerName: "ชื่อ-นามสกุล",
-      minWidth: 200,
+      minWidth: 250,
       hideSortIcons: "true",
       headerClassName: "header",
       cellClassName: "cellDark",
@@ -26,14 +26,14 @@ export const SelectSalePopup = ({ onChange }) => {
     {
       field: "personID",
       headerName: "รหัสประจำตัว",
-      minWidth: 120,
+      minWidth: 200,
       hideSortIcons: "true",
       headerClassName: "header",
     },
     {
       field: "citizenID",
       headerName: "เลขบัตรประชาชน",
-      minWidth: 140,
+      minWidth: 200,
       hideSortIcons: "true",
       headerClassName: "header",
     },

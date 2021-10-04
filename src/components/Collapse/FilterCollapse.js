@@ -24,15 +24,11 @@ export const FilterCollapse = ({ open,title, children }) => {
 
   const toggle = () => setIsOpen(!isOpen);
 
-  useEffect(()=>{
-    toggle()
-    console.log("mook",open)
-  },[open])
   return (
     <Card>
       <CardBody>
         <h3 onClick={toggle} style={header}>
-          {title} {isOpen+"o"}
+          {title}  
           <FontAwesomeIcon
             icon={isOpen ? faAngleUp : faAngleDown}
             className="float-right"

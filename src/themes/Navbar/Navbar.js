@@ -41,7 +41,7 @@ const NavBar = () => {
         <MenuDiv>
           <Nav>
             <NavItem>
-              <NavLink href="/">
+              <NavLink  onClick={() => history.push("/")} style={{cursor:'pointer'}}>
                 <Item> หน้าแรก </Item>
               </NavLink>
             </NavItem>

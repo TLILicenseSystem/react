@@ -133,10 +133,10 @@ const Login = () => {
           <Row form>
             <Col md={6}>
               <InputWithLabelRow
-                label="Email"
+                label="Username"
                 type="email"
                 id="email"
-                placeholder="Email"
+                placeholder="Username"
                 value={data.email.value}
                 onChange={onChange}
                 textboxSize={12}

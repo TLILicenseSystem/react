@@ -18,7 +18,7 @@ export const SearchSales = () => {
       ? JSON.parse(sessionStorage.getItem("sale"))
       : null
   );
-  const [isOpen,setIsOpen] = useState(null)
+  const [,forceUpdate] = useState(0)
   const dispatch = useDispatch();
 
   const onSearchSale = async (key, value) => {
@@ -46,8 +46,9 @@ export const SearchSales = () => {
       let response = await searchLicenseNo(value[key].replaceAll("-",""));
       if(response.data && response.data.responseStatus.errorCode ==="200" ){
         setSaleData(response.data.responseRecord)
-        setIsOpen(false)
-        sessionStorage.setItem("sale", JSON.stringify(response.data.responseRecord));
+         sessionStorage.setItem("sale", JSON.stringify(response.data.responseRecord));
+        forceUpdate(n => !n);
+
       }else if(response.data && response.data.responseStatus.errorCode !== "200"){
         Swal.fire({
           icon: "error",
@@ -77,8 +78,9 @@ export const SearchSales = () => {
      let response = await searchPersonset(type, value[key].replaceAll("-",""));
       if(response.data && response.data.responseStatus.errorCode ==="200" ){
         setSaleData(response.data.responseRecord)
-        setIsOpen(false)
         sessionStorage.setItem("sale", JSON.stringify(response.data.responseRecord));
+        forceUpdate(n => !n);
+
       }else if(response.data && response.data.responseStatus.errorCode !== "200"){
         Swal.fire({
           icon: "error",
@@ -94,12 +96,13 @@ export const SearchSales = () => {
 
 
   const selectSale =  async (data) => {
-    setIsOpen(false)
     setSaleData(null)
     let response = await searchPersonset("C", data.citizenID.replaceAll("-",""));
     if(response.data && response.data.responseStatus.errorCode ==="200" ){
       setSaleData(response.data.responseRecord)
       sessionStorage.setItem("sale", JSON.stringify(response.data.responseRecord));
+      forceUpdate(n => !n);
+
     }else if(response.data && response.data.responseStatus.errorCode !== "200"){
       Swal.fire({
         icon: "error",
@@ -112,7 +115,7 @@ export const SearchSales = () => {
   return (
     <Card style={{ border: "none" }}>
       <CardBody>
-        <FilterCollapse open={isOpen} title="ตัวกรองข้อมูล">
+        <FilterCollapse  title="ตัวกรองข้อมูล">
           <PersonelSearch onSearch={onSearchSale} />
         </FilterCollapse>
       </CardBody>

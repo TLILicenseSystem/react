@@ -4,7 +4,7 @@ import { colors } from "../style";
 export const NavigationBar = styled.div`
   background-color: #fff;
   min-height: 7vh;
-  z-index: 1;
+  z-index: 10;
   position: fixed; /* Set the navbar to fixed position */
   top: 0; /* Position the navbar at the top of the page */
   width: 100%; /* Full width */

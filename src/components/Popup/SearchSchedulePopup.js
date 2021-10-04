@@ -134,10 +134,10 @@ export const SearchSchedulePopup = ({ onChange }) => {
       align: "center",
       renderCell: (cellValues) => {
         if(cellValues.row.remainCandidate < cellValues.row.maxApplicant ){
-          return `${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`
+          return <div  style={{backgroundColor: 'lime', width: '100%',color: 'white'}}>{`${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`} </div>
         }else{
           return (
-            "เต็ม"
+           <div style={{backgroundColor: 'red', width: '100%',color: 'white'}}>เต็ม</div> 
           );
         }
       },
@@ -171,7 +171,6 @@ export const SearchSchedulePopup = ({ onChange }) => {
 
   const handleAction = (e) => {
     //call back function
-    console.log("SearchSchedulePopup ", e);
     dispatch(hideSearchSchedulePopup());
     onChange(e);
   };
@@ -186,7 +185,6 @@ export const SearchSchedulePopup = ({ onChange }) => {
       examOrganizerCode,
       provinceCode
     );
-    console.log("cccdewf")
     setExamScheduleList(get(responseSchedule, "data", []));
     
   };
@@ -197,9 +195,14 @@ export const SearchSchedulePopup = ({ onChange }) => {
 
 
   useEffect(() => {
+  
+    setSelectedDate(moment())
+    setSelectedEndDate(moment())
     fetchData();
-  }, []);
+    console.log("dwdedw",moment(selectedDate).format("YYYY-MM-DD"))
+  }, [isShow]);
 
+  
   const toggle = () => dispatch(hideSearchSchedulePopup());
 
   const fetchProvinceData = async (e) => {
@@ -237,7 +240,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
       <ModalBody>
         <Card style={{border:'none'}}>
           <CardBody>
-          <Row>
+          <Row> 
                   <Col xs="12" md={{offset:'3',size:'3'}} >
                     <DateRangePicker
                       label="วันที่สอบ"

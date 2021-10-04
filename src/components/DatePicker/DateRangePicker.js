@@ -24,7 +24,7 @@ export const DateRangePicker = ({
         <label className={styles.label} style={{paddingLeft: 0}}>{label}</label>
         <DatePicker 
           initialSettings={{ 
-            showDropdowns:true,
+           showDropdowns:true,
            // startDate:null,
             //endDate : null,
             locale:{
