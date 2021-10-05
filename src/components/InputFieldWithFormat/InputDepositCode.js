@@ -20,55 +20,75 @@ export const InputDepositCode = ({
     setDpositCode({
       first: value.substr(0, 3),
       second: value.substr(3, value.length),
-    }); 
+    });
   }, [value]);
   const autoTab_first = (e) => {
-    if (e.target.value && /^\d+$/.test(e.target.value)) {
-      if (e.target.value.length > 3) {
-        e.target.value = e.target.value.substr(0, 3);
-      }
-    } else e.target.value = "";
-    onChange(e.target.value +""+ depositCode.second);
+    if (depositCode.first)
+      onChange(e.target.value + "" + depositCode.second.toUpperCase());
+    else onChange("000" + depositCode.second.toUpperCase());
+
     setDpositCode({
-      first: e.target.value ,
-      second: depositCode.second,
+      first: e.target.value,
+      second: depositCode.second.toUpperCase(),
     });
   };
   const autoTab_second = (e) => {
-    if (e.target.value && /^([A-Z0-9 _-]+)$/.test(e.target.value)) {
-      if (e.target.value.length > 5) {
-        e.target.value = e.target.value.substr(0, 5);
-      }
-    } else e.target.value = "";
-    onChange(depositCode.first +""+ e.target.value  );
+    if (depositCode.first)
+      onChange(depositCode.first + "" + e.target.value.toUpperCase());
+    else onChange("000" + e.target.value.toUpperCase());
+
     setDpositCode({
-      first:depositCode.first,
-      second: e.target.value  ,
+      first: depositCode.first,
+      second: e.target.value.toUpperCase(),
     });
-   };
+  };
+  console.log(depositCode, "depositCode");
   return (
     <div className={styles.div}>
       <label className={styles.label}>{label}</label>
       <Row>
-        <Col md={4}>    
-          <Input
+        <Col md={4}>
+          <InputMask
+            id="depositCode_first"
+            mask="999"
+            maskChar=" "
+            className="form-control"
+            style={{ marginBottom: "20px" }}
+            id="depositCode_first"
+            type={"tel"}
+            defaultValue={depositCode && depositCode.first}
+            disabled={disabled}
+            onChange={autoTab_first}
+          />
+          {/* <Input
             id="depositCode_first"
             defaultValue={depositCode.first}
             className={styles.input}
             type={"tel"}
             disabled={disabled}
             onChange={autoTab_first}
-          />
+          /> */}
         </Col>
         <Col md={6}>
-          <Input
+          <InputMask
+            mask="*****"
+            maskChar=" "
+            className="form-control"
+            style={{ marginBottom: "20px", textTransform: "uppercase" }}
+            id="depositCode_second"
+            type={"tel"}
+            defaultValue={depositCode && depositCode.second}
+            disabled={disabled}
+            onChange={autoTab_second}
+          />
+          {/* <Input
             id="depositCode_second"
             defaultValue={depositCode.second}
             className={styles.input}
             type={"tel"}
             disabled={disabled}
             onChange={autoTab_second}
-          />
+          /> */}
         </Col>
       </Row>
     </div>
