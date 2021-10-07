@@ -330,7 +330,7 @@ const ExamApplication = (props) => {
       let response = await insertExamApplication(inputPost);
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
       onClickCancel();
-      fetchData();
+      fetchData(citizenId);
     } catch (err) {
       let { data } = err.response;
       Swal.fire({
@@ -430,7 +430,7 @@ const ExamApplication = (props) => {
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
       
       onClickCancel();
-      fetchData();
+      fetchData(citizenId)
     } catch (err) {
       let { data } = err.response;
       Swal.fire({
