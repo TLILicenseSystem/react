@@ -13,25 +13,20 @@ import {
   FormGroup,
 } from "reactstrap";
 import {
-  SearchSchedulePopup,
-  DropdownExamResult,
   Container,
   EditLocationPopup,
-  EditButton,
-  CancelButton,
-  SubmitButton,
-  FilterCollapse,
-  PersonelData,
   Table,
   SearchSales,
   StructData,
+  LicenseDetail
 } from "../../components/shared";
 import { showSearchSchedulePopup } from "../../redux/actions";
-
 import { getLicenseHistoryByCid } from "../../api/apiGetLicense";
 import Swal from "sweetalert2";
 import { columns } from "./columns";
 import moment from "moment";
+import { get } from "lodash";
+
 
 const TrainingLicense = (props) => {
   const [loading, setLoading] = useState(false);
@@ -55,12 +50,12 @@ const TrainingLicense = (props) => {
   const fetchData = async () => {
     setLoading(true);
     const response = await getLicenseHistoryByCid(saleData.citizenID);
-    setLicense(response);
+    setLicense(get(response,"data",[]));
     setLoading(false);
   };
 
   const rows = license.map((row) => {
-    return { id: row.scheduleId, ...row };
+    return { id: row.licenseNo, ...row };
   });
 
   const onClickEditExamApplication = () => {};
@@ -80,7 +75,12 @@ const TrainingLicense = (props) => {
     setActiveTab("2");
     setMode("history");
   };
-
+  const onClickShowHistoryCompany = () => {
+    setLicenseDetail(null);
+    setActiveTab("3");
+    setMode("historycompany");
+  };
+   
   const onClickShowDetail = () => {
     setLicenseDetail(null);
     setActiveTab("3");
@@ -151,6 +151,9 @@ const TrainingLicense = (props) => {
         <Card>
           <SearchSales />
           <CardBody>
+          <LicenseDetail title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ" />
+            </CardBody>
+          <CardBody>
             <ButtonGroup>
               <Button
                 outline
@@ -169,6 +172,15 @@ const TrainingLicense = (props) => {
                 onClick={onClickShowHistory}
               >
                 ประวัติ
+              </Button>
+              <Button
+                outline
+                color="secondary"
+                style={{ width: "12em" }}
+                active={mode === "historycompany"}
+                onClick={onClickShowHistoryCompany}
+              >
+                ประวัติการย้ายบริษัท
               </Button>
               <Button
                 outline

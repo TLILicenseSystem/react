@@ -67,6 +67,7 @@ export const DropdownExamResult = ({
             isClearable={true}
             isSearchable={true}
             name="examResult"
+            isDisabled={disabled}
             options={examResultList}
             getOptionLabel={(option) => `${option.resultName}`}
             getOptionValue={(option) => `${option.resultId}`}

@@ -245,6 +245,7 @@ const ExamOrganizer = (props) => {
 
   const editData = (param) => {
     setPressEdit(true);
+    console.log(param.orgName,"ddddd")
     setId(param.orgCode);
     setOrgName(param.orgName);
 

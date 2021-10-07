@@ -2,12 +2,7 @@ import React from "react";
 import { Col, Row, Input } from "reactstrap";
 import { get } from "lodash";
 import PropTypes from "prop-types";
-import {
-  InputCitizenID,
-  InputDepositCode,
-  InputPersonID,
-  InputStrID,
-} from "../shared";
+import moment  from "moment";
 
 import InputMask from "react-input-mask";
 
@@ -173,7 +168,7 @@ export const PersonelData = ({ data }) => {
           <Row style={{ marginBottom: "0" }}>
             <Col sm="5">วันที่หมดอายุ</Col>
             <Col sm="7" style={{ paddingLeft: "0" }}>
-              <Input readOnly={true} value={get(data, "licenseNo", "")} />
+              <Input readOnly={true} value={get(data, "expireDate") ? moment(get(data, "expireDate", "")).format("DD/MM/YYYY"):""} />
             </Col>
           </Row>
         </Col>

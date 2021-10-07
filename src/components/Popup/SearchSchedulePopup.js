@@ -40,7 +40,6 @@ export const SearchSchedulePopup = ({ onChange }) => {
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [examOrganizerName, setExamOrganizerName] = useState("");
   const [searchProvince, setSearchProvince] = useState({});
-  const [examLocationList, setExamLocationList] = useState([]);
   const [examRound, setExamRound] = useState([]);
   const [selectedDate ,setSelectedDate] = useState(moment())
   const [selectedEndDate, setSelectedEndDate] = useState(null);
@@ -174,8 +173,6 @@ export const SearchSchedulePopup = ({ onChange }) => {
   };
 
   const fetchData = async () => {
-    const responseLocation = await getExamLocation("A");
-    setExamLocationList(get(responseLocation, "data", []));
     const responseSchedule = await getExamScheduleByDetails(
       moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
       moment(selectedEndDate).isValid() ? moment(selectedEndDate).format("YYYY-MM-DD"): moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
@@ -183,7 +180,16 @@ export const SearchSchedulePopup = ({ onChange }) => {
       examOrganizerCode,
       provinceCode
     );
-    setExamScheduleList(get(responseSchedule, "data", []));
+
+    
+    if(description === "add"){
+      let result =  get(responseSchedule, "data", []).filter(item => {
+        if(moment(item.applyCloseDate) >=  moment())
+          return  item
+      })
+      setExamScheduleList(result);
+    }else setExamScheduleList(get(responseSchedule, "data", []));
+
     
   };
 
@@ -197,39 +203,12 @@ export const SearchSchedulePopup = ({ onChange }) => {
     setSelectedDate(moment())
     setSelectedEndDate(moment())
     fetchData();
-    console.log("dwdedw",moment(selectedDate).format("YYYY-MM-DD"))
   }, [isShow]);
 
   
   const toggle = () => dispatch(hideSearchSchedulePopup());
 
-  const fetchProvinceData = async (e) => {
-    const response = await getProvinceCode(e);
-    setRegion(get(response[0], "region", ""));
-    setRegionName(
-      get(
-        examZoneResonse.filter(
-          (zone) => zone.regionCode === get(response[0], "region", "")
-        )[0],
-        "regionName",
-        ""
-      )
-    );
-    setProvinceName(
-      get(
-        response.filter((zone) => zone.provinceCode === e)[0],
-        "provinceName",
-        ""
-      )
-    );
-  };
-  const fetchExamOrganizer = async (e) => {
-    if (e !== "") {
-      const response = await getOrganizer(e);
-      setExamOrganizerName(get(response[0], "orgName", ""));
-    }
-  };
-
+ 
 
 
   return (

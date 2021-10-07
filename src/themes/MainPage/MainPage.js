@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col } from "reactstrap";
 import { Container, Card, CardBody } from "./MainPageStyle";
 import { useHistory } from "react-router-dom";
 
 const MainPage = () => {
   const history = useHistory();
+
+  useEffect(() =>{
+    sessionStorage.removeItem("sale")
+  },[])
 
   return (
     <Container style={{ padding: "3em", margin: "auto" }}>

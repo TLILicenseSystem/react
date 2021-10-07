@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Container, Row, Col, FormFeedback } from "reactstrap";
-import { InputWithLabelRow, SubmitButton } from "../components/shared";
+import { Container, Row, Col, FormFeedback,Input } from "reactstrap";
+import { InputWithLabelRow, SubmitButton ,InputField} from "../components/shared";
 import { useHistory } from "react-router-dom";
 import Logo from "../assets/images/logo.png";
 import { colors } from "./style";
@@ -131,25 +131,27 @@ const Login = () => {
           <h5>Log on</h5>
           <br />
           <Row form>
-            <Col md={6}>
-              <InputWithLabelRow
+            <Col md={6} style={{paddingBottom: '20px'}}>
+              <Input
                 label="Username"
                 type="email"
                 id="email"
+                name="email"
                 placeholder="Username"
-                value={data.email.value}
+              //  value={data.email.value}
                 onChange={onChange}
                 textboxSize={12}
                 invalid={data.email.valid}
               />
             </Col>
-            <Col md={6}>
-              <InputWithLabelRow
+            <Col md={6} style={{paddingBottom: '20px'}}>
+              <Input
                 label="Password"
                 type="password"
                 id="password"
+                name="password"
                 placeholder="Password"
-                value={data.password.value}
+             //   value={data.password.value}
                 onChange={onChange}
                 textboxSize={12}
                 invalid={data.password.valid}

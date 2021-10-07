@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import {
   Card,
   CardBody,
@@ -45,14 +45,17 @@ const ExamApplication = (props) => {
   const [activeTab, setActiveTab] = useState("2");
   const [scheduleDetail, setScheduleDetail] = useState(null);
   const [mode, setMode] = useState("history");
+  const [disabled, setDisabled] = useState(false);
   const [application, setApplication] = useState([]);
   const [saleData, setSaleData] = useState(
     sessionStorage.getItem("sale")
       ? JSON.parse(sessionStorage.getItem("sale"))
       : null
   );
+
+  const { seleted } =
+  useSelector((state) => state.selectSalePopup);
   const dispatch = useDispatch();
-  //getExamResult()
 
   const columns = [
     {
@@ -136,23 +139,41 @@ const ExamApplication = (props) => {
 
   useEffect(() => {
     if(saleData && saleData.citizenID){
-      fetchData();
+      fetchData(saleData.citizenID);
     }
   }, []);
 
-  const fetchData = async () => {
+
+  useEffect(() => {
+    setSaleData(seleted)
+    checkStatus(seleted)
+    if(seleted && seleted.citizenID){
+      fetchData(seleted.citizenID);
+    }
+  },[seleted])
+ 
+  const fetchData = async (citizenID) => {
     setLoading(true);
-    const response = await getExamApplication(saleData.citizenID);
+    const response = await getExamApplication(citizenID);
     setApplication(response);
     setLoading(false);
   };
 
+
+  const checkStatus = (seleted) =>{
+    if(seleted){
+      if(seleted.status === "Q" || seleted.status === "M" || seleted.status === "D")
+        setDisabled(true)
+      else setDisabled(false)
+    }else setDisabled(false)
+
+  }
+
   const rows = application.map((row) => {
     return { id: row.scheduleId, ...row };
   });
-  const toggle = (tab) => {
-    if (activeTab !== tab) setActiveTab(tab);
-  };
+
+
 
   const onClickAddExamApplication = () => {
     setScheduleDetail(null);
@@ -219,12 +240,13 @@ const ExamApplication = (props) => {
     dispatch(
       showSearchSchedulePopup({
         title: "ค้นหาตารางสอบ",
-        description: "",
+        description: mode,
       })
     );
   };
+
+
   const onClickSave = async () => {
-    console.log(scheduleDetail,"scheduleDetail")
     if(!scheduleDetail.seatNo || scheduleDetail.seatNo === null || scheduleDetail.seatNo === ""){
       Swal.fire({
         icon: "error",
@@ -249,9 +271,52 @@ const ExamApplication = (props) => {
       });
       return;
     }
+    
+    let citizenId = ""
+    if(!saleData){
+      if(sessionStorage.getItem("sale")){
+        let stored = JSON.parse(sessionStorage.getItem("sale"))
+        citizenId = stored.citizenID
+        if(
+          stored.status === "Q" || 
+          stored.status === "M" || 
+          stored.status === "D" 
+        ){
+          Swal.fire({
+            icon: "warning",
+            title: "เกิดข้อผิดพลาด",
+            text:  "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+          });
+          return
+        }
+        setSaleData(stored)
+      }else{
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "กรุณาเลือกข้อมูลผู้สมัคร",
+        });
+        return;
+      }
+    }else {
+      citizenId = saleData.citizenID
+      if(
+        saleData.status === "Q" || 
+        saleData.status === "M" || 
+        saleData.status === "D" 
+      ){
+        Swal.fire({
+          icon: "warning",
+          title: "เกิดข้อผิดพลาด",
+          text:  "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+        });
+        return
+      }
+    }
+   
     try {
       const inputPost = {
-        "citizenId":saleData.citizenID,
+        "citizenId":citizenId,
         "scheduleId":scheduleDetail.scheduleId,    
         "applyTime":moment().format("YYYY-MM-DDTHH:mm:ss"),
         "applicantType":"0",
@@ -304,9 +369,50 @@ const ExamApplication = (props) => {
       });
       return;
     }
+    let citizenId = ""
+    if(!saleData){
+      if(sessionStorage.getItem("sale")){
+        let stored = JSON.parse(sessionStorage.getItem("sale"))
+        citizenId = stored.citizenID
+        if(
+          stored.status === "Q" || 
+          stored.status === "M" || 
+          stored.status === "D" 
+        ){
+          Swal.fire({
+            icon: "warning",
+            title: "เกิดข้อผิดพลาด",
+            text:  "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+          });
+          return
+        }
+        setSaleData(stored)
+      }else{
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "กรุณาเลือกข้อมูลผู้สมัคร",
+        });
+        return;
+      }
+    }else {
+      citizenId = saleData.citizenID
+      if(
+        saleData.status === "Q" || 
+        saleData.status === "M" || 
+        saleData.status === "D" 
+      ){
+        Swal.fire({
+          icon: "warning",
+          title: "เกิดข้อผิดพลาด",
+          text:  "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+        });
+        return
+      }
+    }
     try {
       const inputPost = {
-        "citizenId":saleData.citizenID,
+        "citizenId":citizenId,
         "scheduleId":scheduleDetail.scheduleId,  
         "applyTime":scheduleDetail.applyTime,
         "applicantType":"0",
@@ -343,16 +449,7 @@ const ExamApplication = (props) => {
       <div className="contents">
         <h2 className="head">สมัครสอบ</h2>
         <Card>
-          {/* <CardBody>
-            <FilterCollapse title="ตัวกรองข้อมูล">
-              <SearchSales onSearch={onSearchSale} />  
-          </CardBody>
-
-          <CardBody>
-            <PersonelData />
-          </CardBody> */}
           <SearchSales />
-
           <CardBody>
             <ButtonGroup>
               <Button
@@ -402,13 +499,14 @@ const ExamApplication = (props) => {
                       <FormGroup>
                         <label className={styles.label}>เลขที่นั่งสอบ  <label className={styles.required}> *</label></label>
                         <Input
-                          type="tel"
+                          type="text"
                           name="seatNo"
+                          disabled={disabled}
                           value={get(scheduleDetail, "seatNo", "")}
                           onChange={(e) =>
                             setScheduleDetail({
                               ...scheduleDetail,
-                              seatNo: e.target.value,
+                              seatNo: parseInt(e.target.value) ?parseInt(e.target.value) :"",
                             })
                           }
                         />
@@ -418,6 +516,7 @@ const ExamApplication = (props) => {
                       <FormGroup style={{ paddingTop: "10px" }}>
                         <DropdownExamResult
                           label="ผลสอบ"
+                          disabled={disabled}
                           value={get(scheduleDetail, "examResult", "")}
                           requiredField={true}
                           onClick={(v) =>
@@ -456,6 +555,7 @@ const ExamApplication = (props) => {
                         <Input
                           type="text"
                           name="remark"
+                          disabled={disabled}
                           value={get(scheduleDetail, "remark", "")}
                           onChange={(e) =>
                             setScheduleDetail({
@@ -522,7 +622,7 @@ const ExamApplication = (props) => {
                 </CardBody>
                 <CardBody style={{ textAlign: "right" }}>
                   <SubmitButton
-                    disabled={scheduleDetail === null || scheduleDetail === "" || saleData === null}
+                    disabled={disabled || scheduleDetail === null || scheduleDetail === ""}
                     title="บันทึก"
                     onClick={mode === "history" ? onClickUpdate : onClickSave}
                   />{" "}
@@ -541,6 +641,7 @@ const ExamApplication = (props) => {
               </TabPane>
             </TabContent>
           </div>
+         
         </Card>
       </div>
       <SearchSchedulePopup onChange={onClickChangeSchedule} />

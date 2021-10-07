@@ -42,7 +42,7 @@ export const InputDepositCode = ({
       second: e.target.value.toUpperCase(),
     });
   };
-  console.log(depositCode, "depositCode");
+
   return (
     <div className={styles.div}>
       <label className={styles.label}>{label}</label>

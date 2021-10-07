@@ -1,6 +1,6 @@
 import {
   HIDE_SEARCH_SCHEDULE_POPUP,
-  SHOW_SEARCH_SCHEDULE_POPUP,
+  SHOW_SEARCH_SCHEDULE_POPUP
 } from "../constants";
 
 const initalState = {

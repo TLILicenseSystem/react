@@ -1,3 +1,4 @@
+import moment from "moment";
 export const columns = [
   {
     field: "a",
@@ -8,14 +9,14 @@ export const columns = [
     cellClassName: "cellDark",
   },
   {
-    field: "b",
+    field: "offerTypeName",
     headerName: "ประเภท",
     minWidth: 160,
     hideSortIcons: "true",
     headerClassName: "header",
   },
   {
-    field: "c",
+    field: "offerResultName",
     headerName: "ผลการขอใบอนญาต",
     width: 160,
     align: "left",
@@ -23,7 +24,7 @@ export const columns = [
     headerClassName: "header",
   },
   {
-    field: "d",
+    field: "licenseNo",
     headerName: "เลขที่ใบอนุญาต",
     width: 160,
     align: "left",
@@ -32,39 +33,43 @@ export const columns = [
   },
 
   {
-    field: "e",
+    field: "offerDate",
     headerName: "วันที่ยื่น คปภ.",
     width: 160,
     align: "left",
+    // valueGetter: (params) =>
+    // `${moment(params.getValue(params.id, "issueDate")).format(
+    //   "DD/MM/yyyy"
+    // )}`,
     hideSortIcons: "true",
     headerClassName: "header",
   },
   {
-    field: "f",
+    field: "issueDate",
     headerName: "วันที่ออกบัตร",
     minWidth: 160,
     align: "left",
+    // valueGetter: (params) =>
+    // `${moment(params.getValue(params.id, "issueDate")).format(
+    //   "DD/MM/yyyy"
+    // )}`,
     hideSortIcons: "true",
     headerClassName: "header",
   },
   {
-    field: "x",
+    field: "expireDate",
     headerName: "วันที่หมดอายุ",
     minWidth: 160,
     align: "left",
+    valueGetter: (params) =>
+    `${moment(params.getValue(params.id, "expireDate")).format(
+      "DD/MM/yyyy"
+    )}`,
     hideSortIcons: "true",
     headerClassName: "header",
   },
   {
-    field: "x",
-    headerName: "สังกัดบริษัทปัจจุบัน",
-    minWidth: 160,
-    align: "left",
-    hideSortIcons: "true",
-    headerClassName: "header",
-  },
-  {
-    field: "x",
+    field: "licenseTimes",
     headerName: "ครั้งที่ต่อ",
     minWidth: 100,
     align: "left",
