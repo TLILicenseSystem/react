@@ -18,15 +18,21 @@ import {
   Table,
   SearchSales,
   StructData,
-  LicenseDetail
+  LicenseDetail,
 } from "../../components/shared";
+import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
+
 import { showSearchSchedulePopup } from "../../redux/actions";
 import { getLicenseHistoryByCid } from "../../api/apiGetLicense";
 import Swal from "sweetalert2";
-import { columns } from "./columns";
+import { columns, columns_company } from "./columns";
 import moment from "moment";
 import { get } from "lodash";
-
+import FormLicense from "./FormLicense";
+import FormCompany from "./FormCompany";
+import FormPayment from "../ExamApplication/FormPayment";
+import FormCreateUser from "../ExamApplication/FormCreateUser";
+import FormResult from "./FormResult";
 
 const TrainingLicense = (props) => {
   const [loading, setLoading] = useState(false);
@@ -50,7 +56,7 @@ const TrainingLicense = (props) => {
   const fetchData = async () => {
     setLoading(true);
     const response = await getLicenseHistoryByCid(saleData.citizenID);
-    setLicense(get(response,"data",[]));
+    setLicense(get(response, "data", []));
     setLoading(false);
   };
 
@@ -80,10 +86,10 @@ const TrainingLicense = (props) => {
     setActiveTab("3");
     setMode("historycompany");
   };
-   
+
   const onClickShowDetail = () => {
     setLicenseDetail(null);
-    setActiveTab("3");
+    setActiveTab("4");
     setMode("detail");
   };
   const onClickChangeLocation = () => {
@@ -151,8 +157,8 @@ const TrainingLicense = (props) => {
         <Card>
           <SearchSales />
           <CardBody>
-          <LicenseDetail title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ" />
-            </CardBody>
+            <LicenseDetail title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ" />
+          </CardBody>
           <CardBody>
             <ButtonGroup>
               <Button
@@ -196,7 +202,50 @@ const TrainingLicense = (props) => {
           <div>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
-                <CardBody>eee</CardBody>
+                <CardBody>
+                  <FormLicense />
+                </CardBody>
+                <CardBody>
+                  <FormCompany />
+                </CardBody>
+                <CardBody>
+                  <FormPayment />
+                </CardBody>
+                <CardBody>
+                  <FormResult />
+                </CardBody>
+                <CardBody
+                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                >
+                  <FormCreateUser mode={"history"} data={[]} />
+                  <hr />
+                </CardBody>
+                <CardBody
+                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                >
+                  <Row sm="1">
+                    <Col sm="9">
+                      <FormGroup>
+                        <label className={styles.label}>
+                          หมายเหตุ <label className={styles.required}> *</label>
+                        </label>
+                        <Input
+                          type="text"
+                          name="remark"
+                          disabled={true}
+                          //  value={get(scheduleDetail, "remark", "")}
+                          // onChange={(e) =>
+                          //   setScheduleDetail({
+                          //     ...scheduleDetail,
+                          //     remark: e.target.value,
+                          //   })
+                          // }
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <FormCreateUser mode={"history"} data={[]} />
+                </CardBody>
               </TabPane>
               <TabPane tabId="2">
                 <CardBody>
@@ -209,6 +258,16 @@ const TrainingLicense = (props) => {
                 </CardBody>
               </TabPane>
               <TabPane tabId="3">
+                <CardBody>
+                  <Table
+                    id="companyId"
+                    data={rows}
+                    columns={columns_company}
+                    loading={false}
+                  />
+                </CardBody>
+              </TabPane>
+              <TabPane tabId="4">
                 <CardBody style={{ margin: "1em 3em", padding: "1em 4em" }}>
                   <StructData />
                 </CardBody>

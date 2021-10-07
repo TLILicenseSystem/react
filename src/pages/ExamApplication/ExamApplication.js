@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Card,
   CardBody,
@@ -39,6 +39,7 @@ import Swal from "sweetalert2";
 import FormSchedule from "./FormSchedule";
 import FormPayment from "./FormPayment";
 import moment from "moment";
+import FormCreateUser from "./FormCreateUser";
 
 const ExamApplication = (props) => {
   const [loading, setLoading] = useState(false);
@@ -53,8 +54,7 @@ const ExamApplication = (props) => {
       : null
   );
 
-  const { seleted } =
-  useSelector((state) => state.selectSalePopup);
+  const { seleted } = useSelector((state) => state.selectSalePopup);
   const dispatch = useDispatch();
 
   const columns = [
@@ -138,20 +138,19 @@ const ExamApplication = (props) => {
   ];
 
   useEffect(() => {
-    if(saleData && saleData.citizenID){
+    if (saleData && saleData.citizenID) {
       fetchData(saleData.citizenID);
     }
   }, []);
 
-
   useEffect(() => {
-    setSaleData(seleted)
-    checkStatus(seleted)
-    if(seleted && seleted.citizenID){
+    setSaleData(seleted);
+    checkStatus(seleted);
+    if (seleted && seleted.citizenID) {
       fetchData(seleted.citizenID);
     }
-  },[seleted])
- 
+  }, [seleted]);
+
   const fetchData = async (citizenID) => {
     setLoading(true);
     const response = await getExamApplication(citizenID);
@@ -159,21 +158,21 @@ const ExamApplication = (props) => {
     setLoading(false);
   };
 
-
-  const checkStatus = (seleted) =>{
-    if(seleted){
-      if(seleted.status === "Q" || seleted.status === "M" || seleted.status === "D")
-        setDisabled(true)
-      else setDisabled(false)
-    }else setDisabled(false)
-
-  }
+  const checkStatus = (seleted) => {
+    if (seleted) {
+      if (
+        seleted.status === "Q" ||
+        seleted.status === "M" ||
+        seleted.status === "D"
+      )
+        setDisabled(true);
+      else setDisabled(false);
+    } else setDisabled(false);
+  };
 
   const rows = application.map((row) => {
     return { id: row.scheduleId, ...row };
   });
-
-
 
   const onClickAddExamApplication = () => {
     setScheduleDetail(null);
@@ -187,8 +186,8 @@ const ExamApplication = (props) => {
     setMode("history");
   };
 
-  const onClickChangeSchedule =  (values) => {
-    if(scheduleDetail){
+  const onClickChangeSchedule = (values) => {
+    if (scheduleDetail) {
       setScheduleDetail({
         ...scheduleDetail,
         alteredLocationId: values.alteredLocationId,
@@ -202,11 +201,11 @@ const ExamApplication = (props) => {
         regionCode: values.regionCode,
         regionName: values.regionName,
         roundId: values.roundId,
-        scheduleId : scheduleDetail.scheduleId,
+        scheduleId: scheduleDetail.scheduleId,
         newScheduleId: values.scheduleId,
         timeStr: values.timeStr,
       });
-    }else{
+    } else {
       setScheduleDetail({
         alteredLocationId: values.alteredLocationId,
         examDate: values.examDate,
@@ -219,11 +218,10 @@ const ExamApplication = (props) => {
         regionCode: values.regionCode,
         regionName: values.regionName,
         roundId: values.roundId,
-        scheduleId : values.scheduleId,
+        scheduleId: values.scheduleId,
         timeStr: values.timeStr,
       });
     }
-     
   };
   const onClickEditExamApplication = (values) => {
     setScheduleDetail(values);
@@ -245,9 +243,12 @@ const ExamApplication = (props) => {
     );
   };
 
-
   const onClickSave = async () => {
-    if(!scheduleDetail.seatNo || scheduleDetail.seatNo === null || scheduleDetail.seatNo === ""){
+    if (
+      !scheduleDetail.seatNo ||
+      scheduleDetail.seatNo === null ||
+      scheduleDetail.seatNo === ""
+    ) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -255,7 +256,11 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    if(!scheduleDetail.examResult || scheduleDetail.examResult === null || scheduleDetail.examResult === ""){
+    if (
+      !scheduleDetail.examResult ||
+      scheduleDetail.examResult === null ||
+      scheduleDetail.examResult === ""
+    ) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -263,7 +268,11 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    if(!scheduleDetail.remark || scheduleDetail.remark === null || scheduleDetail.remark === ""){
+    if (
+      !scheduleDetail.remark ||
+      scheduleDetail.remark === null ||
+      scheduleDetail.remark === ""
+    ) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -271,26 +280,26 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    
-    let citizenId = ""
-    if(!saleData){
-      if(sessionStorage.getItem("sale")){
-        let stored = JSON.parse(sessionStorage.getItem("sale"))
-        citizenId = stored.citizenID
-        if(
-          stored.status === "Q" || 
-          stored.status === "M" || 
-          stored.status === "D" 
-        ){
+
+    let citizenId = "";
+    if (!saleData) {
+      if (sessionStorage.getItem("sale")) {
+        let stored = JSON.parse(sessionStorage.getItem("sale"));
+        citizenId = stored.citizenID;
+        if (
+          stored.status === "Q" ||
+          stored.status === "M" ||
+          stored.status === "D"
+        ) {
           Swal.fire({
             icon: "warning",
             title: "เกิดข้อผิดพลาด",
-            text:  "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+            text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
           });
-          return
+          return;
         }
-        setSaleData(stored)
-      }else{
+        setSaleData(stored);
+      } else {
         Swal.fire({
           icon: "error",
           title: "เกิดข้อผิดพลาด",
@@ -298,35 +307,35 @@ const ExamApplication = (props) => {
         });
         return;
       }
-    }else {
-      citizenId = saleData.citizenID
-      if(
-        saleData.status === "Q" || 
-        saleData.status === "M" || 
-        saleData.status === "D" 
-      ){
+    } else {
+      citizenId = saleData.citizenID;
+      if (
+        saleData.status === "Q" ||
+        saleData.status === "M" ||
+        saleData.status === "D"
+      ) {
         Swal.fire({
           icon: "warning",
           title: "เกิดข้อผิดพลาด",
-          text:  "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+          text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
         });
-        return
+        return;
       }
     }
-   
+
     try {
       const inputPost = {
-        "citizenId":citizenId,
-        "scheduleId":scheduleDetail.scheduleId,    
-        "applyTime":moment().format("YYYY-MM-DDTHH:mm:ss"),
-        "applicantType":"0",
-        "seatNo":scheduleDetail.seatNo,
-        "examResult":scheduleDetail.examResult,
-        "remark": scheduleDetail.remark,
-        "createUserCode":"2901133",
-        "updateUserCode":"2901133",
-        "referenceNo":""
-    } 
+        citizenId: citizenId,
+        scheduleId: scheduleDetail.scheduleId,
+        applyTime: moment().format("YYYY-MM-DDTHH:mm:ss"),
+        applicantType: "0",
+        seatNo: scheduleDetail.seatNo,
+        examResult: scheduleDetail.examResult,
+        remark: scheduleDetail.remark,
+        createUserCode: "2901133",
+        updateUserCode: "2901133",
+        referenceNo: "",
+      };
       let response = await insertExamApplication(inputPost);
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
       onClickCancel();
@@ -344,8 +353,7 @@ const ExamApplication = (props) => {
   };
 
   const onClickUpdate = async () => {
-
-    if(scheduleDetail.seatNo === null || scheduleDetail.seatNo === ""){
+    if (scheduleDetail.seatNo === null || scheduleDetail.seatNo === "") {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -353,7 +361,10 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    if(scheduleDetail.examResult === null || scheduleDetail.examResult === ""){
+    if (
+      scheduleDetail.examResult === null ||
+      scheduleDetail.examResult === ""
+    ) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -361,7 +372,7 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    if(scheduleDetail.remark === null || scheduleDetail.remark === ""){
+    if (scheduleDetail.remark === null || scheduleDetail.remark === "") {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -369,25 +380,25 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    let citizenId = ""
-    if(!saleData){
-      if(sessionStorage.getItem("sale")){
-        let stored = JSON.parse(sessionStorage.getItem("sale"))
-        citizenId = stored.citizenID
-        if(
-          stored.status === "Q" || 
-          stored.status === "M" || 
-          stored.status === "D" 
-        ){
+    let citizenId = "";
+    if (!saleData) {
+      if (sessionStorage.getItem("sale")) {
+        let stored = JSON.parse(sessionStorage.getItem("sale"));
+        citizenId = stored.citizenID;
+        if (
+          stored.status === "Q" ||
+          stored.status === "M" ||
+          stored.status === "D"
+        ) {
           Swal.fire({
             icon: "warning",
             title: "เกิดข้อผิดพลาด",
-            text:  "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+            text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
           });
-          return
+          return;
         }
-        setSaleData(stored)
-      }else{
+        setSaleData(stored);
+      } else {
         Swal.fire({
           icon: "error",
           title: "เกิดข้อผิดพลาด",
@@ -395,42 +406,42 @@ const ExamApplication = (props) => {
         });
         return;
       }
-    }else {
-      citizenId = saleData.citizenID
-      if(
-        saleData.status === "Q" || 
-        saleData.status === "M" || 
-        saleData.status === "D" 
-      ){
+    } else {
+      citizenId = saleData.citizenID;
+      if (
+        saleData.status === "Q" ||
+        saleData.status === "M" ||
+        saleData.status === "D"
+      ) {
         Swal.fire({
           icon: "warning",
           title: "เกิดข้อผิดพลาด",
-          text:  "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+          text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
         });
-        return
+        return;
       }
     }
     try {
       const inputPost = {
-        "citizenId":citizenId,
-        "scheduleId":scheduleDetail.scheduleId,  
-        "applyTime":scheduleDetail.applyTime,
-        "applicantType":"0",
-        "seatNo":scheduleDetail.seatNo,
-        "examResult":scheduleDetail.examResult,
-        "remark": scheduleDetail.remark,
-        "createUserCode":"2901133",
-        "updateUserCode":"2901133",
-        "referenceNo":""
-    } 
-      if(scheduleDetail.newScheduleId !== scheduleDetail.scheduleId)
-      inputPost["newScheduleId"] =scheduleDetail.newScheduleId
+        citizenId: citizenId,
+        scheduleId: scheduleDetail.scheduleId,
+        applyTime: scheduleDetail.applyTime,
+        applicantType: "0",
+        seatNo: scheduleDetail.seatNo,
+        examResult: scheduleDetail.examResult,
+        remark: scheduleDetail.remark,
+        createUserCode: "2901133",
+        updateUserCode: "2901133",
+        referenceNo: "",
+      };
+      if (scheduleDetail.newScheduleId !== scheduleDetail.scheduleId)
+        inputPost["newScheduleId"] = scheduleDetail.newScheduleId;
 
       let response = await updateExamApplication(inputPost);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
-      
+
       onClickCancel();
-      fetchData(citizenId)
+      fetchData(citizenId);
     } catch (err) {
       let { data } = err.response;
       Swal.fire({
@@ -497,7 +508,10 @@ const ExamApplication = (props) => {
                   <Row sm="4">
                     <Col>
                       <FormGroup>
-                        <label className={styles.label}>เลขที่นั่งสอบ  <label className={styles.required}> *</label></label>
+                        <label className={styles.label}>
+                          เลขที่นั่งสอบ{" "}
+                          <label className={styles.required}> *</label>
+                        </label>
                         <Input
                           type="text"
                           name="seatNo"
@@ -506,7 +520,9 @@ const ExamApplication = (props) => {
                           onChange={(e) =>
                             setScheduleDetail({
                               ...scheduleDetail,
-                              seatNo: parseInt(e.target.value) ?parseInt(e.target.value) :"",
+                              seatNo: parseInt(e.target.value)
+                                ? parseInt(e.target.value)
+                                : "",
                             })
                           }
                         />
@@ -539,10 +555,11 @@ const ExamApplication = (props) => {
                           name="applyTime"
                           value={
                             scheduleDetail &&
-                            get(scheduleDetail, "applyTime", "") ?
-                            moment(get(scheduleDetail, "applyTime", "")).format(
-                              "DD/MM/yyyy HH:mm:ss"
-                            ) :  null
+                            get(scheduleDetail, "applyTime", "")
+                              ? moment(
+                                  get(scheduleDetail, "applyTime", "")
+                                ).format("DD/MM/yyyy HH:mm:ss")
+                              : null
                           }
                         />
                       </FormGroup>
@@ -551,7 +568,9 @@ const ExamApplication = (props) => {
                   <Row sm="1">
                     <Col sm="9">
                       <FormGroup>
-                        <label className={styles.label}>หมายเหตุ  <label className={styles.required}> *</label></label>
+                        <label className={styles.label}>
+                          หมายเหตุ <label className={styles.required}> *</label>
+                        </label>
                         <Input
                           type="text"
                           name="remark"
@@ -572,57 +591,15 @@ const ExamApplication = (props) => {
                 <CardBody
                   style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                 >
-                  <Row sm="6">
-                    <Col>
-                      <FormGroup>
-                        <label className={styles.label}>ผู้บันทึก</label>
-                        <Input
-                          readOnly={true}
-                          type="text"
-                          name="code"
-                          value={
-                            mode === "history"
-                              ? get(scheduleDetail, "updateUserCode", "")
-                              : get(scheduleDetail, "createUserCode", "")
-                          }
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col>
-                      <FormGroup>
-                        <label className={styles.label}>สาขา</label>
-                        <Input
-                          readOnly={true}
-                          type="text"
-                          // name="provinceName"
-                          // value={get(scheduleDetail, "provinceName", "")}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col>
-                      <FormGroup>
-                        <label className={styles.label}>วันที่บันทึก</label>
-                        <Input
-                          readOnly={true}
-                          type="text"
-                          name="time"
-                          value={
-                            get(scheduleDetail, "lastUpdate", "") &&
-                            get(scheduleDetail, "createTime", "") &&
-                            (mode === "history"
-                              ? moment(
-                                  get(scheduleDetail, "lastUpdate", "")
-                                ).format("DD/MM/yyyy")
-                              : moment().format("DD/MM/yyyy"))
-                          }
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                  <FormCreateUser mode={mode} data={scheduleDetail} />
                 </CardBody>
                 <CardBody style={{ textAlign: "right" }}>
                   <SubmitButton
-                    disabled={disabled || scheduleDetail === null || scheduleDetail === ""}
+                    disabled={
+                      disabled ||
+                      scheduleDetail === null ||
+                      scheduleDetail === ""
+                    }
                     title="บันทึก"
                     onClick={mode === "history" ? onClickUpdate : onClickSave}
                   />{" "}
@@ -641,7 +618,6 @@ const ExamApplication = (props) => {
               </TabPane>
             </TabContent>
           </div>
-         
         </Card>
       </div>
       <SearchSchedulePopup onChange={onClickChangeSchedule} />
