@@ -8,8 +8,9 @@ import {
   Input,
   Button,
 } from "reactstrap";
-import { AddButton } from "../../components/shared";
+import { AddButton,DropdownCause } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
+import {get} from "lodash"
 
 const FormResult = (props) => {
   return (
@@ -18,9 +19,11 @@ const FormResult = (props) => {
       <hr />
       <Row sm="4">
         <Col>
-          <FormGroup>
-            <label className={styles.label}>ผลการขอรับ</label>
-            <Input readOnly={true} type="text" name="radio1" />
+          <FormGroup style={{paddingTop: '10px'}}>
+            <DropdownCause label="ผลการขอรับ" 
+           // disabled={true}
+             isClearable={true}
+             onClick={(e) => console.log(get(e, "companyCode", ""))}/>
           </FormGroup>
         </Col>
         <Col>

@@ -11,6 +11,7 @@ import {
   TabContent,
   TabPane,
   FormGroup,
+  Container as RsContainer
 } from "reactstrap";
 import {
   SearchSchedulePopup,
@@ -245,6 +246,18 @@ const ExamApplication = (props) => {
 
   const onClickSave = async () => {
     if (
+      !scheduleDetail.newScheduleId ||
+      scheduleDetail.newScheduleId === null ||
+      scheduleDetail.newScheduleId === ""
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาเลือกตารางสอบ",
+      });
+      return;
+    }
+    if (
       !scheduleDetail.seatNo ||
       scheduleDetail.seatNo === null ||
       scheduleDetail.seatNo === ""
@@ -326,7 +339,7 @@ const ExamApplication = (props) => {
     try {
       const inputPost = {
         citizenId: citizenId,
-        scheduleId: scheduleDetail.scheduleId,
+        scheduleId: scheduleDetail.scheduleId ? scheduleDetail.scheduleId : scheduleDetail.newScheduleId,
         applyTime: moment().format("YYYY-MM-DDTHH:mm:ss"),
         applicantType: "0",
         seatNo: scheduleDetail.seatNo,
@@ -336,6 +349,7 @@ const ExamApplication = (props) => {
         updateUserCode: "2901133",
         referenceNo: "",
       };
+
       let response = await insertExamApplication(inputPost);
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
       onClickCancel();
@@ -353,6 +367,18 @@ const ExamApplication = (props) => {
   };
 
   const onClickUpdate = async () => {
+    if (
+      !scheduleDetail.newScheduleId ||
+      scheduleDetail.newScheduleId === null ||
+      scheduleDetail.newScheduleId === ""
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาเลือกตารางสอบ",
+      });
+      return;
+    }
     if (scheduleDetail.seatNo === null || scheduleDetail.seatNo === "") {
       Swal.fire({
         icon: "error",
@@ -502,8 +528,11 @@ const ExamApplication = (props) => {
                   <FormPayment />
                 </CardBody>
                 <CardBody
-                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                 
                 >
+                 < RsContainer >
+
+                 
                   <hr />
                   <Row sm="4">
                     <Col>
@@ -520,8 +549,10 @@ const ExamApplication = (props) => {
                           onChange={(e) =>
                             setScheduleDetail({
                               ...scheduleDetail,
-                              seatNo: parseInt(e.target.value)
-                                ? parseInt(e.target.value)
+                              seatNo: /^([0-9]*)$/.test(e.target.value)
+                                ? e.target.value.length >6 
+                                ? e.target.value.substr(0,6)
+                                : e.target.value
                                 : "",
                             })
                           }
@@ -586,14 +617,16 @@ const ExamApplication = (props) => {
                       </FormGroup>
                     </Col>
                   </Row>
+                  </RsContainer>
                 </CardBody>
 
-                <CardBody
-                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
-                >
+                <CardBody>
+                  <RsContainer> 
                   <FormCreateUser mode={mode} data={scheduleDetail} />
+                  </RsContainer>
                 </CardBody>
                 <CardBody style={{ textAlign: "right" }}>
+                <RsContainer> 
                   <SubmitButton
                     disabled={
                       disabled ||
@@ -604,6 +637,7 @@ const ExamApplication = (props) => {
                     onClick={mode === "history" ? onClickUpdate : onClickSave}
                   />{" "}
                   <CancelButton title="ยกเลิก" onClick={onClickCancel} />
+                  </RsContainer>
                 </CardBody>
               </TabPane>
               <TabPane tabId="2">

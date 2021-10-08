@@ -135,7 +135,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
         if(cellValues.row.remainCandidate === 0 ||  cellValues.row.remainCandidate === "0"){
           return <div style={{backgroundColor: 'red', width: '100%',color: 'white'}}>เต็ม</div> 
         }else{
-            return <div  style={{backgroundColor: 'lime', width: '100%',color: 'white'}}>{`${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`} </div> 
+            return <div  style={{backgroundColor: 'green', width: '100%',color: 'white'}}>{`${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`} </div> 
         }
       },
       hideSortIcons: "true",
@@ -182,13 +182,13 @@ export const SearchSchedulePopup = ({ onChange }) => {
     );
 
     
-    if(description === "add"){
+  //  if(description === "add"){
       let result =  get(responseSchedule, "data", []).filter(item => {
-        if(moment(item.applyCloseDate) >=  moment())
+        if(moment(item.applyCloseDate).format("YYYY-MM-DD") >=  moment().format("YYYY-MM-DD"))
           return  item
       })
       setExamScheduleList(result);
-    }else setExamScheduleList(get(responseSchedule, "data", []));
+   // }else setExamScheduleList(get(responseSchedule, "data", []));
 
     
   };

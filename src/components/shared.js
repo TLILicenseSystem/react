@@ -13,6 +13,8 @@ export { DropdownExamOrganizer } from "./DropdownWithLabel/DropdownExamOrganizer
 export { DropdownExamRegion } from "./DropdownWithLabel/DropdownExamRegion";
 export { DropdownLocationType } from "./DropdownWithLabel/DropdownLocationType";
 export { DropdownExamResult } from "./DropdownWithLabel/DropdownExamResult";
+export { DropdownCompany } from "./DropdownWithLabel/DropdownCompany";
+export { DropdownCause } from "./DropdownWithLabel/DropdownCause";
 
 export { LocationTable } from "./Table/LocationTable";
 export { ScheduleTable } from "./Table/ScheduleTable";

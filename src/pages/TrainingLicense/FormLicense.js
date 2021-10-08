@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   FormGroup,
   Label,
@@ -10,8 +10,31 @@ import {
 } from "reactstrap";
 import { AddButton } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
+import { searchBlacklist } from "../../api/apiBlacklist"
+import { get } from "lodash";
 
 const FormLicense = (props) => {
+
+  const [blacklist,setBlacklist] = useState(false)
+
+  useEffect(()=>{
+    fetchData();
+  },[])
+
+  useEffect(()=>{
+    setBlacklist(blacklist)
+  },[blacklist])
+  const fetchData = async () => {
+    const response = await searchBlacklist("C","3610200165487");
+    const data = get(response, "data", []);
+    if(data.responseRecord.dataList.length > 0){
+      setBlacklist(true)
+    }
+    else setBlacklist(false)
+  };
+
+
+
   return (
     <Container>
       <h3>การขอรับใบอนุญาต</h3>
@@ -49,7 +72,7 @@ const FormLicense = (props) => {
             <Input readOnly={true} type="text" name="radio1" />
           </FormGroup>
         </Col>
-        <Col>Blacklist</Col>
+        <Col style={{marginTop: 'auto'}}>{blacklist && <p style={{color:"red",fontWeight:'bold'}}> Blacklist </p>}</Col>
         <Col></Col>
         <Col></Col>
       </Row>

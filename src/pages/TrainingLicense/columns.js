@@ -138,7 +138,7 @@ export const columns_company = [
   },
   {
     field: "f",
-    headerName: "ประเภท",
+    headerName: "สังกัดบริษัท",
     minWidth: 160,
     align: "left",
     // valueGetter: (params) =>
@@ -148,16 +148,5 @@ export const columns_company = [
     hideSortIcons: "true",
     headerClassName: "header",
   },
-  {
-    field: "g",
-    headerName: "วันที่",
-    minWidth: 160,
-    align: "left",
-    valueGetter: (params) =>
-      `${moment(params.getValue(params.id, "expireDate")).format(
-        "DD/MM/yyyy"
-      )}`,
-    hideSortIcons: "true",
-    headerClassName: "header",
-  },
+  
 ];

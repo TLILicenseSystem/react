@@ -29,3 +29,35 @@ export const getExamResult = async () =>{
       throw err;
   }
 };
+
+export const getCauseByType = async () =>{
+  try {
+    const response = await api.get(`disapprove/type/search?licenseType=1`);
+    if (response.status === 200) {
+        return response;
+    }
+    else {
+        throw new Error();
+    }
+}
+  catch (err) {
+      console.log("msg", err);
+      throw err;
+  }
+};
+
+export const getCompany = async () =>{
+  try {
+    const response = await api.get(`data/search/company?companyId=A`);
+    if (response.status === 200) {
+        return response;
+    }
+    else {
+        throw new Error();
+    }
+}
+  catch (err) {
+      console.log("msg", err);
+      throw err;
+  }
+};

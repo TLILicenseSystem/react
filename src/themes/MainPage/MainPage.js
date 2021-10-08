@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Row, Col } from "reactstrap";
 import { Container, Card, CardBody } from "./MainPageStyle";
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateSelectSale} from "../../redux/actions";
 
 const MainPage = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
 
   useEffect(() =>{
     sessionStorage.removeItem("sale")
+    dispatch(
+      updateSelectSale({
+        seleted : null
+      })
+    );
   },[])
 
   return (
