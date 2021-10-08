@@ -24,6 +24,7 @@ import {
   PersonelData,
   Table,
   SearchSales,
+  LicenseDetail,
 } from "../../components/shared";
 import { get } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
@@ -36,6 +37,10 @@ import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 // import { getExamResult} from "../../api/apiGetConfig"
 import Swal from "sweetalert2";
 import { columns } from "./columns";
+import From3 from "./Form3";
+import FormLicense from "./FormLicense";
+import FormResult from "./FormResult";
+import FormCreateUser from "../ExamApplication/FormCreateUser";
 
 import moment from "moment";
 
@@ -151,6 +156,9 @@ const TrainingUL = (props) => {
         <Card>
           <SearchSales />
           <CardBody>
+            <LicenseDetail title="ผลการอบรมหลักสูตร UL" />
+          </CardBody>
+          <CardBody>
             <ButtonGroup>
               <Button
                 outline
@@ -184,7 +192,42 @@ const TrainingUL = (props) => {
           <div>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
-                <CardBody>eee</CardBody>
+                <CardBody>
+                  <CardBody>
+                    <FormLicense />
+                  </CardBody>
+                  <CardBody>
+                    <FormResult />
+                  </CardBody>
+                  <CardBody
+                    style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                  >
+                    <Row sm="1">
+                      <Col sm="9">
+                        <FormGroup>
+                          <label className={styles.label}>
+                            หมายเหตุ{" "}
+                            <label className={styles.required}> *</label>
+                          </label>
+                          <Input
+                            type="text"
+                            name="remark"
+                            disabled={true}
+                            //  value={get(scheduleDetail, "remark", "")}
+                            // onChange={(e) =>
+                            //   setScheduleDetail({
+                            //     ...scheduleDetail,
+                            //     remark: e.target.value,
+                            //   })
+                            // }
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <FormCreateUser mode={"history"} data={[]} />
+                    <hr />
+                  </CardBody>
+                </CardBody>
               </TabPane>
               <TabPane tabId="2">
                 <CardBody>
@@ -198,7 +241,9 @@ const TrainingUL = (props) => {
                 </CardBody>
               </TabPane>
               <TabPane tabId="3">
-                <CardBody>{/* <FormPayment /> */}</CardBody>
+                <CardBody>
+                  <From3 />
+                </CardBody>
               </TabPane>
             </TabContent>
           </div>

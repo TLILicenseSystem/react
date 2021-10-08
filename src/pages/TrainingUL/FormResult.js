@@ -8,24 +8,20 @@ import {
   Input,
   Button,
 } from "reactstrap";
-import {
-  AddButton,
-  DropdownCompany,
-  DropdownCompanyType,
-} from "../../components/shared";
+import { AddButton, DropdownCause } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import { get } from "lodash";
 
-const FormCompany = (props) => {
+const FormResult = (props) => {
   return (
     <Container>
-      <h3>บริษัทเดิม</h3>
+      <h3>ผลการขอขึ้นทะเบียน UL</h3>
       <hr />
       <Row sm="4">
         <Col>
           <FormGroup style={{ paddingTop: "10px" }}>
-            <DropdownCompany
-              label="บริษัท"
+            <DropdownCause
+              label="ผลการขอรับ"
               // disabled={true}
               isClearable={true}
               onClick={(e) => console.log(get(e, "companyCode", ""))}
@@ -51,27 +47,8 @@ const FormCompany = (props) => {
           </FormGroup>
         </Col>
       </Row>
-      <Row sm="4">
-        <Col>
-          <FormGroup style={{ paddingTop: "10px" }}>
-            <DropdownCompanyType
-              label="ประเภท"
-              isClearable={true}
-              onClick={(e) => console.log(get(e, "companyCode", ""))}
-            />
-          </FormGroup>
-        </Col>
-        <Col>
-          <FormGroup>
-            <label className={styles.label}>วันที่</label>
-            <Input readOnly={true} type="text" name="radio1" />
-          </FormGroup>
-        </Col>
-        <Col></Col>
-        <Col></Col>
-      </Row>
     </Container>
   );
 };
 
-export default FormCompany;
+export default FormResult;

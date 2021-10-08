@@ -26,13 +26,15 @@ import { showSearchSchedulePopup } from "../../redux/actions";
 import { getLicenseHistoryByCid } from "../../api/apiGetLicense";
 import Swal from "sweetalert2";
 import { columns, columns_company } from "./columns";
-import moment from "moment";
 import { get } from "lodash";
 import FormLicense from "./FormLicense";
 import FormCompany from "./FormCompany";
 import FormPayment from "../ExamApplication/FormPayment";
 import FormCreateUser from "../ExamApplication/FormCreateUser";
 import FormResult from "./FormResult";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
 
 const TrainingLicense = (props) => {
   const [loading, setLoading] = useState(false);
@@ -51,6 +53,7 @@ const TrainingLicense = (props) => {
     if (saleData && saleData.citizenID) {
       fetchData();
     }
+    console.log(dayjs().format("DD/MM/BBBB"));
   }, []);
 
   const fetchData = async () => {

@@ -80,3 +80,45 @@ export const columns = [
   //   },
   // },
 ];
+
+export const columns_tab3 = [
+  {
+    field: "a",
+    headerName: "ลำดับ",
+    minWidth: 80,
+    hideSortIcons: "true",
+    headerClassName: "header",
+    cellClassName: "cellDark",
+  },
+  {
+    field: "b",
+    headerName: "เลขที่กรมธรรม์",
+    minWidth: 160,
+    hideSortIcons: "true",
+    headerClassName: "header",
+  },
+  {
+    field: "c",
+    headerName: "ชื่อ-นามสกุล",
+    width: 160,
+    align: "left",
+    hideSortIcons: "true",
+    headerClassName: "header",
+  },
+  {
+    field: "d",
+    headerName: "จำนวนเงินเอาประกันภัย",
+    width: 160,
+    align: "left",
+    hideSortIcons: "true",
+    headerClassName: "header",
+  },
+  {
+    field: "e",
+    headerName: "วันที่เริ่มสัญญา",
+    width: 160,
+    align: "left",
+    hideSortIcons: "true",
+    headerClassName: "header",
+  },
+];
