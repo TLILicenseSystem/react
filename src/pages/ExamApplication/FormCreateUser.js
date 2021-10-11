@@ -12,6 +12,9 @@ import { AddButton } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import moment from "moment";
 import { get } from "lodash";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
 
 const FormCreateUser = ({ mode, data }) => {
   return (
@@ -48,8 +51,8 @@ const FormCreateUser = ({ mode, data }) => {
               get(data, "lastUpdate", "") &&
               get(data, "createTime", "") &&
               (mode === "history"
-                ? moment(get(data, "lastUpdate", "")).format("DD/MM/yyyy")
-                : moment().format("DD/MM/yyyy"))
+                ? dayjs(get(data, "lastUpdate", "")).format("DD/MM/BBBB")
+                : dayjs(new Date()).format("DD/MM/BBBB"))
             }
           />
         </FormGroup>

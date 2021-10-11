@@ -41,6 +41,10 @@ import FormSchedule from "./FormSchedule";
 import FormPayment from "./FormPayment";
 import moment from "moment";
 import FormCreateUser from "./FormCreateUser";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+
 
 const ExamApplication = (props) => {
   const [loading, setLoading] = useState(false);
@@ -64,8 +68,8 @@ const ExamApplication = (props) => {
       headerName: "วันที่สอบ",
       minWidth: 140,
       valueGetter: (params) =>
-        `${moment(params.getValue(params.id, "examDate")).format(
-          "DD/MM/yyyy"
+        `${dayjs(params.getValue(params.id, "examDate")).format(
+          "DD/MM/BBBB"
         )}`,
       hideSortIcons: "true",
       headerClassName: "header",
@@ -340,7 +344,7 @@ const ExamApplication = (props) => {
       const inputPost = {
         citizenId: citizenId,
         scheduleId: scheduleDetail.scheduleId ? scheduleDetail.scheduleId : scheduleDetail.newScheduleId,
-        applyTime: moment().format("YYYY-MM-DDTHH:mm:ss"),
+        applyTime: dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
         applicantType: "0",
         seatNo: scheduleDetail.seatNo,
         examResult: scheduleDetail.examResult,
@@ -451,7 +455,8 @@ const ExamApplication = (props) => {
       const inputPost = {
         citizenId: citizenId,
         scheduleId: scheduleDetail.scheduleId,
-        applyTime: scheduleDetail.applyTime,
+        newScheduleId: scheduleDetail.newScheduleId,
+        applyTime: dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
         applicantType: "0",
         seatNo: scheduleDetail.seatNo,
         examResult: scheduleDetail.examResult,
@@ -460,8 +465,8 @@ const ExamApplication = (props) => {
         updateUserCode: "2901133",
         referenceNo: "",
       };
-      if (scheduleDetail.newScheduleId !== scheduleDetail.scheduleId)
-        inputPost["newScheduleId"] = scheduleDetail.newScheduleId;
+      // if (scheduleDetail.newScheduleId !== scheduleDetail.scheduleId)
+      //   inputPost["newScheduleId"] = scheduleDetail.newScheduleId;
 
       let response = await updateExamApplication(inputPost);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
@@ -585,12 +590,11 @@ const ExamApplication = (props) => {
                           type="text"
                           name="applyTime"
                           value={
-                            scheduleDetail &&
                             get(scheduleDetail, "applyTime", "")
-                              ? moment(
+                              ? dayjs(
                                   get(scheduleDetail, "applyTime", "")
-                                ).format("DD/MM/yyyy HH:mm:ss")
-                              : null
+                                ).format("DD/MM/BBBB HH:mm:ss")
+                              : ""
                           }
                         />
                       </FormGroup>

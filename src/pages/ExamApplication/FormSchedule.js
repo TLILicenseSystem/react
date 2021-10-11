@@ -5,6 +5,10 @@ import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 // "./InputWithLabel.module.css";
 import { get } from "lodash";
 
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+
 const FormApplication = ({ scheduleDetail }) => {
   return (
     <Container>
@@ -18,7 +22,7 @@ const FormApplication = ({ scheduleDetail }) => {
               name="examDate"
               value={
                 get(scheduleDetail, "examDate", "") &&
-                moment(get(scheduleDetail, "examDate", "")).format("DD/MM/yyyy")
+                dayjs(get(scheduleDetail, "examDate", "")).format("DD/MM/BBBB")
               }
             />
           </FormGroup>

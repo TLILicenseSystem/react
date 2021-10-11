@@ -26,24 +26,29 @@ import { getExamRoundAll } from "../../api/apiGetExamRound";
 
 import moment from "moment";
 import Swal from "sweetalert2";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+
+
 
 const validate = (values) => {
   const errors = {};
   if (!values.examDate) {
     errors.examDate = "กรุณาระบุข้อมูล";
   } else if (values.examDate) {
-    if (!moment(values.examDate).isValid())
+    if (!dayjs(values.examDate).isValid())
       errors.examDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
   }
 
   if (!values.applyCloseDate) {
     errors.applyCloseDate = "กรุณาเลือกข้อมูล";
   } else if (values.applyCloseDate) {
-    if (!moment(values.applyCloseDate).isValid())
+    if (!dayjs(values.applyCloseDate).isValid())
       errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     if (
       values.examDate &&
-      moment(values.applyCloseDate) > moment(values.examDate)
+      dayjs(values.applyCloseDate) > dayjs(values.examDate)
     ) {
       errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     }
@@ -51,11 +56,11 @@ const validate = (values) => {
   if (!values.receiveDate) {
     errors.receiveDate = "กรุณาเลือกข้อมูล";
   } else if (values.receiveDate) {
-    if (!moment(values.receiveDate).isValid())
+    if (!dayjs(values.receiveDate).isValid())
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     if (
       values.examDate &&
-      moment(values.receiveDate) > moment(values.examDate)
+      dayjs(values.receiveDate) > dayjs(values.examDate)
     ) {
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     }
@@ -104,7 +109,7 @@ let EditSchedule = (props) => {
   );
 
   const [userModify, setUserModify] = useState("2901133");
-  const [modifyDate, setModifyDate] = useState(moment().format("DD/MM/YYYY"));
+  const [modifyDate, setModifyDate] = useState(dayjs(new Date()).format("DD/MM/BBBB"));
   const [examRoundList, setExamRoundList] = useState([]);
 
   const getSearchValue = (e) => {
@@ -120,14 +125,14 @@ let EditSchedule = (props) => {
       if (state) {
         props.change("roundId", state.roundId);
         props.change("scheduleId", get(state, "scheduleId", null));
-        props.change("examDate", state.examDate ? state.examDate : moment());
+        props.change("examDate", state.examDate ? state.examDate : dayjs(new Date()));
         props.change(
           "applyCloseDate",
-          state.applyCloseDate ? state.applyCloseDate : moment()
+          state.applyCloseDate ? state.applyCloseDate :  dayjs(new Date())
         );
         props.change(
           "receiveDate",
-          state.receiveDate ? state.receiveDate : moment()
+          state.receiveDate ? state.receiveDate :  dayjs(new Date())
         );
         props.change("receiveTime", state.receiveTime);
         props.change("maxApplicant", state.maxApplicant);
@@ -167,14 +172,14 @@ let EditSchedule = (props) => {
           // roundId: data.examTime,
           locationId: get(mainLocation, "locationId", ""),
           alteredLocationId: get(mainLocation, "locationId", ""),
-          examDate: moment(data.examDate).format("YYYY-MM-DD"),
-          applyOpenDate: moment().format("YYYY-MM-DD"),
-          applyCloseDate: moment(data.applyCloseDate).format("YYYY-MM-DD"),
+          examDate: dayjs(data.examDate).format("YYYY-MM-DD"),
+          applyOpenDate: dayjs(new Date()).format("YYYY-MM-DD"),
+          applyCloseDate: dayjs(data.applyCloseDate).format("YYYY-MM-DD"),
           openStatus: "N",
-          receiveDate: moment(data.receiveDate).format("YYYY-MM-DD"),
-          receiveTime: moment(data.receiveTime, "HH:mm").format("HH:mm"),
+          receiveDate: dayjs(data.receiveDate).format("YYYY-MM-DD"),
+          receiveTime: dayjs(data.receiveTime, "HH:mm").format("HH:mm"),
           updateUserCode: userModify,
-          lastUpdate: moment().format(),
+          lastUpdate: dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         };
 
         let response = await updateExamSchedule(examSchedule);
@@ -194,14 +199,14 @@ let EditSchedule = (props) => {
           // roundId: data.examTime,
           locationId: get(mainLocation, "locationId", ""),
           alteredLocationId: get(mainLocation, "locationId", ""),
-          examDate: moment(data.examDate).format("YYYY-MM-DD"),
-          applyOpenDate: moment().format("YYYY-MM-DD"),
-          applyCloseDate: moment(data.applyCloseDate).format("YYYY-MM-DD"),
+          examDate: dayjs(data.examDate).format("YYYY-MM-DD"),
+          applyOpenDate: dayjs(new Date()).format("YYYY-MM-DD"),
+          applyCloseDate: dayjs(data.applyCloseDate).format("YYYY-MM-DD"),
           openStatus: "N",
-          receiveDate: moment(data.receiveDate).format("YYYY-MM-DD"),
-          receiveTime: moment(data.receiveTime, "HH:mm").format("HH:mm"),
+          receiveDate: dayjs(data.receiveDate).format("YYYY-MM-DD"),
+          receiveTime: dayjs(data.receiveTime, "HH:mm").format("HH:mm"),
           updateUserCode: userModify,
-          lastUpdate: moment().format(),
+          lastUpdate: dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         };
         let response = await addExamSchedule(examSchedule);
         if (response !== "error") {

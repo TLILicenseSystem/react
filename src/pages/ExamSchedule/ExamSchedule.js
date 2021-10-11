@@ -50,13 +50,17 @@ import Swal from "sweetalert2";
 import styles from "../pageStyles.css";
 import { getExamRoundAll } from "../../api/apiGetExamRound";
 import { getExamType } from "../../api/apiGetConfig";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+
 
 const ExamSchedule = () => {
   const history = useHistory();
   const [examRound, setExamRound] = useState("");
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
-  const [selectedDate, setSelectedDate] = useState(moment());
+  const [selectedDate, setSelectedDate] = useState(new Date);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [examScheduleList, setExamScheduleList] = useState([]);
   const examType = getExamType();
@@ -80,8 +84,8 @@ const ExamSchedule = () => {
       headerName: "วันที่สอบ",
       minWidth: 140,
       valueGetter: (params) =>
-        `${moment(params.getValue(params.id, "examDate")).format(
-          "DD/MM/yyyy"
+        `${dayjs(params.getValue(params.id, "examDate")).format(
+          "DD/MM/BBBB"
         )}`,
       hideSortIcons: "true",
       headerClassName: "header",
@@ -109,8 +113,8 @@ const ExamSchedule = () => {
       headerName: "วันที่ปิดรับสมัคร",
       minWidth: 140,
       valueGetter: (params) =>
-        `${moment(params.getValue(params.id, "applyCloseDate")).format(
-          "DD/MM/yyyy"
+        `${dayjs(params.getValue(params.id, "applyCloseDate")).format(
+          "DD/MM/BBBB"
         )}`,
       align: "left",
       hideSortIcons: "true",
@@ -157,8 +161,8 @@ const ExamSchedule = () => {
       minWidth: 140,
       align: "left",
       valueGetter: (params) =>
-        `${moment(params.getValue(params.id, "receiveDate")).format(
-          "DD/MM/yyyy"
+        `${dayjs(params.getValue(params.id, "receiveDate")).format(
+          "DD/MM/BBBB"
         )}`,
       hideSortIcons: "true",
       headerClassName: "header",
@@ -199,13 +203,13 @@ const ExamSchedule = () => {
     setLoading(true);
 
     const responseSchedule = await getExamScheduleByDetails(
-      moment(selectedDate).isValid()
-        ? moment(selectedDate).format("YYYY-MM-DD")
+      dayjs(selectedDate).isValid()
+        ? dayjs(selectedDate).format("YYYY-MM-DD")
         : "",
-      moment(selectedEndDate).isValid()
-        ? moment(selectedEndDate).format("YYYY-MM-DD")
-        : moment(selectedDate).isValid()
-        ? moment(selectedDate).format("YYYY-MM-DD")
+        dayjs(selectedEndDate).isValid()
+        ? dayjs(selectedEndDate).format("YYYY-MM-DD")
+        : dayjs(selectedDate).isValid()
+        ? dayjs(selectedDate).format("YYYY-MM-DD")
         : "",
       examRound,
       examOrganizerCode,
@@ -244,7 +248,7 @@ const ExamSchedule = () => {
     }
 
     const { value: check } = await Swal.fire({
-      text: `ต้องการลบตารางสอบวันที่ ${moment(
+      text: `ต้องการลบตารางสอบวันที่ ${dayjs(
         get(selected, "examDate", "")
       ).format("DD/MM/yyyy")} เวลา ${get(selected, "timeStr", "")} ใช่หรือไม่`,
       icon: "warning",
