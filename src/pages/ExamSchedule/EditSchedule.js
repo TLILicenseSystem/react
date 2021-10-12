@@ -30,8 +30,6 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-
-
 const validate = (values) => {
   const errors = {};
   if (!values.examDate) {
@@ -58,10 +56,7 @@ const validate = (values) => {
   } else if (values.receiveDate) {
     if (!dayjs(values.receiveDate).isValid())
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
-    if (
-      values.examDate &&
-      dayjs(values.receiveDate) > dayjs(values.examDate)
-    ) {
+    if (values.examDate && dayjs(values.receiveDate) > dayjs(values.examDate)) {
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     }
   }
@@ -109,7 +104,9 @@ let EditSchedule = (props) => {
   );
 
   const [userModify, setUserModify] = useState("2901133");
-  const [modifyDate, setModifyDate] = useState(dayjs(new Date()).format("DD/MM/BBBB"));
+  const [modifyDate, setModifyDate] = useState(
+    dayjs(new Date()).format("DD/MM/BBBB")
+  );
   const [examRoundList, setExamRoundList] = useState([]);
 
   const getSearchValue = (e) => {
@@ -125,14 +122,19 @@ let EditSchedule = (props) => {
       if (state) {
         props.change("roundId", state.roundId);
         props.change("scheduleId", get(state, "scheduleId", null));
-        props.change("examDate", state.examDate ? state.examDate : dayjs(new Date()));
+        props.change(
+          "examDate",
+          state.examDate ? state.examDate : dayjs(new Date("2021-03-15"))
+        );
         props.change(
           "applyCloseDate",
-          state.applyCloseDate ? state.applyCloseDate :  dayjs(new Date())
+          state.applyCloseDate
+            ? state.applyCloseDate
+            : dayjs(new Date("2021-03-15"))
         );
         props.change(
           "receiveDate",
-          state.receiveDate ? state.receiveDate :  dayjs(new Date())
+          state.receiveDate ? state.receiveDate : dayjs(new Date("2021-03-15"))
         );
         props.change("receiveTime", state.receiveTime);
         props.change("maxApplicant", state.maxApplicant);

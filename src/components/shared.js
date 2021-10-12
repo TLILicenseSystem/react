@@ -24,6 +24,7 @@ export { EditLocationPopup } from "./Popup/EditLocationPopup";
 export { SnackBar } from "./SnackBar/SnackBar";
 export { RoundTable } from "./Table/RoundTable";
 export { DatePicker } from "./DatePicker/DatePicker";
+export { DatePickerThai } from "./DatePickerThai/DatePickerThai";
 export { TimePicker } from "./DatePicker/TimePicker";
 export { DropdownExamTime } from "./DropdownWithLabel/DropdownExamTime";
 export { EditLocationTable } from "./Table/EditLocationTable";
