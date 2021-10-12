@@ -109,7 +109,7 @@ const ExamApplication = (props) => {
     },
 
     {
-      field: "seatNo",
+      field: "seatNoStr",
       headerName: "เลขที่นั่งสอบ",
       minWidth: 120,
       align: "left",
@@ -224,6 +224,7 @@ const ExamApplication = (props) => {
         regionName: values.regionName,
         roundId: values.roundId,
         scheduleId: values.scheduleId,
+        newScheduleId: values.scheduleId,
         timeStr: values.timeStr,
       });
     }
@@ -262,9 +263,9 @@ const ExamApplication = (props) => {
       return;
     }
     if (
-      !scheduleDetail.seatNo ||
-      scheduleDetail.seatNo === null ||
-      scheduleDetail.seatNo === ""
+      !scheduleDetail.seatNoStr ||
+      scheduleDetail.seatNoStr === null ||
+      scheduleDetail.seatNoStr === ""
     ) {
       Swal.fire({
         icon: "error",
@@ -343,10 +344,10 @@ const ExamApplication = (props) => {
     try {
       const inputPost = {
         citizenId: citizenId,
-        scheduleId: scheduleDetail.scheduleId ? scheduleDetail.scheduleId : scheduleDetail.newScheduleId,
+        scheduleId: scheduleDetail.newScheduleId ? scheduleDetail.newScheduleId : scheduleDetail.scheduleId,
         applyTime: dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
         applicantType: "0",
-        seatNo: scheduleDetail.seatNo,
+        seatNoStr: scheduleDetail.seatNoStr,
         examResult: scheduleDetail.examResult,
         remark: scheduleDetail.remark,
         createUserCode: "2901133",
@@ -383,7 +384,7 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    if (scheduleDetail.seatNo === null || scheduleDetail.seatNo === "") {
+    if (scheduleDetail.seatNoStr === null || scheduleDetail.seatNoStr === "") {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
@@ -458,7 +459,7 @@ const ExamApplication = (props) => {
         newScheduleId: scheduleDetail.newScheduleId,
         applyTime: dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
         applicantType: "0",
-        seatNo: scheduleDetail.seatNo,
+        seatNoStr: scheduleDetail.seatNoStr,
         examResult: scheduleDetail.examResult,
         remark: scheduleDetail.remark,
         createUserCode: "2901133",
@@ -548,13 +549,13 @@ const ExamApplication = (props) => {
                         </label>
                         <Input
                           type="text"
-                          name="seatNo"
+                          name="seatNoStr"
                           disabled={disabled}
-                          value={get(scheduleDetail, "seatNo", "")}
+                          value={get(scheduleDetail, "seatNoStr", "")}
                           onChange={(e) =>
                             setScheduleDetail({
                               ...scheduleDetail,
-                              seatNo: /^([0-9]*)$/.test(e.target.value)
+                              seatNoStr: /^([0-9]*)$/.test(e.target.value)
                                 ? e.target.value.length >6 
                                 ? e.target.value.substr(0,6)
                                 : e.target.value

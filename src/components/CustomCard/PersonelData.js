@@ -3,9 +3,10 @@ import { Col, Row, Input } from "reactstrap";
 import { get } from "lodash";
 import PropTypes from "prop-types";
 import moment  from "moment";
-
 import InputMask from "react-input-mask";
-
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
 export const PersonelData = ({ data }) => {
   return (
     <>
@@ -168,7 +169,7 @@ export const PersonelData = ({ data }) => {
           <Row style={{ marginBottom: "0" }}>
             <Col sm="5">วันที่หมดอายุ</Col>
             <Col sm="7" style={{ paddingLeft: "0" }}>
-              <Input readOnly={true} value={get(data, "expireDate") ? moment(get(data, "expireDate", "")).format("DD/MM/YYYY"):""} />
+              <Input readOnly={true} value={get(data, "expireDate") ? dayjs(get(data, "expireDate", "")).format("DD/MM/BBBB"):""} />
             </Col>
           </Row>
         </Col>

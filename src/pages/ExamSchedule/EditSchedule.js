@@ -179,9 +179,8 @@ let EditSchedule = (props) => {
           applyCloseDate: dayjs(data.applyCloseDate).format("YYYY-MM-DD"),
           openStatus: "N",
           receiveDate: dayjs(data.receiveDate).format("YYYY-MM-DD"),
-          receiveTime: dayjs(data.receiveTime, "HH:mm").format("HH:mm"),
+          receiveTime: moment(data.receiveTime, "HH:mm").format("HH:mm"),
           updateUserCode: userModify,
-          lastUpdate: dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         };
 
         let response = await updateExamSchedule(examSchedule);
@@ -206,9 +205,8 @@ let EditSchedule = (props) => {
           applyCloseDate: dayjs(data.applyCloseDate).format("YYYY-MM-DD"),
           openStatus: "N",
           receiveDate: dayjs(data.receiveDate).format("YYYY-MM-DD"),
-          receiveTime: dayjs(data.receiveTime, "HH:mm").format("HH:mm"),
+          receiveTime: moment(data.receiveTime, "HH:mm").format("HH:mm"),
           updateUserCode: userModify,
-          lastUpdate: dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         };
         let response = await addExamSchedule(examSchedule);
         if (response !== "error") {
