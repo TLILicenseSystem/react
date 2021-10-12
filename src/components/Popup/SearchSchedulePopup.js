@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Button,
   Modal,
   ModalHeader,
   ModalBody,
@@ -15,39 +14,31 @@ import {
   DropdownExamOrganizer,
   DropdownExamTime,
   DateRangePicker,
-  DatePicker,
   SubmitButton,
   EditButton,
   CancelButton,
   Table
 } from "../shared";
 import { useSelector, useDispatch } from "react-redux";
-import { hideSearchSchedulePopup } from "../../redux/actions";
-import { getProvinceCode } from "../../api/apiGetProvinceCode";
-import { getOrganizer } from "../../api/apiGetExamOrganizer";
-import { getExamLocationZone , getExamType } from "../../api/apiGetConfig";
-import { getExamLocation } from "../../api/apiGetExamLocation";
+import { hideSearchSchedulePopup } from "../../redux/actions"; 
 import { getExamScheduleByDetails} from "../../api/apiGetExamSchedule"
 
 import { get } from "lodash";
 import PropTypes from "prop-types";
-import moment from "moment"
+
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+
 export const SearchSchedulePopup = ({ onChange }) => {
-  const [region, setRegion] = useState("");
-  const [regionName, setRegionName] = useState("");
-  const [provinceCode, setProvinceCode] = useState("");
-  const [provinceName, setProvinceName] = useState("");
-  const [examOrganizerCode, setExamOrganizerCode] = useState("");
-  const [examOrganizerName, setExamOrganizerName] = useState("");
-  const [searchProvince, setSearchProvince] = useState({});
+  const [provinceCode, setProvinceCode] = useState(""); 
+  const [examOrganizerCode, setExamOrganizerCode] = useState(""); 
   const [examRound, setExamRound] = useState([]);
-  const [selectedDate ,setSelectedDate] = useState(moment())
+  const [selectedDate ,setSelectedDate] = useState(dayjs(new Date()))
   const [selectedEndDate, setSelectedEndDate] = useState(null);
 
   const [examScheduleList,setExamScheduleList] = useState([]);
-  const examType = getExamType();
 
-  const examZoneResonse = getExamLocationZone();
   const dispatch = useDispatch();
   const { isShow, title, description, action } = useSelector(
     (state) => state.searchSchedulePopup
@@ -60,8 +51,8 @@ export const SearchSchedulePopup = ({ onChange }) => {
       headerName: "วันที่สอบ",
       minWidth: 120,
       valueGetter: (params) =>
-        `${moment(params.getValue(params.id, "examDate")).format(
-          "DD/MM/yyyy"
+        `${dayjs(params.getValue(params.id, "examDate")).format(
+          "DD/MM/BBBB"
         )}`,
       hideSortIcons: "true",
       headerClassName: "header",
@@ -81,8 +72,8 @@ export const SearchSchedulePopup = ({ onChange }) => {
       headerName: "วันที่ปิดรับสมัคร",
       minWidth: 120,
       valueGetter: (params) =>
-        `${moment(params.getValue(params.id, "applyCloseDate")).format(
-          "DD/MM/yyyy"
+        `${dayjs(params.getValue(params.id, "applyCloseDate")).format(
+          "DD/MM/BBBB"
         )}`,
       align: "left",
       hideSortIcons: "true",
@@ -113,8 +104,8 @@ export const SearchSchedulePopup = ({ onChange }) => {
       minWidth: 140,
       align: "left",
       valueGetter: (params) =>
-        `${moment(params.getValue(params.id, "applyOpenDate")).format(
-          "DD/MM/yyyy"
+        `${dayjs(params.getValue(params.id, "applyOpenDate")).format(
+          "DD/MM/BBBB"
         )}`,
       hideSortIcons: "true",
       headerClassName: "header",
@@ -135,7 +126,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
         if(cellValues.row.remainCandidate === 0 ||  cellValues.row.remainCandidate === "0"){
           return <div style={{backgroundColor: 'red', width: '100%',color: 'white'}}>เต็ม</div> 
         }else{
-            return <div  style={{backgroundColor: 'green', width: '100%',color: 'white'}}>{`${cellValues.row.remainCandidate} / ${cellValues.row.maxApplicant}`} </div> 
+            return <div>{`${cellValues.row.candidate} / ${cellValues.row.maxApplicant}`} </div> 
         }
       },
       hideSortIcons: "true",
@@ -174,8 +165,8 @@ export const SearchSchedulePopup = ({ onChange }) => {
 
   const fetchData = async () => {
     const responseSchedule = await getExamScheduleByDetails(
-      moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
-      moment(selectedEndDate).isValid() ? moment(selectedEndDate).format("YYYY-MM-DD"): moment(selectedDate).isValid() ? moment(selectedDate).format("YYYY-MM-DD"):"",
+      dayjs(selectedDate).isValid() ? dayjs(selectedDate).format("YYYY-MM-DD"):"",
+      dayjs(selectedEndDate).isValid() ? dayjs(selectedEndDate).format("YYYY-MM-DD"): dayjs(selectedDate).isValid() ? dayjs(selectedDate).format("YYYY-MM-DD"):"",
       examRound,
       examOrganizerCode,
       provinceCode
@@ -184,7 +175,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
     
   //  if(description === "add"){
       let result =  get(responseSchedule, "data", []).filter(item => {
-        if(moment(item.applyCloseDate).format("YYYY-MM-DD") >=  moment().format("YYYY-MM-DD"))
+        if(dayjs(item.applyCloseDate).format("YYYY-MM-DD") >=  dayjs(new Date()).format("YYYY-MM-DD"))
           return  item
       })
       setExamScheduleList(result);
@@ -200,8 +191,8 @@ export const SearchSchedulePopup = ({ onChange }) => {
 
   useEffect(() => {
   
-    setSelectedDate(moment())
-    setSelectedEndDate(moment())
+    setSelectedDate(dayjs(new Date()))
+    setSelectedEndDate(dayjs(new Date()))
     fetchData();
   }, [isShow]);
 
