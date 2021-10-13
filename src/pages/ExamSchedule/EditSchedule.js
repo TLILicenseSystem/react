@@ -124,17 +124,17 @@ let EditSchedule = (props) => {
         props.change("scheduleId", get(state, "scheduleId", null));
         props.change(
           "examDate",
-          state.examDate ? state.examDate : dayjs(new Date("2021-03-15"))
+          state.examDate ? state.examDate : new Date()
         );
         props.change(
           "applyCloseDate",
           state.applyCloseDate
             ? state.applyCloseDate
-            : dayjs(new Date("2021-03-15"))
+            : new Date() 
         );
         props.change(
           "receiveDate",
-          state.receiveDate ? state.receiveDate : dayjs(new Date("2021-03-15"))
+          state.receiveDate ? state.receiveDate :new Date()
         );
         props.change("receiveTime", state.receiveTime);
         props.change("maxApplicant", state.maxApplicant);

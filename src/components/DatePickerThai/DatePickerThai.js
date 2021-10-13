@@ -24,34 +24,42 @@ export const DatePickerThai = ({
   maxdate,
   showError,
 }) => {
-  const [valuePicker, setValuePicker] = useState(new Date());
+  const [valuePicker, setValuePicker] = useState( new Date());
   const [buddhistDate, setBuddhistDate] = useState(
-    dayjs(new Date()).format("DD/MM/BBBB")
+    dayjs(valuePicker).format("DD/MM/BBBB")
   );
 
   useEffect(() => {
     if (value) {
-      setValuePicker(new Date(value));
       setBuddhistDate(dayjs(value).format("DD/MM/BBBB"));
+      setValuePicker(new Date(value))
     }
   }, [value]);
-  useEffect(() => {
-    setBuddhistDate(dayjs(valuePicker).format("DD/MM/BBBB"));
-    onChange(valuePicker);
-  }, [valuePicker]);
+
+  const onChangePicker = (date) => {
+    setValuePicker(date)
+    onChange(date);
+  }
 
   const onChangeinput = (e) => {
     setBuddhistDate(e.target.value);
   };
+  
   const onBlur = (e) => {
     if (e.target.value.length === 10) {
       const date = e.target.value.split("/");
       date[2] = date[2] - 543;
       let christDate = date[2] + "-" + date[1] + "-" + date[0];
-      if (dayjs(new Date(christDate)).isValid()) onChange(new Date(christDate));
-      else onChange(new Date());
+      if (dayjs(new Date(christDate)).isValid()){
+        setValuePicker(new Date(christDate))
+        onChange(new Date(christDate));
+      } else {
+        setValuePicker(new Date())
+        onChange(new Date());
+      }
     } else onChange(new Date());
     setBuddhistDate(e.target.value);
+  
   };
   return (
     <Form>
@@ -71,7 +79,7 @@ export const DatePickerThai = ({
                 locale="th-TH"
                 clearIcon={null}
                 calendarIcon={<FontAwesomeIcon icon={faCalendarAlt} />}
-                onChange={setValuePicker}
+                onChange={onChangePicker}
                 value={valuePicker}
                 minDate={mindate ? new Date(mindate) : undefined}
                 maxDate={maxdate ? new Date(maxdate) : undefined}

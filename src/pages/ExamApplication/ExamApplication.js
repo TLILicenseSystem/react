@@ -78,7 +78,7 @@ const ExamApplication = (props) => {
     {
       field: "timeStr",
       headerName: "เวลาสอบ",
-      minWidth: 100,
+      minWidth: 120,
       hideSortIcons: "true",
       headerClassName: "header",
     },
