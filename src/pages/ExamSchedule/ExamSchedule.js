@@ -54,13 +54,12 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-
 const ExamSchedule = () => {
   const history = useHistory();
   const [examRound, setExamRound] = useState("");
   const [examOrganizerCode, setExamOrganizerCode] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [examScheduleList, setExamScheduleList] = useState([]);
   const examType = getExamType();
@@ -84,9 +83,7 @@ const ExamSchedule = () => {
       headerName: "วันที่สอบ",
       minWidth: 140,
       valueGetter: (params) =>
-        `${dayjs(params.getValue(params.id, "examDate")).format(
-          "DD/MM/BBBB"
-        )}`,
+        `${dayjs(params.getValue(params.id, "examDate")).format("DD/MM/BBBB")}`,
       hideSortIcons: "true",
       headerClassName: "header",
       cellClassName: "cellDark",
@@ -206,7 +203,7 @@ const ExamSchedule = () => {
       dayjs(selectedDate).isValid()
         ? dayjs(selectedDate).format("YYYY-MM-DD")
         : "",
-        dayjs(selectedEndDate).isValid()
+      dayjs(selectedEndDate).isValid()
         ? dayjs(selectedEndDate).format("YYYY-MM-DD")
         : dayjs(selectedDate).isValid()
         ? dayjs(selectedDate).format("YYYY-MM-DD")
@@ -273,7 +270,20 @@ const ExamSchedule = () => {
       }
     }
   };
+  const onChangeDate = (date) => {
+    if (selectedEndDate < date) {
+      setSelectedEndDate(date);
+    }
+    setSelectedDate(date);
+  };
 
+  const onChangeEndDate = (date) => {
+    if (date < selectedDate) {
+      setSelectedEndDate(date);
+      setSelectedDate(date);
+    }
+    setSelectedEndDate(date);
+  };
   return (
     <Container>
       <div className="contents">
@@ -283,17 +293,33 @@ const ExamSchedule = () => {
             <FilterCollapse title="ตัวกรองข้อมูล">
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Row>
-                  <Col xs="12" sm="3" md="3">
-                    <DateRangePicker
-                      label="วันที่สอบ"
-                      value={selectedDate}
-                      onChange={(start, end) => {
-                        setSelectedDate(start);
-                        setSelectedEndDate(end);
-                      }}
-                      // onChange={(date) => console.log(date)}
-                    />
+                  <Col xs="12" sm="5" md="5">
+                    <Row md="2">
+                      <Col>
+                        <DatePicker
+                          label="วันที่สอบ"
+                          value={selectedDate}
+                          onChange={(date) => onChangeDate(new Date(date))}
+                        />
+                      </Col>
+                      <Col>
+                        <DatePicker
+                          label="&nbsp; &nbsp;"
+                          value={selectedEndDate}
+                          mindate={selectedDate}
+                          onChange={(date) => onChangeEndDate(new Date(date))}
+                        />
+                      </Col>
+                    </Row>
                   </Col>
+                  {/* <Col xs="12" sm="3" md="3">
+                    <DatePicker
+                      label="&nbsp; &nbsp;"
+                      value={selectedEndDate}
+                      mindate={selectedDate}
+                      onChange={(date) => setSelectedEndDate(new Date(date))}
+                    />
+                  </Col> */}
                   <Col xs="12" sm="2" md="2">
                     <DropdownExamTime
                       label="เวลาสอบ"
@@ -302,7 +328,7 @@ const ExamSchedule = () => {
                       onClick={(e) => setExamRound(get(e, "roundId", ""))}
                     />
                   </Col>
-                  <Col xs="12" sm="3" md="3">
+                  <Col xs="12" sm="2" md="2">
                     <DropdownExamOrganizer
                       label="สถานที่สอบ"
                       value={examOrganizerCode}
@@ -312,7 +338,7 @@ const ExamSchedule = () => {
                       }}
                     />
                   </Col>
-                  <Col xs="12" sm="3" md="3">
+                  <Col xs="12" sm="2" md="2">
                     <DropdownExamRegion
                       label="สนามสอบ"
                       value={provinceCode}
