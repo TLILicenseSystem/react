@@ -59,7 +59,7 @@ export const SearchSchedulePopup = ({ onChange }) => {
     {
       field: "timeStr",
       headerName: "เวลาสอบ",
-      minWidth: 100,
+      minWidth: 120,
       hideSortIcons: "true",
       // valueGetter: (params) =>
       //   `${getExamRoundDetail(params.getValue(params.id, "roundId"))}`,
@@ -192,10 +192,12 @@ export const SearchSchedulePopup = ({ onChange }) => {
     //  if(description === "add"){
     let result = get(responseSchedule, "data", []).filter((item) => {
       if (
-        dayjs(item.applyCloseDate).format("YYYY-MM-DD") >=
+        dayjs(new Date(item.applyCloseDate)).format("YYYY-MM-DD") >=
         dayjs(new Date()).format("YYYY-MM-DD")
-      )
+      ){
         return item;
+      }
+        
     });
     setExamScheduleList(result);
     // }else setExamScheduleList(get(responseSchedule, "data", []));

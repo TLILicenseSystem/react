@@ -33,6 +33,7 @@ import {
   getExamApplication,
   insertExamApplication,
   updateExamApplication,
+  deleteExamApplication
 } from "./ModelExamApplication";
 // import { getExamResult} from "../../api/apiGetConfig"
 import Swal from "sweetalert2";
@@ -486,6 +487,40 @@ const ExamApplication = (props) => {
     }
   };
 
+  const deleteDeleteExamApplication = async () => {
+   
+    try {
+      let { scheduleId}= scheduleDetail
+      let { citizenID} = saleData
+      const response = await deleteExamApplication(citizenID,scheduleId)
+      Swal.fire("Canceled!", "ยกเลิกการสมัครสอบเรียบร้อยแล้ว", "success");
+      onClickCancel();
+      fetchData(citizenID);
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "พบข้อผิดพลาดในยกเลิกการสมัครสอบ!",
+      });
+
+    }
+  };
+  const onClickDeleteExamApplication = async () => {
+    let { examDate }= scheduleDetail
+    const { value: check } = await Swal.fire({
+      text: `ต้องการยกเลิกการสมัครสอบวันที่ ${dayjs(new Date(examDate)).format("DD-MM-BBBB")} ใช่หรือไม่`,
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonColor: "#d9534f",
+      confirmButtonColor: "#0275d8",
+      confirmButtonText: "ใช่",
+      cancelButtonText: "ยกเลิก",
+    });
+    if (check) {
+       deleteDeleteExamApplication();
+    }
+  }
+
   return (
     <Container>
       <EditLocationPopup />
@@ -527,18 +562,24 @@ const ExamApplication = (props) => {
                     onClick={() => onClickChangeLocation()}
                   >
                     <i class="fas fa-search" type="button"></i> ค้นหาตารางสอบ
-                  </Button>
+                  </Button>{" "}
+                  {mode === "history" &&  <Button
+                    size="sm"
+                    color="secondary"
+                    style={{ display: "inline" }}
+                    onClick={() => onClickDeleteExamApplication()}
+                  >
+                    ยกเลิกการสมัครสอบ
+                  </Button>}
+                 
                   <FormSchedule scheduleDetail={scheduleDetail} />
+                  
                 </CardBody>
                 <CardBody>
                   <FormPayment />
                 </CardBody>
-                <CardBody
-                 
-                >
+                <CardBody>
                  < RsContainer >
-
-                 
                   <hr />
                   <Row sm="4">
                     <Col>

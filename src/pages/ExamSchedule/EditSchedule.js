@@ -46,9 +46,9 @@ const validate = (values) => {
       errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     if (
       values.examDate &&
-      dayjs(values.applyCloseDate) > dayjs(values.examDate)
+      (dayjs(values.applyCloseDate).format("YYYY-MM-DD") > dayjs(values.examDate).format("YYYY-MM-DD") )
     ) {
-      errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
+      errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง >";
     }
   }
   if (!values.receiveDate) {
@@ -56,7 +56,7 @@ const validate = (values) => {
   } else if (values.receiveDate) {
     if (!dayjs(values.receiveDate).isValid())
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
-    if (values.examDate && dayjs(values.receiveDate) > dayjs(values.examDate)) {
+    if (values.examDate && dayjs(values.receiveDate).format("YYYY-MM-DD") > dayjs(values.examDate).format("YYYY-MM-DD")) {
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     }
   }

@@ -41,3 +41,16 @@ export const updateExamApplication = async (request) => {
     throw err;
   }
 };
+
+
+
+export const deleteExamApplication = async (citizenId,scheduleId) => {
+  try {
+    const response = await apiSpring.delete(`examapplication/delete?citizenId=${citizenId}&scheduleId=${scheduleId}`);
+    if (response.status === 200)
+      return response.data;
+    else throw new Error();
+  } catch (err) {
+    throw err;
+  }
+};
