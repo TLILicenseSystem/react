@@ -18,7 +18,7 @@ export const PersonelData = ({ data }) => {
               <Input
                 style={{ marginBottom: "20px" }}
                 readOnly={true}
-                value={`${get(data, "firstName", "")} ${get(
+                value={`${get(data, "preName", "")}${get(data, "firstName", "")} ${get(
                   data,
                   "lastName",
                   ""
@@ -31,49 +31,58 @@ export const PersonelData = ({ data }) => {
           <Row style={{ marginBottom: "0" }}>
             <Col sm="5">ตำแหน่ง</Col>
             <Col sm="7" style={{ paddingRight: "0" }}>
-              <Input
-                id="strid"
-                type={"tel"}
-                value={
-                  get(data, "highStrid", "").length === 3
-                    ? get(data, "highStrid", "").split("").join("-")
-                    : get(data, "highStrid", "").length === 5
-                    ? get(data, "highStrid", "").slice(0, 1) +
-                      "-" +
-                      get(data, "highStrid", "").slice(
-                        1,
-                        get(data, "highStrid", "").length - 1
-                      ) +
-                      "-" +
-                      get(data, "highStrid", "").slice(
-                        get(data, "highStrid", "").length - 1
-                      )
-                    : get(data, "highStrid", "").length === 8
-                    ? get(data, "highStrid", "").slice(0, 1) +
-                      "-" +
-                      get(data, "highStrid", "").slice(
-                        1,
-                        get(data, "highStrid", "").length - 1
-                      ) +
-                      "-" +
-                      get(data, "highStrid", "").slice(
-                        get(data, "highStrid", "").length - 1
-                      )
-                    : get(data, "highStrid", "").length === 10
-                    ? get(data, "highStrid", "").slice(0, 1) +
-                      "-" +
-                      get(data, "highStrid", "").slice(
-                        1,
-                        get(data, "highStrid", "").length - 1
-                      ) +
-                      "-" +
-                      get(data, "highStrid", "").slice(
-                        get(data, "highStrid", "").length - 1
-                      )
-                    : ""
-                }
-                disabled={true}
-              />
+              { get(data, "highStrid", "")
+              ? <Input
+              id="strid"
+              type={"tel"}
+              value={
+                get(data, "highStrid", "").length === 3
+                  ? get(data, "highStrid", "").split("").join("-")
+                  : get(data, "highStrid", "").length === 5
+                  ? get(data, "highStrid", "").slice(0, 1) +
+                    "-" +
+                    get(data, "highStrid", "").slice(
+                      1,
+                      get(data, "highStrid", "").length - 1
+                    ) +
+                    "-" +
+                    get(data, "highStrid", "").slice(
+                      get(data, "highStrid", "").length - 1
+                    )
+                  : get(data, "highStrid", "").length === 8
+                  ? get(data, "highStrid", "").slice(0, 1) +
+                    "-" +
+                    get(data, "highStrid", "").slice(
+                      1,
+                      get(data, "highStrid", "").length - 1
+                    ) +
+                    "-" +
+                    get(data, "highStrid", "").slice(
+                      get(data, "highStrid", "").length - 1
+                    )
+                  : get(data, "highStrid", "").length === 10
+                  ? get(data, "highStrid", "").slice(0, 1) +
+                    "-" +
+                    get(data, "highStrid", "").slice(
+                      1,
+                      get(data, "highStrid", "").length - 1
+                    ) +
+                    "-" +
+                    get(data, "highStrid", "").slice(
+                      get(data, "highStrid", "").length - 1
+                    )
+                  :""
+              }
+              disabled={true}
+            />
+              :<Input
+              id="positionName"
+              type={"tel"}
+              value={get(data,"positionName","")}
+              disabled={true}
+            />
+            }
+             
             </Col>
           </Row>
         </Col>
@@ -100,7 +109,7 @@ export const PersonelData = ({ data }) => {
             <Col sm="8" style={{ padding: "0" }}>
               <InputMask
                 mask="9-9999-99999-99-9"
-                maskChar={null}
+                 
                 className="form-control"
                 style={{ marginBottom: "20px" }}
                 id="citizenID"
@@ -118,16 +127,27 @@ export const PersonelData = ({ data }) => {
               รหัสประจำตัว
             </Col>
             <Col sm="7" style={{ paddingRight: "0" }}>
-              <InputMask
-                mask="999-9999-9"
-                maskChar={null}
+              {get(data, "employeeID", "")
+              ? <InputMask
+                mask="999-9999"
+                 
+                className="form-control"
+                style={{ marginBottom: "20px" }}
+                id="employeeID"
+                type={"tel"}
+                value={get(data, "employeeID", "")}
+                disabled={true}
+              />
+              : <InputMask
+                mask={get(data, "personID", "").length === 7 ? "999-9999": "999-9999-9"}
+                 
                 className="form-control"
                 style={{ marginBottom: "20px" }}
                 id="personID"
                 type={"tel"}
                 value={get(data, "personID", "")}
                 disabled={true}
-              />
+              />}
             </Col>
           </Row>
         </Col>
@@ -139,7 +159,9 @@ export const PersonelData = ({ data }) => {
                 label=""
                 disabled={true}
                 value={
-                  get(data, "branchCode", "") + "-" + get(data, "depositNo", "")
+                  get(data, "branchCode", "") 
+                  ? get(data, "branchCode", "")+"-" + get(data, "depositNo", "")
+                  : get(data, "depositNo", "")
                 }
               />
             </Col>

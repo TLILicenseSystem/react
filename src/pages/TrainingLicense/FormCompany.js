@@ -26,7 +26,7 @@ const FormCompany = (props) => {
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownCompany
               label="บริษัท"
-              // disabled={true}
+              disabled={true}
               isClearable={true}
               onClick={(e) => console.log(get(e, "companyCode", ""))}
             />
@@ -56,6 +56,7 @@ const FormCompany = (props) => {
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownCompanyType
               label="ประเภท"
+              disabled={true}
               isClearable={true}
               onClick={(e) => console.log(get(e, "companyCode", ""))}
             />

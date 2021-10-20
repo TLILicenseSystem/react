@@ -23,7 +23,7 @@ import {
   FilterCollapse,
   PersonelData,
   Table,
-  SearchSales,
+  SearchPerson,
 } from "../../components/shared";
 import { get } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
@@ -231,7 +231,7 @@ const ExamPayment = (props) => {
       <div className="contents">
         <h2 className="head">ค่าธรรมเนียม</h2>
         <Card>
-          <SearchSales />
+          <SearchPerson />
           <CardBody>
             <ButtonGroup>
               <Button

@@ -8,7 +8,7 @@ import {
   Input,
   Button,
 } from "reactstrap";
-import { AddButton, DropdownCause } from "../../components/shared";
+import { DropdownOfferResult } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import { get } from "lodash";
 
@@ -19,12 +19,11 @@ const FormResult = (props) => {
       <hr />
       <Row sm="4">
         <Col>
-          <FormGroup style={{ paddingTop: "10px" }}>
-            <DropdownCause
+        <FormGroup style={{paddingTop: '10px'}}>
+          <DropdownOfferResult
               label="ผลการขอรับ"
-              // disabled={true}
-              isClearable={true}
-              onClick={(e) => console.log(get(e, "companyCode", ""))}
+              type={"offerResultUL"}
+              onClick={(e) => console.log(get(e, "offerResult", ""))}
             />
           </FormGroup>
         </Col>

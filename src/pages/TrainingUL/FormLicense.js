@@ -8,7 +8,7 @@ import {
   Input,
   Button,
 } from "reactstrap";
-import { AddButton } from "../../components/shared";
+import { DropdownOfferType } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import { searchBlacklist } from "../../api/apiBlacklist";
 import { get } from "lodash";
@@ -37,9 +37,12 @@ const FormLicense = (props) => {
       <hr />
       <Row sm="4">
         <Col>
-          <FormGroup>
-            <label className={styles.label}>ประเภทการขอ</label>
-            <Input readOnly={true} type="text" name="radio1" />
+          <FormGroup style={{paddingTop: '10px'}}>
+            <DropdownOfferType
+              label="ประเภทการขอ"
+              type={"offerTypeUL"}
+              onClick={(e) => console.log(get(e, "offerType", ""))}
+            />
           </FormGroup>
         </Col>
         <Col>

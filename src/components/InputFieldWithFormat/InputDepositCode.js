@@ -51,7 +51,7 @@ export const InputDepositCode = ({
           <InputMask
             id="depositCode_first"
             mask="999"
-            maskChar=" "
+             
             className="form-control"
             style={{ marginBottom: "20px" }}
             id="depositCode_first"
@@ -72,7 +72,7 @@ export const InputDepositCode = ({
         <Col md={6}>
           <InputMask
             mask="*****"
-            maskChar=" "
+             
             className="form-control"
             style={{ marginBottom: "20px", textTransform: "uppercase" }}
             id="depositCode_second"

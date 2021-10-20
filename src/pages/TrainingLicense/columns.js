@@ -1,8 +1,11 @@
-import moment from "moment";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+
 
 export const columns = [
   {
-    field: "a",
+    field: "id",
     headerName: "ลำดับ",
     minWidth: 80,
     hideSortIcons: "true",
@@ -10,7 +13,7 @@ export const columns = [
     cellClassName: "cellDark",
   },
   {
-    field: "offerTypeName",
+    field: "offerName",
     headerName: "ประเภท",
     minWidth: 160,
     hideSortIcons: "true",
@@ -18,7 +21,7 @@ export const columns = [
   },
   {
     field: "offerResultName",
-    headerName: "ผลการขอใบอนญาต",
+    headerName: "ผลการขอใบอนุญาต",
     width: 160,
     align: "left",
     hideSortIcons: "true",
@@ -38,10 +41,6 @@ export const columns = [
     headerName: "วันที่ยื่น คปภ.",
     width: 160,
     align: "left",
-    // valueGetter: (params) =>
-    // `${moment(params.getValue(params.id, "issueDate")).format(
-    //   "DD/MM/yyyy"
-    // )}`,
     hideSortIcons: "true",
     headerClassName: "header",
   },
@@ -50,10 +49,6 @@ export const columns = [
     headerName: "วันที่ออกบัตร",
     minWidth: 160,
     align: "left",
-    // valueGetter: (params) =>
-    // `${moment(params.getValue(params.id, "issueDate")).format(
-    //   "DD/MM/yyyy"
-    // )}`,
     hideSortIcons: "true",
     headerClassName: "header",
   },
@@ -62,10 +57,6 @@ export const columns = [
     headerName: "วันที่หมดอายุ",
     minWidth: 160,
     align: "left",
-    valueGetter: (params) =>
-      `${moment(params.getValue(params.id, "expireDate")).format(
-        "DD/MM/yyyy"
-      )}`,
     hideSortIcons: "true",
     headerClassName: "header",
   },
@@ -112,7 +103,7 @@ export const columns_company = [
     headerClassName: "header",
   },
   {
-    field: "c",
+    field: "licenseNo",
     headerName: "เลขที่ใบอนุญาต",
     width: 160,
     align: "left",
@@ -120,7 +111,7 @@ export const columns_company = [
     headerClassName: "header",
   },
   {
-    field: "d",
+    field: "issueDate",
     headerName: "วันที่ออกบัตร",
     width: 160,
     align: "left",
@@ -129,7 +120,7 @@ export const columns_company = [
   },
 
   {
-    field: "e",
+    field: "expireDate",
     headerName: "วันที่หมดอายุ",
     width: 160,
     align: "left",

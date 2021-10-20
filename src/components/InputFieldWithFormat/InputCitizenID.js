@@ -10,7 +10,7 @@ export const InputCitizenID = ({ label, disabled, value, width, onChange }) => {
       <label className={styles.label}>{label}</label>
       <InputMask
         mask="9-9999-99999-99-9"
-        maskChar=" "
+         
         className="form-control"
         style={{ marginBottom: "20px" }}
         id="citizenID"

@@ -23,7 +23,7 @@ import {
   FilterCollapse,
   PersonelData,
   Table,
-  SearchSales,
+  SearchPerson,
   LicenseDetail,
 } from "../../components/shared";
 import { get } from "lodash";
@@ -154,7 +154,7 @@ const TrainingUL = (props) => {
       <div className="contents">
         <h2 className="head">ขอรับ/ขอต่อ ใบอนุญาต UL</h2>
         <Card>
-          <SearchSales />
+          <SearchPerson />
           <CardBody>
             <LicenseDetail title="ผลการอบรมหลักสูตร UL" />
           </CardBody>

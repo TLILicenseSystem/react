@@ -23,7 +23,7 @@ import {
   FilterCollapse,
   PersonelData,
   Table,
-  SearchSales,
+  SearchPerson,
 } from "../../components/shared";
 import { get } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
@@ -150,7 +150,7 @@ const TrainingUK = (props) => {
       <div className="contents">
         <h2 className="head">ขอรับ/ขอต่อ ใบอนุญาต UK</h2>
         <Card>
-          <SearchSales />
+          <SearchPerson />
           <CardBody>
             <ButtonGroup>
               <Button

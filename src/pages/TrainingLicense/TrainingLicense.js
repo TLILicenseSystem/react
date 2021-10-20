@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
+  Container as RsContainer,
   Card,
   CardBody,
   Row,
@@ -16,14 +17,19 @@ import {
   Container,
   EditLocationPopup,
   Table,
-  SearchSales,
+  SearchPerson,
   StructData,
   LicenseDetail,
+  SubmitButton,
+  CancelButton,
 } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 
 import { showSearchSchedulePopup } from "../../redux/actions";
-import { getLicenseHistoryByCid } from "../../api/apiGetLicense";
+import {
+  getLicenseHistoryByCid,
+  getLicenseByCid,
+} from "../../api/apiGetLicense";
 import Swal from "sweetalert2";
 import { columns, columns_company } from "./columns";
 import { get } from "lodash";
@@ -39,7 +45,7 @@ dayjs.extend(buddhistEra);
 const TrainingLicense = (props) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
-  const [licenseDetail, setLicenseDetail] = useState(null);
+  const [currentLicense, setCurrentLicense] = useState(null);
   const [mode, setMode] = useState("add");
   const [license, setLicense] = useState([]);
   const [saleData, setSaleData] = useState(
@@ -47,51 +53,70 @@ const TrainingLicense = (props) => {
       ? JSON.parse(sessionStorage.getItem("sale"))
       : null
   );
+
+  const { seleted } = useSelector((state) => state.selectSalePopup);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (saleData && saleData.citizenID) {
-      fetchData();
+      fetchData(saleData.citizenID);
     }
-    console.log(dayjs().format("DD/MM/BBBB"));
   }, []);
 
-  const fetchData = async () => {
+  useEffect(() => {
+    setSaleData(seleted);
+    if (seleted && seleted.citizenID) {
+      fetchData(seleted.citizenID);
+    }
+  }, [seleted]);
+
+  useEffect(() => {
+    console.log(currentLicense, "currentLicense");
+  }, [currentLicense]);
+
+  const fetchData = async (citizenID) => {
     setLoading(true);
-    const response = await getLicenseHistoryByCid(saleData.citizenID);
-    setLicense(get(response, "data", []));
+    const response = await getLicenseHistoryByCid(citizenID);
+    let data = get(response, "data", []).map((row, index) => {
+      return {
+        ...row,
+        offerDate: dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+        issueDate: dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+        expireDate: dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+        bookDate: dayjs(new Date(row.bookDate)).format("DD-MM-BBBB"),
+      };
+    });
+    setLicense(data);
     setLoading(false);
+    const current = await getLicenseByCid(citizenID);
+    data = get(current, "data", []);
+    setCurrentLicense(get(data, "license", []));
   };
 
-  const rows = license.map((row) => {
-    return { id: row.licenseNo, ...row };
+  const rows = license.map((row, index) => {
+    return { id: index + 1, ...row };
   });
 
   const onClickEditExamApplication = () => {};
   const onClickCancel = () => {
-    setLicenseDetail(null);
     setActiveTab("1");
     setMode("add");
   };
   const onClickAdd = () => {
-    setLicenseDetail(null);
     setActiveTab("1");
     setMode("add");
   };
 
   const onClickShowHistory = () => {
-    setLicenseDetail(null);
     setActiveTab("2");
     setMode("history");
   };
   const onClickShowHistoryCompany = () => {
-    setLicenseDetail(null);
     setActiveTab("3");
     setMode("historycompany");
   };
 
   const onClickShowDetail = () => {
-    setLicenseDetail(null);
     setActiveTab("4");
     setMode("detail");
   };
@@ -123,6 +148,77 @@ const TrainingLicense = (props) => {
   };
 
   const onClickUpdate = async () => {
+    console.log(currentLicense, saleData);
+    let citizenId = "";
+    if (!saleData) {
+      if (sessionStorage.getItem("sale")) {
+        let stored = JSON.parse(sessionStorage.getItem("sale"));
+        citizenId = stored.citizenID;
+        if (
+          stored.status === "Q" ||
+          stored.status === "M" ||
+          stored.status === "D"
+        ) {
+          Swal.fire({
+            icon: "warning",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+          });
+          return;
+        }
+        setSaleData(stored);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "กรุณาเลือกข้อมูลผู้สมัคร",
+        });
+        return;
+      }
+    } else {
+      citizenId = saleData.citizenID;
+      if (
+        saleData.status === "Q" ||
+        saleData.status === "M" ||
+        saleData.status === "D"
+      ) {
+        Swal.fire({
+          icon: "warning",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+        });
+        return;
+      }
+    }
+    let data = {
+      citizenId: citizenId,
+      licenseNo: currentLicense.licenseNo,
+      issueDate: dayjs(new Date(currentLicense.issueDate)).format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      ),
+      expireDate: dayjs(new Date(currentLicense.expireDate)).format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      ),
+      offerDate: dayjs(new Date(currentLicense.offerDate)).format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      ),
+      offerType: currentLicense.offerType,
+      offerResult: currentLicense.offerResult,
+      agentType: saleData.agentType,
+      bookNo: currentLicense.bookNo,
+      bookDate: dayjs(new Date(currentLicense.bookDate)).format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      ),
+      referenceNo: "",
+      remark: currentLicense.remark,
+      createUserCode: "9123456",
+      updateUserCode: "9123456",
+    };
+    if (currentLicense.disapprovePerson) {
+      data["disapprovePerson"] = currentLicense.disapprovePerson;
+    }
+    console.log(data, "save");
+
     // try {
     //   let data = {
     //     citizenId: licenseDetail.citizenId,
@@ -158,7 +254,7 @@ const TrainingLicense = (props) => {
       <div className="contents">
         <h2 className="head">ขอรับ/ขอต่อ ใบอนุญาต</h2>
         <Card>
-          <SearchSales />
+          <SearchPerson />
           <CardBody>
             <LicenseDetail title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ" />
           </CardBody>
@@ -206,7 +302,10 @@ const TrainingLicense = (props) => {
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
                 <CardBody>
-                  <FormLicense />
+                  <FormLicense
+                    currentLicense={currentLicense}
+                    onChange={(v) => setCurrentLicense(v)}
+                  />
                 </CardBody>
                 <CardBody>
                   <FormCompany />
@@ -215,45 +314,63 @@ const TrainingLicense = (props) => {
                   <FormPayment />
                 </CardBody>
                 <CardBody>
-                  <FormResult />
+                  <FormResult
+                    currentLicense={currentLicense}
+                    onChange={(v) => setCurrentLicense(v)}
+                  />
                 </CardBody>
-                <CardBody
-                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
-                >
-                  <FormCreateUser mode={"history"} data={[]} />
-                  <hr />
+                <CardBody>
+                  <RsContainer>
+                    <FormCreateUser mode={"history"} data={currentLicense} />
+                    <hr />
+                  </RsContainer>
                 </CardBody>
-                <CardBody
-                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
-                >
-                  <Row sm="1">
-                    <Col sm="9">
-                      <FormGroup>
-                        <label className={styles.label}>
-                          หมายเหตุ <label className={styles.required}> *</label>
-                        </label>
-                        <Input
-                          type="text"
-                          name="remark"
-                          disabled={true}
-                          //  value={get(scheduleDetail, "remark", "")}
-                          // onChange={(e) =>
-                          //   setScheduleDetail({
-                          //     ...scheduleDetail,
-                          //     remark: e.target.value,
-                          //   })
-                          // }
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <FormCreateUser mode={"history"} data={[]} />
+                <CardBody>
+                  <RsContainer>
+                    <Row sm="1">
+                      <Col sm="9">
+                        <FormGroup>
+                          <label className={styles.label}>
+                            หมายเหตุ{" "}
+                            <label className={styles.required}> *</label>
+                          </label>
+                          <Input
+                            type="text"
+                            name="remark"
+                            value={get(currentLicense, "remark", "")}
+                            onChange={(e) =>
+                              setCurrentLicense({
+                                ...currentLicense,
+                                remark: e.target.value,
+                              })
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <FormCreateUser mode={"history"} data={currentLicense} />
+                  </RsContainer>
+                  <CardBody style={{ textAlign: "right" }}>
+                    <RsContainer>
+                      <SubmitButton
+                        // disabled={
+                        //   disabled ||
+                        //   scheduleDetail === null ||
+                        //   scheduleDetail === ""
+                        // }
+                        title="บันทึก"
+                        // onClick={mode === "history" ? onClickUpdate : onClickSave}
+                        onClick={onClickUpdate}
+                      />{" "}
+                      <CancelButton title="ยกเลิก" onClick={onClickCancel} />
+                    </RsContainer>
+                  </CardBody>
                 </CardBody>
               </TabPane>
               <TabPane tabId="2">
                 <CardBody>
                   <Table
-                    id="scheduleId"
+                    id="license"
                     data={rows}
                     columns={columns}
                     loading={false}
@@ -264,7 +381,7 @@ const TrainingLicense = (props) => {
                 <CardBody>
                   <Table
                     id="companyId"
-                    data={rows}
+                    data={[]}
                     columns={columns_company}
                     loading={false}
                   />

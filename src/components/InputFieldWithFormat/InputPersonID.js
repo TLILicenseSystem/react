@@ -11,7 +11,7 @@ export const InputPersonID = ({ label, disabled, value, width, onChange }) => {
       <label className={styles.label}>{label}</label>
       <InputMask
         mask="999-9999-9"
-        maskChar={null}
+         
         className="form-control"
         style={{ marginBottom: "20px" }}
         id="personID"

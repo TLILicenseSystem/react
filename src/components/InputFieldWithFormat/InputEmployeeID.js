@@ -1,42 +1,30 @@
-import React,{useEffect}from "react";
+import React ,{useEffect,useRef}from "react";
 import { Input } from "reactstrap";
 import styles from "./InputWithLabel.module.css";
 import PropTypes from "prop-types";
 import InputMask from "react-input-mask";
 
-export const InputLicenseNo = ({ label, disabled, value, width, onChange }) => {
-  function autoTab(e) {
-    if (e.target.value && /^\d+$/.test(e.target.value.replaceAll("-", ""))) {
-      var pattern = new String("__________"); // กำหนดรูปแบบในนี้
+export const InputEmployeeID = ({ label, disabled, value, width, onChange }) => {
 
-      var obj_l = e.target.value.length;
-      if (obj_l >= pattern.length) {
-        e.target.value = e.target.value.substr(0, pattern.length);
-      }
-    } else e.target.value = null;
-    onChange(e.target.value);
-  }
-
-  
   return (
     <div className={styles.div}>
       <label className={styles.label}>{label}</label>
       <InputMask
-        mask="9999999999"
+        mask="999-9999"
+         
         className="form-control"
         style={{ marginBottom: "20px" }}
-        id="InputLicenseNo"
+        id="employeeID"
         type={"tel"}
         defaultValue={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-
       />
     </div>
   );
 };
 
-InputLicenseNo.defaultProps = {
+InputEmployeeID.defaultProps = {
   label: "",
   type: "text",
   value: "",
@@ -46,7 +34,7 @@ InputLicenseNo.defaultProps = {
   onChange: () => {},
 };
 
-InputLicenseNo.propTypes = {
+InputEmployeeID.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string,
   value: PropTypes.string,

@@ -27,6 +27,13 @@ export const SelectSalePopup = ({ onChange }) => {
       field: "personID",
       headerName: "รหัสประจำตัว",
       minWidth: 200,
+      renderCell: (cellValues) => {
+       return cellValues.row.personID 
+        ? cellValues.row.personID
+        : cellValues.row.employeeID
+        ?cellValues.row.employeeID
+        :""
+      },
       hideSortIcons: "true",
       headerClassName: "header",
     },

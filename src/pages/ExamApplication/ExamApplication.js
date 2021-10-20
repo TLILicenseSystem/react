@@ -11,7 +11,7 @@ import {
   TabContent,
   TabPane,
   FormGroup,
-  Container as RsContainer
+  Container as RsContainer,
 } from "reactstrap";
 import {
   SearchSchedulePopup,
@@ -24,7 +24,7 @@ import {
   FilterCollapse,
   PersonelData,
   Table,
-  SearchSales,
+  SearchPerson,
 } from "../../components/shared";
 import { get } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
@@ -33,7 +33,7 @@ import {
   getExamApplication,
   insertExamApplication,
   updateExamApplication,
-  deleteExamApplication
+  deleteExamApplication,
 } from "./ModelExamApplication";
 // import { getExamResult} from "../../api/apiGetConfig"
 import Swal from "sweetalert2";
@@ -45,7 +45,6 @@ import FormCreateUser from "./FormCreateUser";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
-
 
 const ExamApplication = (props) => {
   const [loading, setLoading] = useState(false);
@@ -69,9 +68,7 @@ const ExamApplication = (props) => {
       headerName: "วันที่สอบ",
       minWidth: 140,
       valueGetter: (params) =>
-        `${dayjs(params.getValue(params.id, "examDate")).format(
-          "DD/MM/BBBB"
-        )}`,
+        `${dayjs(params.getValue(params.id, "examDate")).format("DD/MM/BBBB")}`,
       hideSortIcons: "true",
       headerClassName: "header",
       cellClassName: "cellDark",
@@ -345,7 +342,9 @@ const ExamApplication = (props) => {
     try {
       const inputPost = {
         citizenId: citizenId,
-        scheduleId: scheduleDetail.newScheduleId ? scheduleDetail.newScheduleId : scheduleDetail.scheduleId,
+        scheduleId: scheduleDetail.newScheduleId
+          ? scheduleDetail.newScheduleId
+          : scheduleDetail.scheduleId,
         applyTime: dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
         applicantType: "0",
         seatNoStr: scheduleDetail.seatNoStr,
@@ -488,11 +487,10 @@ const ExamApplication = (props) => {
   };
 
   const deleteDeleteExamApplication = async () => {
-   
     try {
-      let { scheduleId}= scheduleDetail
-      let { citizenID} = saleData
-      const response = await deleteExamApplication(citizenID,scheduleId)
+      let { scheduleId } = scheduleDetail;
+      let { citizenID } = saleData;
+      const response = await deleteExamApplication(citizenID, scheduleId);
       Swal.fire("Canceled!", "ยกเลิกการสมัครสอบเรียบร้อยแล้ว", "success");
       onClickCancel();
       fetchData(citizenID);
@@ -502,13 +500,14 @@ const ExamApplication = (props) => {
         title: "เกิดข้อผิดพลาด",
         text: "พบข้อผิดพลาดในยกเลิกการสมัครสอบ!",
       });
-
     }
   };
   const onClickDeleteExamApplication = async () => {
-    let { examDate }= scheduleDetail
+    let { examDate } = scheduleDetail;
     const { value: check } = await Swal.fire({
-      text: `ต้องการยกเลิกการสมัครสอบวันที่ ${dayjs(new Date(examDate)).format("DD-MM-BBBB")} ใช่หรือไม่`,
+      text: `ต้องการยกเลิกการสมัครสอบวันที่ ${dayjs(new Date(examDate)).format(
+        "DD-MM-BBBB"
+      )} ใช่หรือไม่`,
       icon: "warning",
       showCancelButton: true,
       cancelButtonColor: "#d9534f",
@@ -517,9 +516,9 @@ const ExamApplication = (props) => {
       cancelButtonText: "ยกเลิก",
     });
     if (check) {
-       deleteDeleteExamApplication();
+      deleteDeleteExamApplication();
     }
-  }
+  };
 
   return (
     <Container>
@@ -527,7 +526,7 @@ const ExamApplication = (props) => {
       <div className="contents">
         <h2 className="head">สมัครสอบ</h2>
         <Card>
-          <SearchSales />
+          <SearchPerson />
           <CardBody>
             <ButtonGroup>
               <Button
@@ -563,126 +562,127 @@ const ExamApplication = (props) => {
                   >
                     <i class="fas fa-search" type="button"></i> ค้นหาตารางสอบ
                   </Button>{" "}
-                  {mode === "history" &&  <Button
-                    size="sm"
-                    color="secondary"
-                    style={{ display: "inline" }}
-                    onClick={() => onClickDeleteExamApplication()}
-                  >
-                    ยกเลิกการสมัครสอบ
-                  </Button>}
-                 
+                  {mode === "history" && (
+                    <Button
+                      size="sm"
+                      color="secondary"
+                      style={{ display: "inline" }}
+                      onClick={() => onClickDeleteExamApplication()}
+                    >
+                      ยกเลิกการสมัครสอบ
+                    </Button>
+                  )}
                   <FormSchedule scheduleDetail={scheduleDetail} />
-                  
                 </CardBody>
                 <CardBody>
                   <FormPayment />
                 </CardBody>
                 <CardBody>
-                 < RsContainer >
-                  <hr />
-                  <Row sm="4">
-                    <Col>
-                      <FormGroup>
-                        <label className={styles.label}>
-                          เลขที่นั่งสอบ{" "}
-                          <label className={styles.required}> *</label>
-                        </label>
-                        <Input
-                          type="text"
-                          name="seatNoStr"
-                          disabled={disabled}
-                          value={get(scheduleDetail, "seatNoStr", "")}
-                          onChange={(e) =>
-                            setScheduleDetail({
-                              ...scheduleDetail,
-                              seatNoStr: /^([0-9]*)$/.test(e.target.value)
-                                ? e.target.value.length >6 
-                                ? e.target.value.substr(0,6)
-                                : e.target.value
-                                : "",
-                            })
-                          }
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col>
-                      <FormGroup style={{ paddingTop: "10px" }}>
-                        <DropdownExamResult
-                          label="ผลสอบ"
-                          disabled={disabled}
-                          value={get(scheduleDetail, "examResult", "")}
-                          requiredField={true}
-                          onClick={(v) =>
-                            setScheduleDetail({
-                              ...scheduleDetail,
-                              examResult: v.resultId,
-                            })
-                          }
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col>
-                      <FormGroup>
-                        <label className={styles.label}>
-                          เวลาที่ยื่นสมัครสอบ
-                        </label>
-                        <Input
-                          readOnly={true}
-                          type="text"
-                          name="applyTime"
-                          value={
-                            get(scheduleDetail, "applyTime", "")
-                              ? dayjs(
-                                  get(scheduleDetail, "applyTime", "")
-                                ).format("DD/MM/BBBB HH:mm:ss")
-                              : ""
-                          }
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row sm="1">
-                    <Col sm="9">
-                      <FormGroup>
-                        <label className={styles.label}>
-                          หมายเหตุ <label className={styles.required}> *</label>
-                        </label>
-                        <Input
-                          type="text"
-                          name="remark"
-                          disabled={disabled}
-                          value={get(scheduleDetail, "remark", "")}
-                          onChange={(e) =>
-                            setScheduleDetail({
-                              ...scheduleDetail,
-                              remark: e.target.value,
-                            })
-                          }
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                  <RsContainer>
+                    <hr />
+                    <Row sm="4">
+                      <Col>
+                        <FormGroup>
+                          <label className={styles.label}>
+                            เลขที่นั่งสอบ{" "}
+                            <label className={styles.required}> *</label>
+                          </label>
+                          <Input
+                            type="text"
+                            name="seatNoStr"
+                            disabled={disabled}
+                            value={get(scheduleDetail, "seatNoStr", "")}
+                            onChange={(e) =>
+                              setScheduleDetail({
+                                ...scheduleDetail,
+                                seatNoStr: /^([0-9]*)$/.test(e.target.value)
+                                  ? e.target.value.length > 6
+                                    ? e.target.value.substr(0, 6)
+                                    : e.target.value
+                                  : "",
+                              })
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <FormGroup style={{ paddingTop: "10px" }}>
+                          <DropdownExamResult
+                            label="ผลสอบ"
+                            disabled={disabled}
+                            value={get(scheduleDetail, "examResult", "")}
+                            requiredField={true}
+                            onClick={(v) =>
+                              setScheduleDetail({
+                                ...scheduleDetail,
+                                examResult: v.resultId,
+                              })
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <FormGroup>
+                          <label className={styles.label}>
+                            เวลาที่ยื่นสมัครสอบ
+                          </label>
+                          <Input
+                            readOnly={true}
+                            type="text"
+                            name="applyTime"
+                            value={
+                              get(scheduleDetail, "applyTime", "")
+                                ? dayjs(
+                                    get(scheduleDetail, "applyTime", "")
+                                  ).format("DD/MM/BBBB HH:mm:ss")
+                                : ""
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row sm="1">
+                      <Col sm="9">
+                        <FormGroup>
+                          <label className={styles.label}>
+                            หมายเหตุ{" "}
+                            <label className={styles.required}> *</label>
+                          </label>
+                          <Input
+                            type="text"
+                            name="remark"
+                            disabled={disabled}
+                            value={get(scheduleDetail, "remark", "")}
+                            onChange={(e) =>
+                              setScheduleDetail({
+                                ...scheduleDetail,
+                                remark: e.target.value,
+                              })
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
                   </RsContainer>
                 </CardBody>
 
                 <CardBody>
-                  <RsContainer> 
-                  <FormCreateUser mode={mode} data={scheduleDetail} />
+                  <RsContainer>
+                    <FormCreateUser mode={mode} data={scheduleDetail} />
                   </RsContainer>
                 </CardBody>
                 <CardBody style={{ textAlign: "right" }}>
-                <RsContainer> 
-                  <SubmitButton
-                    disabled={
-                      disabled ||
-                      scheduleDetail === null ||
-                      scheduleDetail === ""
-                    }
-                    title="บันทึก"
-                    onClick={mode === "history" ? onClickUpdate : onClickSave}
-                  />{" "}
-                  <CancelButton title="ยกเลิก" onClick={onClickCancel} />
+                  <RsContainer>
+                    <SubmitButton
+                      disabled={
+                        disabled ||
+                        scheduleDetail === null ||
+                        scheduleDetail === ""
+                      }
+                      title="บันทึก"
+                      onClick={mode === "history" ? onClickUpdate : onClickSave}
+                    />{" "}
+                    <CancelButton title="ยกเลิก" onClick={onClickCancel} />
                   </RsContainer>
                 </CardBody>
               </TabPane>

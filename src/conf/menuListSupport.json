@@ -3,11 +3,22 @@
     "main": "สมัครสอบ",
     "path" : "/license/examApplication",
     "submenu":null
-    },
-
-    {
-        "main": "ค่าธรรมเนียม",
-        "path" :"/license/examPayment",
-        "submenu":null
-    }
+    },{
+        "main": "ขอรับ/ขอต่อใบอนุญาต",
+        "path" : "#",
+        "submenu":[
+            {
+                "title":"ใบอนุญาต",
+                "path" : "/license/trainingLicense"	
+            },
+            {
+                "title":"ใบอนุญาต UL",
+                "path" : "/license/trainingUL"	
+            },
+            {
+                "title":"ใบอนุญาต UK",
+                "path" : "/license/trainingUK"
+            }
+        ]
+        }
 ]
