@@ -70,10 +70,6 @@ const TrainingLicense = (props) => {
     }
   }, [seleted]);
 
-  useEffect(() => {
-    console.log(currentLicense, "currentLicense");
-  }, [currentLicense]);
-
   const fetchData = async (citizenID) => {
     setLoading(true);
     const response = await getLicenseHistoryByCid(citizenID);
@@ -148,7 +144,6 @@ const TrainingLicense = (props) => {
   };
 
   const onClickUpdate = async () => {
-    console.log(currentLicense, saleData);
     let citizenId = "";
     if (!saleData) {
       if (sessionStorage.getItem("sale")) {
@@ -304,6 +299,7 @@ const TrainingLicense = (props) => {
                 <CardBody>
                   <FormLicense
                     currentLicense={currentLicense}
+                    expireDate={saleData && saleData.expireDate}
                     onChange={(v) => setCurrentLicense(v)}
                   />
                 </CardBody>

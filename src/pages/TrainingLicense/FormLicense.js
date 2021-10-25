@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { FormGroup, Container, Row, Col, Input } from "reactstrap";
 import { DropdownOfferType, DatePickerThai } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
+import Swal from "sweetalert2";
+
 import { searchBlacklist } from "../../api/apiBlacklist";
 import { get } from "lodash";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-const FormLicense = ({ currentLicense, onChange }) => {
+const FormLicense = ({ currentLicense, expireDate, onChange }) => {
   const [blacklist, setBlacklist] = useState(false);
   const [data, setData] = useState(currentLicense);
   const [readOnly, setReadOnly] = useState(false);
@@ -43,6 +45,76 @@ const FormLicense = ({ currentLicense, onChange }) => {
     }
   };
 
+  const onSelectOfferType = (value) => {
+    const offerType = get(value, "offerType", null);
+    const offerTypeName = get(value, "offerTypeName", "");
+    if (offerType === "4" || offerType === "6") {
+      //  { offerType: "4", offerTypeName: "ต่ออายุ" }
+      //  { offerType: "6", offerTypeName: "ต่ออายุพร้อมขอใบแทน" }
+      if (checkConditionExpireDate()) return;
+    } else if (offerType === "2") {
+      if (checkExpired()) return;
+      // { offerType: "2", offerTypeName: "ขาดอายุ" }
+    } else if (offerType === "3") {
+      //{ offerType: "3", offerTypeName: "เปลี่ยนบริษัท" }
+    } else {
+    }
+    setData({
+      ...data,
+      offerType: offerType,
+      offerTypeName: offerTypeName,
+    });
+  };
+  const checkExpired = () => {
+    if (!expireDate) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่พบข้อมูลเลขที่ใบอนุญาต",
+      });
+      return true;
+    } else {
+      let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
+      let today = dayjs(new Date("2021-12-01T07:00:00.000+00:00")).format(
+        "YYYY-MM-DD"
+      );
+      if (today <= date) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ใบอนุญาติยังไม่หมดอายุ ไม่สามารถเลือกขาดอายุได้",
+        });
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const checkConditionExpireDate = () => {
+    if (!expireDate) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่พบข้อมูลเลขที่ใบอนุญาต",
+      });
+      return true;
+    } else {
+      let minData = dayjs(new Date(expireDate))
+        .subtract(61, "day")
+        .format("YYYY-MM-DD");
+      let today = dayjs(new Date("2021-09-01T07:00:00.000+00:00")).format(
+        "YYYY-MM-DD"
+      );
+      if (today <= minData) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ยังไม่ถึงเวลา",
+        });
+        return true;
+      } else return false;
+    }
+  };
   return (
     <Container>
       <h3>การขอรับใบอนุญาต</h3>
@@ -54,13 +126,7 @@ const FormLicense = ({ currentLicense, onChange }) => {
               label="ประเภทการขอ"
               type={"offerType"}
               value={get(data, "offerType", "")}
-              onClick={(e) =>
-                setData({
-                  ...data,
-                  offerType: get(e, "offerType", ""),
-                  offerTypeName: get(e, "offerTypeName", ""),
-                })
-              }
+              onClick={(e) => onSelectOfferType(e)}
             />
           </FormGroup>
         </Col>

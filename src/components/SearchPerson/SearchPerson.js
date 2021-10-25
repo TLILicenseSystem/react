@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -32,6 +32,8 @@ export const SearchPerson = () => {
       ? JSON.parse(sessionStorage.getItem("sale"))
       : null
   );
+  const [isShow, setIsShow] = useState(false);
+
   const [, forceUpdate] = useState(0);
   const dispatch = useDispatch();
 
@@ -41,6 +43,11 @@ export const SearchPerson = () => {
       setActiveTab(tab);
     }
   };
+
+  useEffect(() => {
+    console.log("saleData", saleData);
+    if (saleData) setIsShow(false);
+  }, [saleData]);
 
   const onSearchEmployee = async (key, value) => {
     // E = ค้นหาด้วยรหัสพนักงาน
@@ -433,7 +440,11 @@ export const SearchPerson = () => {
   return (
     <Card style={{ border: "none" }}>
       <CardBody>
-        <FilterCollapse title="ตัวกรองข้อมูล">
+        <FilterCollapse
+          open={isShow}
+          title="ตัวกรองข้อมูล"
+          onClick={(v) => setIsShow(v)}
+        >
           <div style={{ textAlign: "center" }}>
             <ButtonGroup style={{ marginBottom: "2em" }}>
               <Button

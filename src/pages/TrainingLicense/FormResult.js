@@ -6,7 +6,9 @@ import {
   DatePickerThai,
   InputLicenseNo,
   SubmitButton,
+  DeleteButton,
 } from "../../components/shared";
+import Swal from "sweetalert2";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import { colors } from "../../themes/style";
 import { get } from "lodash";
@@ -42,13 +44,19 @@ const FormResult = ({ currentLicense, onChange }) => {
 
   const onSelectCause = () => {
     if (lesson) {
-      let find = cause.find((item) => lesson.causeId === item.lesson);
-      if (find) console.log("find", find, cause);
+      let find = cause.find((item) => lesson.causeId === item.causeId);
+      if (find) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "พบข้อมูลซ้ำในเหตุผลการไม่อนุมัติ กรุณาเลือกเหตุผลใหม่!!",
+        });
+      } else {
+        cause.push({ ...lesson });
+        setCause(cause);
+        setData({ ...data, disapprovePerson: cause });
+      }
     }
-    console.log("find", cause);
-    cause.push({ ...lesson });
-    setCause(cause);
-    setData({ ...data, disapprovePerson: cause });
   };
 
   return (
@@ -76,12 +84,24 @@ const FormResult = ({ currentLicense, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>เลขที่ใบอนุญาต</label>
-            <Input
-              readOnly={readOnly}
-              name="licenseNo"
-              value={get(data, "licenseNo", null)}
-              onChange={(e) => setData({ ...data, licenseNo: e.target.value })}
-            />
+            {get(data, "licenseNo", null) ? (
+              <Input
+                readOnly={readOnly}
+                name="licenseNo"
+                value={get(data, "licenseNo", null)}
+                onChange={(e) =>
+                  setData({ ...data, licenseNo: e.target.value })
+                }
+              />
+            ) : (
+              <InputLicenseNo
+                readOnly={readOnly}
+                name="licenseNo"
+                value={get(data, "licenseNo", null)}
+                onChange={(e) => setData({ ...data, licenseNo: e })}
+              />
+            )}
+
             {/* <InputLicenseNo readOnly={readOnly} name="licenseNo"    value={get(data,"licenseNo",null)} onChange={(e) => setData({...data,"licenseNo": e}) }/> */}
           </FormGroup>
         </Col>
@@ -115,7 +135,6 @@ const FormResult = ({ currentLicense, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>วันที่หมดอายุ</label>
-            {/* expireDate */}
             <Input
               readOnly={true}
               type="text"
@@ -166,7 +185,7 @@ const FormResult = ({ currentLicense, onChange }) => {
         </Col>
       </Row>
       <Row>
-        <Col sm="8">
+        <Col sm="6">
           <Table bordered size="sm" style={{ fontSize: "90%" }}>
             <thead
               style={{ backgroundColor: colors.SECONDARYBLUE, color: "white" }}
@@ -180,9 +199,11 @@ const FormResult = ({ currentLicense, onChange }) => {
             <tbody>
               {cause.map((item, index) => (
                 <tr>
-                  <th>{index + 1}</th>
-                  <th>{item.detail}</th>
-                  <th>delete</th>
+                  <th scope="row">{index + 1}</th>
+                  <td>{item.detail}</td>
+                  <td style={{ textAlign: "center" }}>
+                    <DeleteButton onClick={() => console.log("eee")} />
+                  </td>
                 </tr>
               ))}
             </tbody>

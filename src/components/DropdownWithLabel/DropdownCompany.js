@@ -7,8 +7,6 @@ import { get } from "lodash";
 import { getCompany } from "../../api/apiGetConfig";
 import Select from "react-select";
 
-
-
 export const DropdownCompany = ({
   label,
   type,
@@ -49,8 +47,8 @@ export const DropdownCompany = ({
     <div>
       <Form>
         <FormGroup row>
-          <label className={styles.labelDropdown} style={{ marginTop: 0}}>
-            {label} 
+          <label className={styles.labelDropdown} style={{ marginTop: 0 }}>
+            {label}
             <label className={styles.required}>
               {value === "" && requiredField ? "*" : ""}
             </label>
@@ -63,7 +61,9 @@ export const DropdownCompany = ({
             name="company"
             isDisabled={disabled}
             options={companyList}
-            getOptionLabel={(option) => `${option.companyPrefix}${option.companyName}`}
+            getOptionLabel={(option) =>
+              `${option.companyPrefix}${option.companyName}`
+            }
             getOptionValue={(option) => `${option.companyCode}`}
             onChange={onClick}
             value={companyList.filter((option) => option.companyCode === value)}
