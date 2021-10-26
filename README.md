@@ -1,2 +1,1 @@
-
-React License 
+React License
