@@ -90,6 +90,11 @@ export let EditLocationPopup = (props) => {
   }, []);
 
   useEffect(() => {
+    if (props.initialValues === null)
+      props.dispatch(change("EditLocationPopup", "locationType", "1"));
+  }, [isShow]);
+
+  useEffect(() => {
     const found = province.find(
       (element) => element.provinceCode === provinceCode
     );
@@ -120,21 +125,23 @@ export let EditLocationPopup = (props) => {
     try {
       let examlocation = { createUserCode: "2901133", ...data };
       let response = await addExamLocation(examlocation);
-        Swal.fire("Added!", "บันทึกข้อมูลแล้ว", "success");
-        toggle();
-        action();
+      Swal.fire("Added!", "บันทึกข้อมูลแล้ว", "success");
+      toggle();
+      action();
     } catch (err) {
-      let { data } = err.response
+      let { data } = err.response;
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการบันทึกข้อมูล!",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการบันทึกข้อมูล!",
       });
       //throw new Error("พบข้อผิดพลาดในการบันทึกข้อมูล! ", err);
 
       // throw err;
     }
-  //  toggle();
+    //  toggle();
   };
   const onClickEditLocationData = async (data) => {
     if (props.invalid) {
@@ -154,11 +161,13 @@ export let EditLocationPopup = (props) => {
       toggle();
       action();
     } catch (err) {
-      let { data } = err.response
+      let { data } = err.response;
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการแก้ไขข้อมูล!",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
       });
       //throw new Error("พบข้อผิดพลาดในการบันทึกข้อมูล! ", err);
 
@@ -237,7 +246,7 @@ export let EditLocationPopup = (props) => {
             </Col>
 
             <Field
-              label="ประเภท"
+              label="แก้ไขสถานที่สอบ"
               name="locationType"
               component={SelectField}
               textboxSize={12}

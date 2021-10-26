@@ -123,6 +123,26 @@ const ExamApplication = (props) => {
       headerClassName: "header",
     },
     {
+      field: "lastUpdateFormat",
+      headerName: "วันเวลาที่แก้ไข",
+      minWidth: 200,
+      align: "left",
+      valueGetter: (params) =>
+        `${dayjs(new Date(params.getValue(params.id, "lastUpdate"))).format(
+          "DD/MM/BBBB HH:mm:ss"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "updateUserCode",
+      headerName: "ชื่อผู้แก้ไข",
+      minWidth: 140,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
       field: "select",
       headerName: "เลือก",
       align: "center",
@@ -260,42 +280,42 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    if (
-      !scheduleDetail.seatNoStr ||
-      scheduleDetail.seatNoStr === null ||
-      scheduleDetail.seatNoStr === ""
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "กรุณาระบุเลขที่นั่งสอบ",
-      });
-      return;
-    }
-    if (
-      !scheduleDetail.examResult ||
-      scheduleDetail.examResult === null ||
-      scheduleDetail.examResult === ""
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "กรุณาเลือกข้อมูลผลสอบ",
-      });
-      return;
-    }
-    if (
-      !scheduleDetail.remark ||
-      scheduleDetail.remark === null ||
-      scheduleDetail.remark === ""
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "กรุณาระบุหมายเหตุ",
-      });
-      return;
-    }
+    // if (
+    //   !scheduleDetail.seatNoStr ||
+    //   scheduleDetail.seatNoStr === null ||
+    //   scheduleDetail.seatNoStr === ""
+    // ) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "เกิดข้อผิดพลาด",
+    //     text: "กรุณาระบุเลขที่นั่งสอบ",
+    //   });
+    //   return;
+    // }
+    // if (
+    //   !scheduleDetail.examResult ||
+    //   scheduleDetail.examResult === null ||
+    //   scheduleDetail.examResult === ""
+    // ) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "เกิดข้อผิดพลาด",
+    //     text: "กรุณาเลือกข้อมูลผลสอบ",
+    //   });
+    //   return;
+    // }
+    // if (
+    //   !scheduleDetail.remark ||
+    //   scheduleDetail.remark === null ||
+    //   scheduleDetail.remark === ""
+    // ) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "เกิดข้อผิดพลาด",
+    //     text: "กรุณาระบุหมายเหตุ",
+    //   });
+    //   return;
+    // }
 
     let citizenId = "";
     if (!saleData) {
@@ -384,33 +404,33 @@ const ExamApplication = (props) => {
       });
       return;
     }
-    if (scheduleDetail.seatNoStr === null || scheduleDetail.seatNoStr === "") {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "กรุณาระบุเลขที่นั่งสอบ",
-      });
-      return;
-    }
-    if (
-      scheduleDetail.examResult === null ||
-      scheduleDetail.examResult === ""
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "กรุณาเลือกข้อมูลผลสอบ",
-      });
-      return;
-    }
-    if (scheduleDetail.remark === null || scheduleDetail.remark === "") {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "กรุณาระบุหมายเหตุ",
-      });
-      return;
-    }
+    // if (scheduleDetail.seatNoStr === null || scheduleDetail.seatNoStr === "") {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "เกิดข้อผิดพลาด",
+    //     text: "กรุณาระบุเลขที่นั่งสอบ",
+    //   });
+    //   return;
+    // }
+    // if (
+    //   scheduleDetail.examResult === null ||
+    //   scheduleDetail.examResult === ""
+    // ) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "เกิดข้อผิดพลาด",
+    //     text: "กรุณาเลือกข้อมูลผลสอบ",
+    //   });
+    //   return;
+    // }
+    // if (scheduleDetail.remark === null || scheduleDetail.remark === "") {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "เกิดข้อผิดพลาด",
+    //     text: "กรุณาระบุหมายเหตุ",
+    //   });
+    //   return;
+    // }
     let citizenId = "";
     if (!saleData) {
       if (sessionStorage.getItem("sale")) {
@@ -562,16 +582,20 @@ const ExamApplication = (props) => {
                   >
                     <i class="fas fa-search" type="button"></i> ค้นหาตารางสอบ
                   </Button>{" "}
-                  {mode === "history" && (
-                    <Button
-                      size="sm"
-                      color="secondary"
-                      style={{ display: "inline" }}
-                      onClick={() => onClickDeleteExamApplication()}
-                    >
-                      ยกเลิกการสมัครสอบ
-                    </Button>
-                  )}
+                  {mode === "history" &&
+                    dayjs(new Date()).format("DD/MM/BBBB") <
+                      dayjs(get(scheduleDetail, "examDate", "")).format(
+                        "DD/MM/BBBB"
+                      ) && (
+                      <Button
+                        size="sm"
+                        color="secondary"
+                        style={{ display: "inline" }}
+                        onClick={() => onClickDeleteExamApplication()}
+                      >
+                        ยกเลิกการสมัครสอบ{" "}
+                      </Button>
+                    )}
                   <FormSchedule scheduleDetail={scheduleDetail} />
                 </CardBody>
                 <CardBody>
@@ -583,10 +607,7 @@ const ExamApplication = (props) => {
                     <Row sm="4">
                       <Col>
                         <FormGroup>
-                          <label className={styles.label}>
-                            เลขที่นั่งสอบ{" "}
-                            <label className={styles.required}> *</label>
-                          </label>
+                          <label className={styles.label}>เลขที่นั่งสอบ</label>
                           <Input
                             type="text"
                             name="seatNoStr"
@@ -611,11 +632,10 @@ const ExamApplication = (props) => {
                             label="ผลสอบ"
                             disabled={disabled}
                             value={get(scheduleDetail, "examResult", "")}
-                            requiredField={true}
                             onClick={(v) =>
                               setScheduleDetail({
                                 ...scheduleDetail,
-                                examResult: v.resultId,
+                                examResult: v && v.resultId,
                               })
                             }
                           />
@@ -644,10 +664,7 @@ const ExamApplication = (props) => {
                     <Row sm="1">
                       <Col sm="9">
                         <FormGroup>
-                          <label className={styles.label}>
-                            หมายเหตุ{" "}
-                            <label className={styles.required}> *</label>
-                          </label>
+                          <label className={styles.label}>หมายเหตุ</label>
                           <Input
                             type="text"
                             name="remark"

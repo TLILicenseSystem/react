@@ -144,6 +144,8 @@ const TrainingLicense = (props) => {
   };
 
   const onClickUpdate = async () => {
+    console.log(currentLicense, " currentLicense save");
+
     let citizenId = "";
     if (!saleData) {
       if (sessionStorage.getItem("sale")) {
@@ -194,16 +196,20 @@ const TrainingLicense = (props) => {
       expireDate: dayjs(new Date(currentLicense.expireDate)).format(
         "YYYY-MM-DDTHH:mm:ssZ"
       ),
-      offerDate: dayjs(new Date(currentLicense.offerDate)).format(
-        "YYYY-MM-DDTHH:mm:ssZ"
-      ),
+      offerDate: currentLicense.offerDate
+        ? dayjs(new Date(currentLicense.offerDate)).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          )
+        : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
       offerType: currentLicense.offerType,
       offerResult: currentLicense.offerResult,
       agentType: saleData.agentType,
       bookNo: currentLicense.bookNo,
-      bookDate: dayjs(new Date(currentLicense.bookDate)).format(
-        "YYYY-MM-DDTHH:mm:ssZ"
-      ),
+      bookDate: currentLicense.bookDate
+        ? dayjs(new Date(currentLicense.bookDate)).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          )
+        : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
       referenceNo: "",
       remark: currentLicense.remark,
       createUserCode: "9123456",
@@ -250,9 +256,9 @@ const TrainingLicense = (props) => {
         <h2 className="head">ขอรับ/ขอต่อ ใบอนุญาต</h2>
         <Card>
           <SearchPerson />
-          <CardBody>
+          {/* <CardBody>
             <LicenseDetail title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ" />
-          </CardBody>
+          </CardBody> */}
           <CardBody>
             <ButtonGroup>
               <Button
@@ -304,7 +310,11 @@ const TrainingLicense = (props) => {
                   />
                 </CardBody>
                 <CardBody>
-                  <FormCompany />
+                  <FormCompany
+                    currentLicense={currentLicense}
+                    expireDate={saleData && saleData.expireDate}
+                    onChange={(v) => setCurrentLicense(v)}
+                  />
                 </CardBody>
                 <CardBody>
                   <FormPayment />
@@ -333,6 +343,11 @@ const TrainingLicense = (props) => {
                           <Input
                             type="text"
                             name="remark"
+                            disabled={
+                              get(currentLicense, "offerType", null)
+                                ? false
+                                : true
+                            }
                             value={get(currentLicense, "remark", "")}
                             onChange={(e) =>
                               setCurrentLicense({

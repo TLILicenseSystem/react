@@ -19,8 +19,7 @@ export const DateField = ({
   };
   return (
     <div>
-      <label className={styles.label}>{label}</label>
-
+      <label className={styles.label}> {label} </label>
       <Col xs={textboxSize}>
         <DatePickerThai
           label={label}

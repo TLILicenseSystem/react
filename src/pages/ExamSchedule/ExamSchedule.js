@@ -49,7 +49,7 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import styles from "../pageStyles.css";
 import { getExamRoundAll } from "../../api/apiGetExamRound";
-import { getExamType } from "../../api/apiGetConfig";
+// import { getExamType } from "../../api/apiGetConfig";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
@@ -62,21 +62,21 @@ const ExamSchedule = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [examScheduleList, setExamScheduleList] = useState([]);
-  const examType = getExamType();
+  // const examType = getExamType();
   const [loading, setLoading] = useState(false);
 
-  const getLocationTypeData = (e) => {
-    if (e !== "" || e !== null) {
-      const locationType = get(
-        examType.filter((zone) => zone.examTypeId === e)[0],
-        "examTypeName",
-        ""
-      );
-      return locationType;
-    } else {
-      return "";
-    }
-  };
+  // const getLocationTypeData = (e) => {
+  //   if (e !== "" || e !== null) {
+  //     const locationType = get(
+  //       examType.filter((zone) => zone.examTypeId === e)[0],
+  //       "examTypeName",
+  //       ""
+  //     );
+  //     return locationType;
+  //   } else {
+  //     return "";
+  //   }
+  // };
   const columns = [
     {
       field: "examDateFormat",
@@ -93,8 +93,6 @@ const ExamSchedule = () => {
       headerName: "เวลาสอบ",
       minWidth: 120,
       hideSortIcons: "true",
-      // valueGetter: (params) =>
-      //   `${getExamRoundDetail(params.getValue(params.id, "roundId"))}`,
       headerClassName: "header",
     },
     {
@@ -136,11 +134,11 @@ const ExamSchedule = () => {
     },
     {
       field: "locationTypeName",
-      headerName: "ประเภท",
-      width: 100,
+      headerName: "แก้ไขสถานที่สอบ",
+      width: 140,
       align: "left",
-      valueGetter: (params) =>
-        `${getLocationTypeData(params.getValue(params.id, "locationType"))}`,
+      // valueGetter: (params) =>
+      //   `${getLocationTypeData(params.getValue(params.id, "locationType"))}`,
       hideSortIcons: "true",
       headerClassName: "header",
     },
@@ -168,6 +166,26 @@ const ExamSchedule = () => {
       field: "receiveTime",
       headerName: "เวลาที่ได้รับหนังสือ",
       minWidth: 120,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "lastUpdateFormat",
+      headerName: "วันเวลาที่แก้ไข",
+      minWidth: 200,
+      align: "left",
+      valueGetter: (params) =>
+        `${dayjs(new Date(params.getValue(params.id, "lastUpdate"))).format(
+          "DD/MM/BBBB HH:mm:ss"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "updateUserCode",
+      headerName: "ชื่อผู้แก้ไข",
+      minWidth: 140,
       align: "left",
       hideSortIcons: "true",
       headerClassName: "header",
@@ -284,6 +302,7 @@ const ExamSchedule = () => {
     }
     setSelectedEndDate(date);
   };
+
   return (
     <Container>
       <div className="contents">
@@ -360,13 +379,10 @@ const ExamSchedule = () => {
                       paddingRight: 0,
                     }}
                   >
-                    <Button
-                      color="primary"
-                      style={{ fontFamily: "Prompt-Regular" }}
+                    <AddButton
+                      title="ค้นหา"
                       onClick={() => onClickSearchSchedule()}
-                    >
-                      ค้นหา
-                    </Button>
+                    />
                   </Col>
                 </Row>
               </MuiPickersUtilsProvider>

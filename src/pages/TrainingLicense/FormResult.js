@@ -18,7 +18,7 @@ dayjs.extend(buddhistEra);
 
 const FormResult = ({ currentLicense, onChange }) => {
   const [data, setData] = useState(currentLicense);
-  const [readOnly, setReadOnly] = useState(false);
+  const [readOnly, setReadOnly] = useState(true);
   const [lesson, setLesson] = useState(null);
   const [cause, setCause] = useState([]);
 
@@ -68,7 +68,7 @@ const FormResult = ({ currentLicense, onChange }) => {
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownOfferResult
               label="ผลการขอรับ"
-              disabled={readOnly}
+              disabled={get(data, "offerType", null) ? false : true}
               type={"offerResult"}
               value={get(data, "offerResult", "")}
               onClick={(e) =>
@@ -84,7 +84,13 @@ const FormResult = ({ currentLicense, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>เลขที่ใบอนุญาต</label>
-            {get(data, "licenseNo", null) ? (
+            <Input
+              readOnly={readOnly}
+              name="licenseNo"
+              value={get(data, "licenseNo", null)}
+              onChange={(e) => setData({ ...data, licenseNo: e.target.value })}
+            />
+            {/* {get(data, "licenseNo", null) ? (
               <Input
                 readOnly={readOnly}
                 name="licenseNo"
@@ -93,14 +99,14 @@ const FormResult = ({ currentLicense, onChange }) => {
                   setData({ ...data, licenseNo: e.target.value })
                 }
               />
-            ) : (
-              <InputLicenseNo
-                readOnly={readOnly}
-                name="licenseNo"
-                value={get(data, "licenseNo", null)}
-                onChange={(e) => setData({ ...data, licenseNo: e })}
-              />
-            )}
+            ) : (  
+            <InputLicenseNo
+              readOnly={readOnly}
+              name="licenseNo"
+              value={get(data, "licenseNo", null)}
+              onChange={(e) => setData({ ...data, licenseNo: e })}
+            />
+             )} */}
 
             {/* <InputLicenseNo readOnly={readOnly} name="licenseNo"    value={get(data,"licenseNo",null)} onChange={(e) => setData({...data,"licenseNo": e}) }/> */}
           </FormGroup>

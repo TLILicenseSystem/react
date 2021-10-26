@@ -121,6 +121,17 @@ export const SearchPerson = () => {
         default:
           break;
       }
+      if (
+        type === "M" &&
+        (value.firstName.length < 2 || value.lastName.length < 2)
+      ) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "โปรดระบุชื่อตั้งแต่2ตัวอักษรขึ้นไป",
+        });
+        return;
+      }
       let response = await searchEmployeeInfo(
         type,
         value[key].replaceAll("-", "")

@@ -46,7 +46,8 @@ const validate = (values) => {
       errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     if (
       values.examDate &&
-      (dayjs(values.applyCloseDate).format("YYYY-MM-DD") > dayjs(values.examDate).format("YYYY-MM-DD") )
+      dayjs(values.applyCloseDate).format("YYYY-MM-DD") >
+        dayjs(values.examDate).format("YYYY-MM-DD")
     ) {
       errors.applyCloseDate = "กรุณาระบุข้อมูลให้ถูกต้อง >";
     }
@@ -56,7 +57,11 @@ const validate = (values) => {
   } else if (values.receiveDate) {
     if (!dayjs(values.receiveDate).isValid())
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
-    if (values.examDate && dayjs(values.receiveDate).format("YYYY-MM-DD") > dayjs(values.examDate).format("YYYY-MM-DD")) {
+    if (
+      values.examDate &&
+      dayjs(values.receiveDate).format("YYYY-MM-DD") >
+        dayjs(values.examDate).format("YYYY-MM-DD")
+    ) {
       errors.receiveDate = "กรุณาระบุข้อมูลให้ถูกต้อง";
     }
   }
@@ -122,22 +127,20 @@ let EditSchedule = (props) => {
       if (state) {
         props.change("roundId", state.roundId);
         props.change("scheduleId", get(state, "scheduleId", null));
-        props.change(
-          "examDate",
-          state.examDate ? state.examDate : new Date()
-        );
+        props.change("examDate", state.examDate ? state.examDate : new Date());
         props.change(
           "applyCloseDate",
-          state.applyCloseDate
-            ? state.applyCloseDate
-            : new Date() 
+          state.applyCloseDate ? state.applyCloseDate : new Date()
         );
         props.change(
           "receiveDate",
-          state.receiveDate ? state.receiveDate :new Date()
+          state.receiveDate ? state.receiveDate : new Date()
         );
         props.change("receiveTime", state.receiveTime);
         props.change("maxApplicant", state.maxApplicant);
+        if (state.lastUpdate) {
+          setModifyDate(dayjs(new Date(state.lastUpdate)).format("DD/MM/BBBB"));
+        }
       } else props.history.push("/setting/examSchedule");
     }
   }, []);
@@ -280,7 +283,6 @@ let EditSchedule = (props) => {
                                 label: row.timeStr,
                               };
                             })}
-                            // requiredField={true}
                             isClearable={false}
                           />
                         </Col>

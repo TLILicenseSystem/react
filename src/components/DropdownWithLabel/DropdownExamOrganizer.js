@@ -55,10 +55,8 @@ export const DropdownExamOrganizer = ({
     <Form>
       <FormGroup row>
         <label className={styles.labelDropdown}>
-          {label}
-          <label className={styles.required}>
-            {value === "" && requiredField ? "*" : ""}
-          </label>
+          {label}{" "}
+          <label className={styles.required}>{requiredField ? " *" : ""}</label>
         </label>
         <Select
           styles={customStyle}

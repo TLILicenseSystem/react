@@ -48,7 +48,7 @@ export const SelectField = ({
       <Form>
         <FormGroup row>
           <label className={styles.label}>
-            {label}
+            {label}{" "}
             <label className={styles.required}>
               {requiredField ? " *" : ""}
             </label>

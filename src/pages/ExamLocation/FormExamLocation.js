@@ -40,11 +40,9 @@ const FormExamLocation = (props) => {
     { field: "provinceName", headerName: "สนามสอบ", minWidth: 160 },
     {
       field: "locationTypeName",
-      headerName: "ประเภท",
+      headerName: "แก้ไขสถานที่สอบ",
       minWidth: 250,
       align: "left",
-      // valueGetter: (params) =>
-      //   `${getLocationTypeData(params.getValue(params.id, "locationType"))}`,
     },
     {
       field: "locationDetail",

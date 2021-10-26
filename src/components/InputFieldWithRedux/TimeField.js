@@ -63,7 +63,7 @@ export const TimeField = ({
 
   return (
     <div>
-      <label className={styles.label}>{label}</label>
+      <label className={styles.label}> {label} </label>
       <Col xs={textboxSize}>
         <Input
           id={input.name}

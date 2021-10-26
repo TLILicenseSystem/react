@@ -8,7 +8,7 @@
         {"regionCode": "5","regionName": "ภาคใต้"}
     ],
     "examType": [
-        {"examTypeId": "1", "examTypeName": "Regular"},
-        {"examTypeId": "2", "examTypeName": "Temporary"}
+        {"examTypeId": "1", "examTypeName": "สถานที่เดิม"},
+        {"examTypeId": "2", "examTypeName": "สถานที่ชั่วคราว"}
     ]
 }

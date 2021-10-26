@@ -51,9 +51,9 @@ export const DropdownExamRegion = ({
       <Form>
         <FormGroup row>
           <label className={styles.labelDropdown}>
-            {label}
+            {label}{" "}
             <label className={styles.required}>
-              {value === "" && requiredField ? "*" : ""}
+              {requiredField ? " *" : ""}
             </label>
           </label>
           <Select

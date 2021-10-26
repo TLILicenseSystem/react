@@ -16,6 +16,7 @@ import TableRow from "@material-ui/core/TableRow";
 import { DataGrid } from "@material-ui/data-grid";
 import { useStyles } from "./table.style";
 import PropTypes from "prop-types";
+import { DeleteButton, EditButton } from "../shared";
 
 export const LocationTable = ({
   provinceCode,
@@ -152,10 +153,8 @@ export const LocationTable = ({
       minWidth: 125,
       renderCell: (cellValues) => {
         return (
-          <Button
-            size="sm"
-            variant="contained"
-            color="primary"
+          <EditButton
+            title={get(event, "event", "") === "edit" ? "แก้ไข" : "เลือก"}
             // onClick={(event) => {
             //   handleClick(event, cellValues);
             // }}
@@ -178,9 +177,7 @@ export const LocationTable = ({
                 },
               })
             }
-          >
-            {get(event, "event", "") === "edit" ? "แก้ไข" : "เลือก"}
-          </Button>
+          />
         );
       },
     },
@@ -191,10 +188,8 @@ export const LocationTable = ({
           align: "left",
           renderCell: (cellValues) => {
             return (
-              <Button
-                size="sm"
-                variant="contained"
-                color="danger"
+              <DeleteButton
+                title="ลบ"
                 // onClick={(event) => {
                 //   handleClick(event, cellValues);
                 // }}
@@ -218,9 +213,7 @@ export const LocationTable = ({
                     },
                   })
                 }
-              >
-                ลบ
-              </Button>
+              />
             );
           },
         }

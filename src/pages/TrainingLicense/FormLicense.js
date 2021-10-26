@@ -3,7 +3,7 @@ import { FormGroup, Container, Row, Col, Input } from "reactstrap";
 import { DropdownOfferType, DatePickerThai } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import Swal from "sweetalert2";
-
+import InputMask from "react-input-mask";
 import { searchBlacklist } from "../../api/apiBlacklist";
 import { get } from "lodash";
 import dayjs from "dayjs";
@@ -75,9 +75,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
       return true;
     } else {
       let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
-      let today = dayjs(new Date("2021-12-01T07:00:00.000+00:00")).format(
-        "YYYY-MM-DD"
-      );
+      let today = dayjs(new Date()).format("YYYY-MM-DD");
       if (today <= date) {
         Swal.fire({
           icon: "error",
@@ -102,14 +100,14 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
       let minData = dayjs(new Date(expireDate))
         .subtract(61, "day")
         .format("YYYY-MM-DD");
-      let today = dayjs(new Date("2021-09-01T07:00:00.000+00:00")).format(
-        "YYYY-MM-DD"
-      );
+      let today = dayjs(new Date()).format("YYYY-MM-DD");
       if (today <= minData) {
         Swal.fire({
           icon: "error",
           title: "เกิดข้อผิดพลาด",
-          text: "ยังไม่ถึงเวลา",
+          text: `สามารถต่ออายุได้ตั้งแต่ ${dayjs(minData).format(
+            "DD-MM-BBBB"
+          )} ถึง ${dayjs(new Date()).format("DD-MM-BBBB")}`,
         });
         return true;
       } else return false;
@@ -123,6 +121,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
         <Col>
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownOfferType
+              requiredField
               label="ประเภทการขอ"
               type={"offerType"}
               value={get(data, "offerType", "")}
@@ -159,14 +158,26 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
         </Col>
         <Col>
           <FormGroup>
-            <label className={styles.label}>ส่ง สนญ.ตามหนังสือที่</label>
-            <Input
+            <label className={styles.label}>
+              ส่ง สนญ.ตามหนังสือที่{" "}
+              <label className={styles.required}> *</label>
+            </label>
+            <InputMask
+              mask="******"
+              className="form-control"
+              id="bookNo"
+              type={"tel"}
+              defaultValue={get(data, "bookNo", "")}
+              disabled={readOnly}
+              onChange={(e) => setData({ ...data, bookNo: e.target.value })}
+            />
+            {/* <Input
               readOnly={readOnly}
               type="text"
               name="bookNo"
               value={get(data, "bookNo", "")}
               onChange={(e) => setData({ ...data, bookNo: e.target.value })}
-            />
+            /> */}
           </FormGroup>
         </Col>
         <Col>

@@ -48,9 +48,9 @@ export const DropdownCompanyType = ({
       <Form>
         <FormGroup row>
           <label className={styles.labelDropdown} style={{ marginTop: 0 }}>
-            {label}
+            {label}{" "}
             <label className={styles.required}>
-              {value === "" && requiredField ? "*" : ""}
+              {requiredField ? " *" : ""}
             </label>
           </label>
           <Select

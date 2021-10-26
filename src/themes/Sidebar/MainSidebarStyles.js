@@ -14,17 +14,28 @@ export const MainMenu = styled.div`
   color: white;
   position: relative;
   display: block;
-  padding: 0.5rem 1.5rem;
+  padding: 0.7rem 1.5rem;
   text-decoration: none;
-  border: 1px solid rgba(0, 0, 0, 0.125);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   width: 100%;
+  &:hover {
+    background-color: ${colors.PRIMARYBLUE};
+  }
+  &.active {
+    background-color: ${colors.PRIMARYBLUE};
+  }
 `;
 
 export const SubMenu = styled(MainMenu)`
-  background-color: ${colors.PRIMARYBLUE};
-  padding: 0.5rem 2.5rem;
-  padding-right: 0.5rem;
+  background-color: ${colors.SECONDARYBLUE};
+  padding: 0.7rem 2.5rem;
+  padding-left: 2.9rem;
+  &:hover {
+    background-color: ${colors.PRIMARYBLUE};
+  }
+  &.active {
+    background-color: ${colors.PRIMARYBLUE};
+  }
 `;

@@ -7,8 +7,6 @@ import { get } from "lodash";
 import { getCauseByType } from "../../api/apiGetConfig";
 import Select from "react-select";
 
-
-
 export const DropdownCause = ({
   label,
   type,
@@ -49,10 +47,10 @@ export const DropdownCause = ({
     <div>
       <Form>
         <FormGroup row>
-          <label className={styles.labelDropdown} style={{ marginTop: 0}}>
-            {label} 
+          <label className={styles.labelDropdown} style={{ marginTop: 0 }}>
+            {label}{" "}
             <label className={styles.required}>
-              {value === "" && requiredField ? "*" : ""}
+              {requiredField ? " *" : ""}
             </label>
           </label>
           <Select
