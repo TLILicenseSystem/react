@@ -23,6 +23,7 @@ const FormResult = ({ currentLicense, onChange }) => {
   const [cause, setCause] = useState([]);
 
   useEffect(() => {
+    console.log(currentLicense, "currentLicense");
     setData(currentLicense);
     if (currentLicense) {
       if (currentLicense.issueDate) {
@@ -68,9 +69,11 @@ const FormResult = ({ currentLicense, onChange }) => {
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownOfferResult
               label="ผลการขอรับ"
+              requiredField
               disabled={get(data, "offerType", null) ? false : true}
               type={"offerResult"}
               value={get(data, "offerResult", "")}
+              showError={get(data, "offerResult", null) ? false : true}
               onClick={(e) =>
                 setData({
                   ...data,
@@ -87,28 +90,11 @@ const FormResult = ({ currentLicense, onChange }) => {
             <Input
               readOnly={readOnly}
               name="licenseNo"
-              value={get(data, "licenseNo", null)}
-              onChange={(e) => setData({ ...data, licenseNo: e.target.value })}
+              value={get(data, "licenseNo", "")}
+              onChange={(e) =>
+                setData({ ...data, licenseNo: e.target.value.substr(0, 10) })
+              }
             />
-            {/* {get(data, "licenseNo", null) ? (
-              <Input
-                readOnly={readOnly}
-                name="licenseNo"
-                value={get(data, "licenseNo", null)}
-                onChange={(e) =>
-                  setData({ ...data, licenseNo: e.target.value })
-                }
-              />
-            ) : (  
-            <InputLicenseNo
-              readOnly={readOnly}
-              name="licenseNo"
-              value={get(data, "licenseNo", null)}
-              onChange={(e) => setData({ ...data, licenseNo: e })}
-            />
-             )} */}
-
-            {/* <InputLicenseNo readOnly={readOnly} name="licenseNo"    value={get(data,"licenseNo",null)} onChange={(e) => setData({...data,"licenseNo": e}) }/> */}
           </FormGroup>
         </Col>
         <Col>

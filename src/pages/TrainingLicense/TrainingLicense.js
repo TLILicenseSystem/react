@@ -30,6 +30,10 @@ import {
   getLicenseHistoryByCid,
   getLicenseByCid,
 } from "../../api/apiGetLicense";
+import {
+  insertTrainingLicense,
+  updateTrainingLicense,
+} from "./ModelTrainingLicense";
 import Swal from "sweetalert2";
 import { columns, columns_company } from "./columns";
 import { get } from "lodash";
@@ -93,7 +97,6 @@ const TrainingLicense = (props) => {
     return { id: index + 1, ...row };
   });
 
-  const onClickEditExamApplication = () => {};
   const onClickCancel = () => {
     setActiveTab("1");
     setMode("add");
@@ -116,36 +119,8 @@ const TrainingLicense = (props) => {
     setActiveTab("4");
     setMode("detail");
   };
-  const onClickChangeLocation = () => {
-    dispatch(
-      showSearchSchedulePopup({
-        title: "ค้นหาตารางสอบ",
-        description: "",
-      })
-    );
-  };
-  const onClickSave = async () => {
-    // licenseDetail.citizenId = "1122334455667";
-    // licenseDetail.createUserCode = "2901133";
-    // console.log(licenseDetail);
-    // try {
-    //   let response = await insertExamApplication(licenseDetail);
-    //   Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
-    // } catch (err) {
-    //   let { data } = err.response;
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "เกิดข้อผิดพลาด",
-    //     text: data.errorMessage
-    //       ? data.errorMessage
-    //       : "พบข้อผิดพลาดในการบันทึกข้อมูล!",
-    //   });
-    // }
-  };
 
-  const onClickUpdate = async () => {
-    console.log(currentLicense, " currentLicense save");
-
+  const onClickSubmit = async () => {
     let citizenId = "";
     if (!saleData) {
       if (sessionStorage.getItem("sale")) {
@@ -189,19 +164,15 @@ const TrainingLicense = (props) => {
     }
     let data = {
       citizenId: citizenId,
-      licenseNo: currentLicense.licenseNo,
-      issueDate: dayjs(new Date(currentLicense.issueDate)).format(
-        "YYYY-MM-DDTHH:mm:ssZ"
-      ),
-      expireDate: dayjs(new Date(currentLicense.expireDate)).format(
-        "YYYY-MM-DDTHH:mm:ssZ"
-      ),
+      licenseNo: null,
+      issueDate: null,
+      expireDate: null,
+      offerType: currentLicense.offerType,
       offerDate: currentLicense.offerDate
         ? dayjs(new Date(currentLicense.offerDate)).format(
             "YYYY-MM-DDTHH:mm:ssZ"
           )
         : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
-      offerType: currentLicense.offerType,
       offerResult: currentLicense.offerResult,
       agentType: saleData.agentType,
       bookNo: currentLicense.bookNo,
@@ -215,38 +186,80 @@ const TrainingLicense = (props) => {
       createUserCode: "9123456",
       updateUserCode: "9123456",
     };
-    if (currentLicense.disapprovePerson) {
-      data["disapprovePerson"] = currentLicense.disapprovePerson;
-    }
-    console.log(data, "save");
 
-    // try {
-    //   let data = {
-    //     citizenId: licenseDetail.citizenId,
-    //     scheduleId: licenseDetail.scheduleId,
-    //     applyTime: licenseDetail.applyTime,
-    //     applicantType: licenseDetail.applicantType,
-    //     seatNo: licenseDetail.seatNo,
-    //     examResult: licenseDetail.examResult,
-    //     remark: licenseDetail.remark,
-    //     createUserCode: licenseDetail.createUserCode,
-    //     updateUserCode: licenseDetail.updateUserCode,
-    //     referenceNo: licenseDetail.referenceNo,
-    //   };
-    //   let response = await updateExamApplication(licenseDetail);
-    //   Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
-    //   onClickCancel();
-    //   fetchData();
-    // } catch (err) {
-    //   let { data } = err.response;
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "เกิดข้อผิดพลาด",
-    //     text: data.errorMessage
-    //       ? data.errorMessage
-    //       : "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
-    //   });
-    // }
+    if (currentLicense.licenseNo) {
+      data["licenseNo"] = currentLicense.licenseNo;
+      data["issueDate"] = dayjs(new Date(currentLicense.issueDate)).format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      );
+      data["expireDate"] = dayjs(new Date(currentLicense.expireDate)).format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      );
+    }
+    if (currentLicense.disapprovePerson) {
+      const disapprovePerson = [];
+      currentLicense.disapprovePerson.map((item) => {
+        disapprovePerson.push({
+          citizenId: citizenId,
+          causeId: item.causeId,
+          licenseType: currentLicense.offerType,
+          historyId: currentLicense.historyId,
+        });
+      });
+      data["disapprovePerson"] = disapprovePerson;
+    }
+    if (currentLicense.historyId) {
+      data["historyId"] = currentLicense.historyId;
+    }
+    if (currentLicense.licenseNo) {
+      data["licenseNo"] = currentLicense.licenseNo;
+      data["issueDate"] = dayjs(new Date(currentLicense.issueDate)).format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      );
+      data["expireDate"] = dayjs(new Date(currentLicense.expireDate)).format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      );
+      onClickUpdate(data);
+    } else {
+      onClickSave(data);
+    }
+  };
+  const onClickSave = async (data) => {
+    try {
+      let response = await insertTrainingLicense(data);
+      Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+      if (saleData && saleData.citizenID) {
+        fetchData(saleData.citizenID);
+      }
+    } catch (err) {
+      let { data } = err.response;
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการบันทึกข้อมูล!",
+      });
+    }
+  };
+
+  const onClickUpdate = async (data) => {
+    try {
+      let response = await updateTrainingLicense(data);
+      Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+      if (saleData && saleData.citizenID) {
+        fetchData(saleData.citizenID);
+      }
+    } catch (err) {
+      let { data } = err.response;
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
+      });
+    }
   };
 
   return (
@@ -336,10 +349,7 @@ const TrainingLicense = (props) => {
                     <Row sm="1">
                       <Col sm="9">
                         <FormGroup>
-                          <label className={styles.label}>
-                            หมายเหตุ{" "}
-                            <label className={styles.required}> *</label>
-                          </label>
+                          <label className={styles.label}>หมายเหตุ</label>
                           <Input
                             type="text"
                             name="remark"
@@ -371,7 +381,7 @@ const TrainingLicense = (props) => {
                         // }
                         title="บันทึก"
                         // onClick={mode === "history" ? onClickUpdate : onClickSave}
-                        onClick={onClickUpdate}
+                        onClick={onClickSubmit}
                       />{" "}
                       <CancelButton title="ยกเลิก" onClick={onClickCancel} />
                     </RsContainer>

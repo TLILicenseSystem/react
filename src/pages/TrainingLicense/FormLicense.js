@@ -106,8 +106,8 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
           icon: "error",
           title: "เกิดข้อผิดพลาด",
           text: `สามารถต่ออายุได้ตั้งแต่ ${dayjs(minData).format(
-            "DD-MM-BBBB"
-          )} ถึง ${dayjs(new Date()).format("DD-MM-BBBB")}`,
+            "DD/MM/BBBB"
+          )} ถึง ${dayjs(new Date()).format("DD/MM/BBBB")}`,
         });
         return true;
       } else return false;
@@ -125,6 +125,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
               label="ประเภทการขอ"
               type={"offerType"}
               value={get(data, "offerType", "")}
+              showError={get(data, "offerType", null) ? false : true}
               onClick={(e) => onSelectOfferType(e)}
             />
           </FormGroup>
@@ -138,16 +139,18 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
                 type="text"
                 name="offerDate"
                 value={
-                  get(data, "offerDate", null) &&
-                  dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
+                  get(data, "offerDate", null)
+                    ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
+                    : dayjs(new Date())
                 }
               />
             ) : (
               <DatePickerThai
                 name="offerDate"
                 value={
-                  get(data, "offerDate", null) &&
-                  dayjs(new Date(data.offerDate))
+                  get(data, "offerDate", null)
+                    ? dayjs(new Date(data.offerDate))
+                    : dayjs(new Date())
                 }
                 onChange={(e) =>
                   setData({ ...data, offerDate: dayjs(new Date(e)) })
@@ -162,22 +165,16 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
               ส่ง สนญ.ตามหนังสือที่{" "}
               <label className={styles.required}> *</label>
             </label>
-            <InputMask
-              mask="******"
-              className="form-control"
-              id="bookNo"
-              type={"tel"}
-              defaultValue={get(data, "bookNo", "")}
-              disabled={readOnly}
-              onChange={(e) => setData({ ...data, bookNo: e.target.value })}
-            />
-            {/* <Input
+            <Input
               readOnly={readOnly}
               type="text"
               name="bookNo"
               value={get(data, "bookNo", "")}
-              onChange={(e) => setData({ ...data, bookNo: e.target.value })}
-            /> */}
+              invalid={get(data, "bookNo", null) ? false : true}
+              onChange={(e) =>
+                setData({ ...data, bookNo: e.target.value.substr(0, 6) })
+              }
+            />
           </FormGroup>
         </Col>
         <Col>
@@ -189,15 +186,18 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
                 type="text"
                 name="bookDate"
                 value={
-                  get(data, "bookDate", null) &&
-                  dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
+                  get(data, "bookDate", null)
+                    ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
+                    : dayjs(new Date())
                 }
               />
             ) : (
               <DatePickerThai
                 name="bookDate"
                 value={
-                  get(data, "bookDate", null) && dayjs(new Date(data.bookDate))
+                  get(data, "bookDate", null)
+                    ? dayjs(new Date(data.bookDate))
+                    : dayjs(new Date())
                 }
                 onChange={(e) =>
                   setData({ ...data, bookDate: dayjs(new Date(e)) })
