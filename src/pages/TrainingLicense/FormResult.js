@@ -11,7 +11,7 @@ import {
 import Swal from "sweetalert2";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import { colors } from "../../themes/style";
-import { get } from "lodash";
+import _ from "lodash";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
@@ -23,7 +23,6 @@ const FormResult = ({ currentLicense, onChange }) => {
   const [cause, setCause] = useState([]);
 
   useEffect(() => {
-    console.log(currentLicense, "currentLicense");
     setData(currentLicense);
     if (currentLicense) {
       if (currentLicense.issueDate) {
@@ -36,6 +35,13 @@ const FormResult = ({ currentLicense, onChange }) => {
           .add(1, "year")
           .subtract(1, "day");
       }
+      // if (currentLicense.disapprovePerson) {
+      //   const result = _.map(currentLicense.disapprovePerson, "causeId");
+      //   // let find = _.filter(
+      //   //   cause,
+      //   //   (item) => lesson.causeId === item.causeId
+      //   // );
+      // }
     }
   }, [currentLicense]);
 
@@ -45,7 +51,7 @@ const FormResult = ({ currentLicense, onChange }) => {
 
   const onSelectCause = () => {
     if (lesson) {
-      let find = cause.find((item) => lesson.causeId === item.causeId);
+      let find = _.find(cause, (item) => lesson.causeId === item.causeId);
       if (find) {
         Swal.fire({
           icon: "error",
@@ -69,16 +75,15 @@ const FormResult = ({ currentLicense, onChange }) => {
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownOfferResult
               label="ผลการขอรับ"
-              requiredField
-              disabled={get(data, "offerType", null) ? false : true}
+              disabled={_.get(data, "offerType", null) ? false : true}
               type={"offerResult"}
-              value={get(data, "offerResult", "")}
-              showError={get(data, "offerResult", null) ? false : true}
+              value={_.get(data, "offerResult", "")}
+              showError={_.get(data, "offerResult", null) ? false : true}
               onClick={(e) =>
                 setData({
                   ...data,
-                  offerResult: get(e, "offerResult", ""),
-                  offerResultName: get(e, "offerResultName", ""),
+                  offerResult: _.get(e, "offerResult", ""),
+                  offerResultName: _.get(e, "offerResultName", ""),
                 })
               }
             />
@@ -88,74 +93,74 @@ const FormResult = ({ currentLicense, onChange }) => {
           <FormGroup>
             <label className={styles.label}>เลขที่ใบอนุญาต</label>
             <Input
-              readOnly={readOnly}
+              readOnly={_.get(data, "offerResult", null) ? false : true}
               name="licenseNo"
-              value={get(data, "licenseNo", "")}
+              value={_.get(data, "licenseNo", "")}
               onChange={(e) =>
                 setData({ ...data, licenseNo: e.target.value.substr(0, 10) })
               }
             />
           </FormGroup>
         </Col>
-        <Col>
-          <FormGroup>
-            <label className={styles.label}>วันที่ออกบัตร</label>
-            {readOnly ? (
-              <Input
-                readOnly={readOnly}
-                type="text"
-                name="issueDate"
-                value={
-                  get(data, "issueDate", null) &&
-                  dayjs(new Date(data.issueDate)).format("DD/MM/BBBB")
-                }
-              />
-            ) : (
-              <DatePickerThai
-                name="issueDate"
-                value={
-                  get(data, "issueDate", null) &&
-                  dayjs(new Date(data.issueDate))
-                }
-                onChange={(e) =>
-                  setData({ ...data, issueDate: dayjs(new Date(e)) })
-                }
-              />
-            )}
-          </FormGroup>
-        </Col>
-        <Col>
-          <FormGroup>
-            <label className={styles.label}>วันที่หมดอายุ</label>
-            <Input
-              readOnly={true}
-              type="text"
-              name="expireDate"
-              value={
-                get(data, "issueDate", null) &&
-                dayjs(new Date(data.issueDate))
-                  .add(1, "year")
-                  .subtract(1, "day")
-                  .format("DD/MM/BBBB")
-              }
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  expireDate: dayjs(new Date(data.issueDate))
-                    .add(1, "year")
-                    .subtract(1, "day"),
-                })
-              }
-            />
-          </FormGroup>
-        </Col>
+        {_.get(data, "licenseNo", null) ? (
+          <>
+            <Col>
+              <FormGroup>
+                <label className={styles.label}>วันที่ออกบัตร</label>
+                <DatePickerThai
+                  name="issueDate"
+                  value={
+                    _.get(data, "issueDate", null) &&
+                    dayjs(new Date(data.issueDate))
+                  }
+                  onChange={(e) =>
+                    setData({ ...data, issueDate: dayjs(new Date(e)) })
+                  }
+                />
+              </FormGroup>
+            </Col>
+            <Col>
+              <FormGroup>
+                <label className={styles.label}>วันที่หมดอายุ</label>
+                <Input
+                  readOnly={true}
+                  type="text"
+                  name="expireDateE"
+                  value={
+                    _.get(data, "issueDate", null)
+                      ? dayjs(new Date(data.issueDate))
+                          .add(1, "year")
+                          .subtract(1, "day")
+                          .format("DD/MM/BBBB")
+                      : ""
+                  }
+                />
+              </FormGroup>
+            </Col>
+          </>
+        ) : (
+          <>
+            <Col>
+              <FormGroup>
+                <label className={styles.label}>วันที่ออกบัตร</label>
+                <Input readOnly={true} type="text" name="issueDate" />
+              </FormGroup>
+            </Col>
+            <Col>
+              <FormGroup>
+                <label className={styles.label}>วันที่หมดอายุ</label>
+                <Input readOnly={true} type="text" name="expireDate" />
+              </FormGroup>
+            </Col>
+          </>
+        )}
       </Row>
       <Row sm="4">
         <Col>
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownCause
               label="เหตุผลการไม่อนุมัติ"
-              disabled={get(data, "offerResult", null) === "3" ? false : true}
+              disabled={_.get(data, "offerResult", null) === "3" ? false : true}
               value={lesson && lesson.causeId}
               type={"disapprovePerson"}
               onClick={(e) => setLesson(e)}

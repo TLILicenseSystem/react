@@ -45,7 +45,6 @@ export const SearchPerson = () => {
   };
 
   useEffect(() => {
-    console.log("saleData", saleData);
     if (saleData) setIsShow(false);
   }, [saleData]);
 
@@ -168,7 +167,12 @@ export const SearchPerson = () => {
             ""
           );
           response.data.responseRecord["agentType"] = "E";
-
+          response.data.responseRecord["statusName"] = response.data
+            .responseRecord.statusName
+            ? response.data.responseRecord.statusName
+            : response.data.responseRecord.retireDate === "00000000"
+            ? "ปกติ"
+            : "ลาออก";
           setSaleData(response.data.responseRecord);
           sessionStorage.setItem(
             "sale",

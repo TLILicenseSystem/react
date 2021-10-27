@@ -16,7 +16,6 @@ export const insertTrainingLicense = async (request) => {
 export const updateTrainingLicense = async (request) => {
   try {
     const response = await apiSpring.put("/license/update", request);
-    console.log("updateExamOrganizer response=", response.data);
     if (response.status === 200)
       //data=success
       return response.data;

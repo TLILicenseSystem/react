@@ -90,7 +90,10 @@ const TrainingLicense = (props) => {
     setLoading(false);
     const current = await getLicenseByCid(citizenID);
     data = get(current, "data", []);
-    setCurrentLicense(get(data, "license", []));
+    setCurrentLicense({
+      ...get(data, "license", []),
+      disapprovePerson: get(data, "disapprovePerson", []),
+    });
   };
 
   const rows = license.map((row, index) => {
