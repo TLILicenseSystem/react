@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-
 export const columns = [
   {
     field: "id",
@@ -88,7 +87,7 @@ export const columns = [
 
 export const columns_company = [
   {
-    field: "a",
+    field: "id",
     headerName: "ลำดับ",
     minWidth: 80,
     hideSortIcons: "true",
@@ -139,5 +138,4 @@ export const columns_company = [
     hideSortIcons: "true",
     headerClassName: "header",
   },
-  
 ];

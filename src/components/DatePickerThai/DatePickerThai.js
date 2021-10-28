@@ -31,10 +31,14 @@ export const DatePickerThai = ({
 
   useEffect(() => {
     if (value) {
-      setBuddhistDate(dayjs(value).format("DD/MM/BBBB"));
-      setValuePicker(new Date(value));
+      setFormat(value);
     }
   }, [value]);
+
+  const setFormat = (value) => {
+    setBuddhistDate(dayjs(value).format("DD/MM/BBBB"));
+    setValuePicker(new Date(value));
+  };
 
   const onChangePicker = (date) => {
     setValuePicker(date);

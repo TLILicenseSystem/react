@@ -29,6 +29,9 @@ import {
   deleteExamOrganizer,
 } from "./ModelExamOrganizer";
 import Swal from "sweetalert2";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
 
 const ExamOrganizer = (props) => {
   //   const history = useHistory();
@@ -41,7 +44,27 @@ const ExamOrganizer = (props) => {
 
   const columns = [
     { field: "orgCode", headerName: "รหัสสถานที่สอบ", width: 200 },
-    { field: "orgName", headerName: "สถานที่สอบ", width: 400 },
+    { field: "orgName", headerName: "สถานที่สอบ", width: 300 },
+    {
+      field: "lastUpdateFormat",
+      headerName: "วันเวลาที่แก้ไข",
+      minWidth: 200,
+      align: "left",
+      valueGetter: (params) =>
+        `${dayjs(new Date(params.getValue(params.id, "lastUpdate"))).format(
+          "DD/MM/BBBB HH:mm:ss"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "updateUserName",
+      headerName: "ชื่อผู้แก้ไข",
+      minWidth: 140,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
     {
       field: "edit",
       headerName: "แก้ไข",
@@ -99,11 +122,13 @@ const ExamOrganizer = (props) => {
       //alert("บันทึกข้อมูลเรียบร้อยแล้ว");
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
     } catch (err) {
-      let { data } = err.response
+      let { data } = err.response;
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการบันทึกข้อมูล!",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการบันทึกข้อมูล!",
       });
       //throw new Error("พบข้อผิดพลาดในการบันทึกข้อมูล! ", err);
 
@@ -124,13 +149,15 @@ const ExamOrganizer = (props) => {
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
       //alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
     } catch (err) {
-      let { data } = err.response
+      let { data } = err.response;
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: data.errorMessage ? data.errorMessage :"พบข้อผิดพลาดในการแก้ไขข้อมูล!",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
       });
-    //  throw new Error("พบข้อผิดพลาดในการแก้ไขข้อมูล! ", err);
+      //  throw new Error("พบข้อผิดพลาดในการแก้ไขข้อมูล! ", err);
       // throw err;
     }
   };
@@ -147,7 +174,7 @@ const ExamOrganizer = (props) => {
         title: "เกิดข้อผิดพลาด",
         text: "พบข้อผิดพลาดในการลบข้อมูล!",
       });
-     // throw new Error("พบข้อผิดพลาดในการลบข้อมูล! ", err);
+      // throw new Error("พบข้อผิดพลาดในการลบข้อมูล! ", err);
       // throw err;
     }
   };
@@ -245,7 +272,7 @@ const ExamOrganizer = (props) => {
 
   const editData = (param) => {
     setPressEdit(true);
-    console.log(param.orgName,"ddddd")
+    console.log(param.orgName, "ddddd");
     setId(param.orgCode);
     setOrgName(param.orgName);
 

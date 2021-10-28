@@ -36,3 +36,18 @@ export const updateTrainingLicense = async (request) => {
 //     throw err;
 //   }
 // };
+
+//----------------------------for update spring boot------------------------
+export const getMoveCompany = async (citizenId) => {
+  try {
+    const response = await apiSpring.get(
+      `moveCompany/search?citizenId=${citizenId}`
+    );
+    if (response.status === 200)
+      //data=success
+      return response.data;
+    else throw new Error();
+  } catch (err) {
+    throw err;
+  }
+};

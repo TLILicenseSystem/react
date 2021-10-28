@@ -17,6 +17,9 @@ import { getExamLocation } from "../../api/apiGetExamLocation";
 import { showEditLocationPopup } from "../../redux/actions";
 import { deleteExamLocation } from "../../api/apiAddExamLocation";
 import Swal from "sweetalert2";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
 
 const FormExamLocation = (props) => {
   const [provinceCode, setProvinceCode] = useState("");
@@ -29,7 +32,7 @@ const FormExamLocation = (props) => {
     {
       field: "locationId",
       headerName: "รหัสที่ตั้ง",
-      width: 150,
+      width: 120,
     },
     {
       field: "orgName",
@@ -49,6 +52,26 @@ const FormExamLocation = (props) => {
       headerName: "สถานที่ตั้งสอบ",
       minWidth: 250,
       align: "left",
+    },
+    {
+      field: "lastUpdateFormat",
+      headerName: "วันเวลาที่แก้ไข",
+      minWidth: 200,
+      align: "left",
+      valueGetter: (params) =>
+        `${dayjs(new Date(params.getValue(params.id, "lastUpdate"))).format(
+          "DD/MM/BBBB HH:mm:ss"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "updateUserName",
+      headerName: "ชื่อผู้แก้ไข",
+      minWidth: 140,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
     },
     {
       field: "edit",

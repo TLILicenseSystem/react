@@ -65,7 +65,6 @@ const FormResult = ({ currentLicense, onChange }) => {
       }
     }
   };
-
   return (
     <Container>
       <h3>ผลการขอรับใบอนุญาต</h3>
@@ -196,10 +195,18 @@ const FormResult = ({ currentLicense, onChange }) => {
             <tbody>
               {cause.map((item, index) => (
                 <tr>
-                  <th scope="row">{index + 1}</th>
+                  <th style={{ width: "10%" }} scope="row">
+                    {index + 1}
+                  </th>
                   <td>{item.detail}</td>
-                  <td style={{ textAlign: "center" }}>
-                    <DeleteButton onClick={() => console.log("eee")} />
+                  <td style={{ textAlign: "center", width: "10%" }}>
+                    <DeleteButton
+                      onClick={() =>
+                        setCause(
+                          _.filter(cause, (c) => c.causeId !== item.causeId)
+                        )
+                      }
+                    />
                   </td>
                 </tr>
               ))}

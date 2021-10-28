@@ -66,32 +66,50 @@ export const SearchPerson = () => {
             text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
           });
         }
-        let licenseNo = await getLicenseByCid(
-          response.data.responseRecord.citizenID
-        );
-        response.data.responseRecord["licenseNo"] = get(
-          licenseNo.license,
-          "licenseNo",
-          ""
-        );
-        response.data.responseRecord["expireDate"] = get(
-          licenseNo.license,
-          "expireDate",
-          ""
-        );
-        response.data.responseRecord["agentType"] = "E";
+        if (response.data.responseRecord.listEmployee.length === 1) {
+          response.data.responseRecord =
+            response.data.responseRecord.listEmployee[0];
+          response.data.responseRecord["citizenID"] =
+            response.data.responseRecord["referenceId"];
 
-        setSaleData(response.data.responseRecord);
-        sessionStorage.setItem(
-          "sale",
-          JSON.stringify(response.data.responseRecord)
-        );
-        forceUpdate((n) => !n);
-        dispatch(
-          updateSelectSale({
-            seleted: response.data.responseRecord,
-          })
-        );
+          let licenseNo = await getLicenseByCid(
+            response.data.responseRecord.citizenID
+          );
+          response.data.responseRecord["licenseNo"] = get(
+            licenseNo.license,
+            "licenseNo",
+            ""
+          );
+          response.data.responseRecord["expireDate"] = get(
+            licenseNo.license,
+            "expireDate",
+            ""
+          );
+          response.data.responseRecord["agentType"] = "E";
+          response.data.responseRecord["statusName"] = response.data
+            .responseRecord.statusName
+            ? response.data.responseRecord.statusName
+            : response.data.responseRecord.retireDate === "00000000"
+            ? "ปกติ"
+            : "ลาออก";
+          setSaleData(response.data.responseRecord);
+          sessionStorage.setItem(
+            "sale",
+            JSON.stringify(response.data.responseRecord)
+          );
+          forceUpdate((n) => !n);
+          dispatch(
+            updateSelectSale({
+              seleted: response.data.responseRecord,
+            })
+          );
+        } else if (response.data.responseRecord.listEmployee.length === 0) {
+          Swal.fire({
+            icon: "error",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่พบข้อมูลที่ต้องการ",
+          });
+        }
       } else if (
         response.data &&
         response.data.responseStatus.errorCode !== "200"

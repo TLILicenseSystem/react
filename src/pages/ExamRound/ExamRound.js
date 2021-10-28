@@ -21,7 +21,9 @@ import {
   deleteExamRound,
 } from "./ModelExamRound";
 import Swal from "sweetalert2";
-import moment  from "moment";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
 
 const ExamRound = (props) => {
   // const history = useHistory();
@@ -37,7 +39,27 @@ const ExamRound = (props) => {
 
   const columns = [
     { field: "roundId", headerName: "รหัสรอบเวลาสอบ", width: 200 },
-    { field: "timeStr", headerName: "รอบเวลาสอบ", width: 400 },
+    { field: "timeStr", headerName: "รอบเวลาสอบ", width: 300 },
+    {
+      field: "lastUpdateFormat",
+      headerName: "วันเวลาที่แก้ไข",
+      minWidth: 200,
+      align: "left",
+      valueGetter: (params) =>
+        `${dayjs(new Date(params.getValue(params.id, "lastUpdate"))).format(
+          "DD/MM/BBBB HH:mm:ss"
+        )}`,
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
+    {
+      field: "updateUserName",
+      headerName: "ชื่อผู้แก้ไข",
+      minWidth: 140,
+      align: "left",
+      hideSortIcons: "true",
+      headerClassName: "header",
+    },
     {
       field: "edit",
       headerName: "แก้ไข",

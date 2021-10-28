@@ -25,12 +25,13 @@ import {
 } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 
-import { showSearchSchedulePopup } from "../../redux/actions";
 import {
   getLicenseHistoryByCid,
   getLicenseByCid,
 } from "../../api/apiGetLicense";
+import { getTrainingByCid } from "../../api/apiTraining";
 import {
+  getMoveCompany,
   insertTrainingLicense,
   updateTrainingLicense,
 } from "./ModelTrainingLicense";
@@ -50,8 +51,11 @@ const TrainingLicense = (props) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const [currentLicense, setCurrentLicense] = useState(null);
+  const [currentTraining, setCurrentTraining] = useState(null);
+  const [historyCompany, setHistoryCompany] = useState([]);
   const [mode, setMode] = useState("add");
   const [license, setLicense] = useState([]);
+
   const [saleData, setSaleData] = useState(
     sessionStorage.getItem("sale")
       ? JSON.parse(sessionStorage.getItem("sale"))
@@ -75,25 +79,15 @@ const TrainingLicense = (props) => {
   }, [seleted]);
 
   const fetchData = async (citizenID) => {
-    setLoading(true);
-    const response = await getLicenseHistoryByCid(citizenID);
-    let data = get(response, "data", []).map((row, index) => {
-      return {
-        ...row,
-        offerDate: dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
-        issueDate: dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
-        expireDate: dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
-        bookDate: dayjs(new Date(row.bookDate)).format("DD-MM-BBBB"),
-      };
-    });
-    setLicense(data);
-    setLoading(false);
     const current = await getLicenseByCid(citizenID);
-    data = get(current, "data", []);
+    let data = get(current, "data", []);
     setCurrentLicense({
       ...get(data, "license", []),
       disapprovePerson: get(data, "disapprovePerson", []),
     });
+    // const training = await getTrainingByCid(citizenID);
+    // setCurrentTraining(training);
+    setCurrentTraining([]);
   };
 
   const rows = license.map((row, index) => {
@@ -109,13 +103,43 @@ const TrainingLicense = (props) => {
     setMode("add");
   };
 
-  const onClickShowHistory = () => {
+  const onClickShowHistory = async () => {
     setActiveTab("2");
     setMode("history");
+    setLoading(true);
+    if (saleData && saleData.citizenID) {
+      const response = await getLicenseHistoryByCid(saleData.citizenID);
+      let data = get(response, "data", []).map((row, index) => {
+        return {
+          ...row,
+          id: index + 1,
+          offerDate: dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+          issueDate: dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+          expireDate: dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+          bookDate: dayjs(new Date(row.bookDate)).format("DD-MM-BBBB"),
+        };
+      });
+      setLicense(data);
+      setLoading(false);
+    }
   };
-  const onClickShowHistoryCompany = () => {
+  const onClickShowHistoryCompany = async () => {
     setActiveTab("3");
     setMode("historycompany");
+    if (saleData && saleData.citizenID) {
+      const response = await getMoveCompany(saleData.citizenID);
+      let data = response.map((row, index) => {
+        return {
+          ...row,
+          id: index + 1,
+          offerDate: dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+          issueDate: dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+          expireDate: dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+        };
+      });
+      setHistoryCompany(data);
+      setLoading(false);
+    }
   };
 
   const onClickShowDetail = () => {
@@ -222,7 +246,12 @@ const TrainingLicense = (props) => {
       data["expireDate"] = dayjs(new Date(currentLicense.expireDate)).format(
         "YYYY-MM-DDTHH:mm:ssZ"
       );
-      onClickUpdate(data);
+      if (currentLicense.historyId) {
+        data["historyId"] = currentLicense.historyId;
+        onClickUpdate(data);
+      } else {
+        onClickSave(data);
+      }
     } else {
       onClickSave(data);
     }
@@ -273,7 +302,10 @@ const TrainingLicense = (props) => {
         <Card>
           <SearchPerson />
           {/* <CardBody>
-            <LicenseDetail title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ" />
+            <LicenseDetail
+              title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ"
+              data={currentTraining}
+            />
           </CardBody> */}
           <CardBody>
             <ButtonGroup>
@@ -405,7 +437,7 @@ const TrainingLicense = (props) => {
                 <CardBody>
                   <Table
                     id="companyId"
-                    data={[]}
+                    data={historyCompany}
                     columns={columns_company}
                     loading={false}
                   />

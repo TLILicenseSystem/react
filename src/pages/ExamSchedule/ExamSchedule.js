@@ -183,7 +183,7 @@ const ExamSchedule = () => {
       headerClassName: "header",
     },
     {
-      field: "updateUserCode",
+      field: "updateUserName",
       headerName: "ชื่อผู้แก้ไข",
       minWidth: 140,
       align: "left",

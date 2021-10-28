@@ -2,7 +2,7 @@ import React from "react";
 import { Col, Row, Input } from "reactstrap";
 import { get } from "lodash";
 import PropTypes from "prop-types";
-import moment  from "moment";
+import moment from "moment";
 import InputMask from "react-input-mask";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
@@ -18,11 +18,11 @@ export const PersonelData = ({ data }) => {
               <Input
                 style={{ marginBottom: "20px" }}
                 readOnly={true}
-                value={`${get(data, "preName", "")}${get(data, "firstName", "")} ${get(
+                value={`${get(data, "preName", "")}${get(
                   data,
-                  "lastName",
+                  "firstName",
                   ""
-                )}`}
+                )} ${get(data, "lastName", "")}`}
               />
             </Col>
           </Row>
@@ -31,58 +31,58 @@ export const PersonelData = ({ data }) => {
           <Row style={{ marginBottom: "0" }}>
             <Col sm="5">ตำแหน่ง</Col>
             <Col sm="7" style={{ paddingRight: "0" }}>
-              { get(data, "highStrid", "")
-              ? <Input
-              id="strid"
-              type={"tel"}
-              value={
-                get(data, "highStrid", "").length === 3
-                  ? get(data, "highStrid", "").split("").join("-")
-                  : get(data, "highStrid", "").length === 5
-                  ? get(data, "highStrid", "").slice(0, 1) +
-                    "-" +
-                    get(data, "highStrid", "").slice(
-                      1,
-                      get(data, "highStrid", "").length - 1
-                    ) +
-                    "-" +
-                    get(data, "highStrid", "").slice(
-                      get(data, "highStrid", "").length - 1
-                    )
-                  : get(data, "highStrid", "").length === 8
-                  ? get(data, "highStrid", "").slice(0, 1) +
-                    "-" +
-                    get(data, "highStrid", "").slice(
-                      1,
-                      get(data, "highStrid", "").length - 1
-                    ) +
-                    "-" +
-                    get(data, "highStrid", "").slice(
-                      get(data, "highStrid", "").length - 1
-                    )
-                  : get(data, "highStrid", "").length === 10
-                  ? get(data, "highStrid", "").slice(0, 1) +
-                    "-" +
-                    get(data, "highStrid", "").slice(
-                      1,
-                      get(data, "highStrid", "").length - 1
-                    ) +
-                    "-" +
-                    get(data, "highStrid", "").slice(
-                      get(data, "highStrid", "").length - 1
-                    )
-                  :""
-              }
-              disabled={true}
-            />
-              :<Input
-              id="positionName"
-              type={"tel"}
-              value={get(data,"positionName","")}
-              disabled={true}
-            />
-            }
-             
+              {get(data, "highStrid", "") ? (
+                <Input
+                  id="strid"
+                  type={"tel"}
+                  value={
+                    get(data, "highStrid", "").length === 3
+                      ? get(data, "highStrid", "").split("").join("-")
+                      : get(data, "highStrid", "").length === 5
+                      ? get(data, "highStrid", "").slice(0, 1) +
+                        "-" +
+                        get(data, "highStrid", "").slice(
+                          1,
+                          get(data, "highStrid", "").length - 1
+                        ) +
+                        "-" +
+                        get(data, "highStrid", "").slice(
+                          get(data, "highStrid", "").length - 1
+                        )
+                      : get(data, "highStrid", "").length === 8
+                      ? get(data, "highStrid", "").slice(0, 1) +
+                        "-" +
+                        get(data, "highStrid", "").slice(
+                          1,
+                          get(data, "highStrid", "").length - 1
+                        ) +
+                        "-" +
+                        get(data, "highStrid", "").slice(
+                          get(data, "highStrid", "").length - 1
+                        )
+                      : get(data, "highStrid", "").length === 10
+                      ? get(data, "highStrid", "").slice(0, 1) +
+                        "-" +
+                        get(data, "highStrid", "").slice(
+                          1,
+                          get(data, "highStrid", "").length - 1
+                        ) +
+                        "-" +
+                        get(data, "highStrid", "").slice(
+                          get(data, "highStrid", "").length - 1
+                        )
+                      : ""
+                  }
+                  disabled={true}
+                />
+              ) : (
+                <Input
+                  id="positionName"
+                  type={"tel"}
+                  value={get(data, "positionName", "")}
+                  disabled={true}
+                />
+              )}
             </Col>
           </Row>
         </Col>
@@ -93,9 +93,11 @@ export const PersonelData = ({ data }) => {
               <Input
                 readOnly={true}
                 value={
-                  get(data, "branchCode", "") +
-                  " " +
-                  get(data, "branchName", "")
+                  get(data, "branchCode", "")
+                    ? get(data, "branchCode", "") +
+                      " " +
+                      get(data, "branchName", "")
+                    : get(data, "orgCode", "") + " " + get(data, "orgName", "")
                 }
               />
             </Col>
@@ -109,7 +111,6 @@ export const PersonelData = ({ data }) => {
             <Col sm="8" style={{ padding: "0" }}>
               <InputMask
                 mask="9-9999-99999-99-9"
-                 
                 className="form-control"
                 style={{ marginBottom: "20px" }}
                 id="citizenID"
@@ -127,27 +128,31 @@ export const PersonelData = ({ data }) => {
               รหัสประจำตัว
             </Col>
             <Col sm="7" style={{ paddingRight: "0" }}>
-              {get(data, "employeeID", "")
-              ? <InputMask
-                mask="999-9999"
-                 
-                className="form-control"
-                style={{ marginBottom: "20px" }}
-                id="employeeID"
-                type={"tel"}
-                value={get(data, "employeeID", "")}
-                disabled={true}
-              />
-              : <InputMask
-                mask={get(data, "personID", "").length === 7 ? "999-9999": "999-9999-9"}
-                 
-                className="form-control"
-                style={{ marginBottom: "20px" }}
-                id="personID"
-                type={"tel"}
-                value={get(data, "personID", "")}
-                disabled={true}
-              />}
+              {get(data, "employeeID", "") ? (
+                <InputMask
+                  mask="999-9999"
+                  className="form-control"
+                  style={{ marginBottom: "20px" }}
+                  id="employeeID"
+                  type={"tel"}
+                  value={get(data, "employeeID", "")}
+                  disabled={true}
+                />
+              ) : (
+                <InputMask
+                  mask={
+                    get(data, "personID", "").length === 7
+                      ? "999-9999"
+                      : "999-9999-9"
+                  }
+                  className="form-control"
+                  style={{ marginBottom: "20px" }}
+                  id="personID"
+                  type={"tel"}
+                  value={get(data, "personID", "")}
+                  disabled={true}
+                />
+              )}
             </Col>
           </Row>
         </Col>
@@ -159,9 +164,11 @@ export const PersonelData = ({ data }) => {
                 label=""
                 disabled={true}
                 value={
-                  get(data, "branchCode", "") 
-                  ? get(data, "branchCode", "")+"-" + get(data, "depositNo", "")
-                  : get(data, "depositNo", "")
+                  get(data, "branchCode", "")
+                    ? get(data, "branchCode", "") +
+                      "-" +
+                      get(data, "depositNo", "")
+                    : get(data, "depositNo", "")
                 }
               />
             </Col>
@@ -191,7 +198,14 @@ export const PersonelData = ({ data }) => {
           <Row style={{ marginBottom: "0" }}>
             <Col sm="5">วันที่หมดอายุ</Col>
             <Col sm="7" style={{ paddingLeft: "0" }}>
-              <Input readOnly={true} value={get(data, "expireDate") ? dayjs(get(data, "expireDate", "")).format("DD/MM/BBBB"):""} />
+              <Input
+                readOnly={true}
+                value={
+                  get(data, "expireDate")
+                    ? dayjs(get(data, "expireDate", "")).format("DD/MM/BBBB")
+                    : ""
+                }
+              />
             </Col>
           </Row>
         </Col>

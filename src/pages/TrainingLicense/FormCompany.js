@@ -38,11 +38,10 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
   useEffect(() => {
     setData(currentLicense);
     const offerType = _.get(currentLicense, "offerType", null);
-
     if (offerType === "3") {
       //{ offerType: "3", offerTypeName: "เปลี่ยนบริษัท" }
       setReadOnly(false);
-    }
+    } else setReadOnly(true);
   }, [currentLicense]);
 
   useEffect(() => {
