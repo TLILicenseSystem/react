@@ -36,7 +36,11 @@ const ExamRound = (props) => {
   const [pressEdit, setPressEdit] = useState(false);
   const [init, setInit] = useState([]);
   const [result, setResult] = useState([]);
-
+  const [user, setUser] = useState(
+    sessionStorage.getItem("updateUser")
+      ? JSON.parse(sessionStorage.getItem("updateUser"))
+      : null
+  );
   const columns = [
     { field: "roundId", headerName: "รหัสรอบเวลาสอบ", width: 200 },
     { field: "timeStr", headerName: "รอบเวลาสอบ", width: 300 },
@@ -82,8 +86,8 @@ const ExamRound = (props) => {
 
   let canInsert = false;
 
-  let create_user_code = "9009998";
-  let update_user_code = "9009999";
+  let create_user_code = user && user.employeeID;
+  let update_user_code = user && user.employeeID;
 
   const rows = result.map((row) => {
     const { roundId, ...rest } = row;
@@ -144,6 +148,7 @@ const ExamRound = (props) => {
         { id: id, roundId: id, timeStr: `${start}-${end}` },
       ]);
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+      fetchData();
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -167,6 +172,7 @@ const ExamRound = (props) => {
       updateItem(id, "timeStr", `${start}-${end}`);
       //alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+      fetchData();
     } catch (err) {
       throw new Error("พบข้อผิดพลาดในการแก้ไขข้อมูล! ", err);
       // throw err;

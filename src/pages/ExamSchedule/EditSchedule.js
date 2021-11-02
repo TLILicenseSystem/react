@@ -3,7 +3,16 @@ import { useDispatch, connect } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import { get } from "lodash";
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Card, CardBody, Row, Col, Table, Input, Button } from "reactstrap";
+import {
+  Container as RsContainer,
+  Card,
+  CardBody,
+  Row,
+  Col,
+  Table,
+  Input,
+  Button,
+} from "reactstrap";
 import {
   Container,
   SearchLocationPopup,
@@ -17,6 +26,7 @@ import {
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { showSearchLocationPopup } from "../../redux/actions";
+import FormCreateUser from "../ExamApplication/FormCreateUser";
 
 import {
   addExamSchedule,
@@ -93,7 +103,11 @@ let EditSchedule = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const scheduleDetail = get(location, "state", {});
-
+  const [user, setUser] = useState(
+    sessionStorage.getItem("updateUser")
+      ? JSON.parse(sessionStorage.getItem("updateUser"))
+      : null
+  );
   const [mainLocation, setMainLocation] = useState(scheduleDetail);
   const [alterLocation, setAlterLocation] = useState(
     scheduleDetail.alteredLocationDetail
@@ -108,10 +122,7 @@ let EditSchedule = (props) => {
       : false
   );
 
-  const [userModify, setUserModify] = useState("2901133");
-  const [modifyDate, setModifyDate] = useState(
-    dayjs(new Date()).format("DD/MM/BBBB")
-  );
+  const [userModify, setUserModify] = useState(null);
   const [examRoundList, setExamRoundList] = useState([]);
 
   const getSearchValue = (e) => {
@@ -139,7 +150,7 @@ let EditSchedule = (props) => {
         props.change("receiveTime", state.receiveTime);
         props.change("maxApplicant", state.maxApplicant);
         if (state.lastUpdate) {
-          setModifyDate(dayjs(new Date(state.lastUpdate)).format("DD/MM/BBBB"));
+          setUserModify(state);
         }
       } else props.history.push("/setting/examSchedule");
     }
@@ -183,7 +194,7 @@ let EditSchedule = (props) => {
           openStatus: "N",
           receiveDate: dayjs(data.receiveDate).format("YYYY-MM-DD"),
           receiveTime: moment(data.receiveTime, "HH:mm").format("HH:mm"),
-          updateUserCode: userModify,
+          updateUserCode: user && user.employeeID,
         };
 
         let response = await updateExamSchedule(examSchedule);
@@ -209,7 +220,7 @@ let EditSchedule = (props) => {
           openStatus: "N",
           receiveDate: dayjs(data.receiveDate).format("YYYY-MM-DD"),
           receiveTime: moment(data.receiveTime, "HH:mm").format("HH:mm"),
-          updateUserCode: userModify,
+          updateUserCode: user && user.employeeID,
         };
         let response = await addExamSchedule(examSchedule);
         if (response !== "error") {
@@ -434,36 +445,13 @@ let EditSchedule = (props) => {
               </Card>
             </div>
           </CardBody>
-          <CardBody style={{ paddingTop: "0px", paddingBottom: "14px" }}>
-            <Row style={{ textAlign: "center" }}>
-              <Col
-                xs={{ size: 4, offset: 2 }}
-                sm="12"
-                md={{ size: 2, offset: 4 }}
-              >
-                <label className="label" style={{ textAlign: "center" }}>
-                  ผู้บันทึก
-                </label>
-                <Input
-                  readOnly={true}
-                  style={{
-                    textAlign: "center",
-                  }}
-                  value={userModify}
-                />
-              </Col>
-              <Col xs="4" sm="12" md={{ size: 2 }}>
-                <label className="label">วันที่บันทึก</label>
-                <Input
-                  readOnly={true}
-                  style={{
-                    textAlign: "center",
-                  }}
-                  value={modifyDate}
-                />
-              </Col>
-            </Row>
+          <CardBody>
+            <RsContainer>
+              <FormCreateUser data={userModify} />
+              <hr />
+            </RsContainer>
           </CardBody>
+
           <CardBody style={{ textAlign: "right" }}>
             <SubmitButton
               disabled={props.invalid || props.pristine || props.submitting}

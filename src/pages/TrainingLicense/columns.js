@@ -95,13 +95,6 @@ export const columns_company = [
     cellClassName: "cellDark",
   },
   {
-    field: "b",
-    headerName: "บริษัท",
-    minWidth: 160,
-    hideSortIcons: "true",
-    headerClassName: "header",
-  },
-  {
     field: "licenseNo",
     headerName: "เลขที่ใบอนุญาต",
     width: 160,
@@ -127,7 +120,7 @@ export const columns_company = [
     headerClassName: "header",
   },
   {
-    field: "f",
+    field: "companyName",
     headerName: "สังกัดบริษัท",
     minWidth: 160,
     align: "left",

@@ -55,28 +55,45 @@ const TrainingLicense = (props) => {
   const [historyCompany, setHistoryCompany] = useState([]);
   const [mode, setMode] = useState("add");
   const [license, setLicense] = useState([]);
-
+  const [disabled, setDisabled] = useState(false);
   const [saleData, setSaleData] = useState(
     sessionStorage.getItem("sale")
       ? JSON.parse(sessionStorage.getItem("sale"))
       : null
   );
-
+  const [user, setUser] = useState(
+    sessionStorage.getItem("updateUser")
+      ? JSON.parse(sessionStorage.getItem("updateUser"))
+      : null
+  );
   const { seleted } = useSelector((state) => state.selectSalePopup);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (saleData && saleData.citizenID) {
-      fetchData(saleData.citizenID);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (saleData && saleData.citizenID) {
+  //     fetchData(saleData.citizenID);
+  //   }
+  // }, []);
 
   useEffect(() => {
     setSaleData(seleted);
+    checkStatus(seleted);
     if (seleted && seleted.citizenID) {
       fetchData(seleted.citizenID);
     }
   }, [seleted]);
+
+  const checkStatus = (seleted) => {
+    if (seleted) {
+      if (
+        seleted.status === "Q" ||
+        seleted.status === "M" ||
+        seleted.status === "D"
+      )
+        setDisabled(true);
+      else setDisabled(false);
+    } else setDisabled(false);
+  };
 
   const fetchData = async (citizenID) => {
     const current = await getLicenseByCid(citizenID);
@@ -84,12 +101,22 @@ const TrainingLicense = (props) => {
     setCurrentLicense({
       ...get(data, "license", []),
       disapprovePerson: get(data, "disapprovePerson", []),
+      moveCompany: get(data, "moveCompanyList", [])[0],
     });
-    // const training = await getTrainingByCid(citizenID);
-    // setCurrentTraining(training);
-    setCurrentTraining([]);
+    const training = await getTrainingByCid(citizenID);
+    setCurrentTraining(training);
+    onClickAdd();
   };
 
+  const fetchCurrentLicense = async (citizenID) => {
+    const current = await getLicenseByCid(citizenID);
+    let data = get(current, "data", []);
+    setCurrentLicense({
+      ...get(data, "license", []),
+      disapprovePerson: get(data, "disapprovePerson", []),
+      moveCompany: get(data, "moveCompanyList", [])[0],
+    });
+  };
   const rows = license.map((row, index) => {
     return { id: index + 1, ...row };
   });
@@ -97,6 +124,11 @@ const TrainingLicense = (props) => {
   const onClickCancel = () => {
     setActiveTab("1");
     setMode("add");
+    if (saleData && saleData.citizenID) {
+      fetchCurrentLicense(saleData.citizenID);
+    } else {
+      setCurrentLicense(null);
+    }
   };
   const onClickAdd = () => {
     setActiveTab("1");
@@ -113,10 +145,17 @@ const TrainingLicense = (props) => {
         return {
           ...row,
           id: index + 1,
-          offerDate: dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
-          issueDate: dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
-          expireDate: dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
-          bookDate: dayjs(new Date(row.bookDate)).format("DD-MM-BBBB"),
+          offerDate:
+            row.offerDate &&
+            dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+          issueDate:
+            row.issueDate &&
+            dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+          expireDate:
+            row.expireDate &&
+            dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+          bookDate:
+            row.bookDate && dayjs(new Date(row.bookDate)).format("DD-MM-BBBB"),
         };
       });
       setLicense(data);
@@ -132,9 +171,15 @@ const TrainingLicense = (props) => {
         return {
           ...row,
           id: index + 1,
-          offerDate: dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
-          issueDate: dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
-          expireDate: dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+          offerDate:
+            row.offerDate &&
+            dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+          issueDate:
+            row.issueDate &&
+            dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+          expireDate:
+            row.expireDate &&
+            dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
         };
       });
       setHistoryCompany(data);
@@ -210,8 +255,8 @@ const TrainingLicense = (props) => {
         : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
       referenceNo: "",
       remark: currentLicense.remark,
-      createUserCode: "9123456",
-      updateUserCode: "9123456",
+      createUserCode: user && user.employeeID,
+      updateUserCode: user && user.employeeID,
     };
 
     if (currentLicense.licenseNo) {
@@ -235,6 +280,9 @@ const TrainingLicense = (props) => {
       });
       data["disapprovePerson"] = disapprovePerson;
     }
+    if (currentLicense.moveCompany) {
+      data["moveCompany"] = currentLicense.moveCompany;
+    }
     if (currentLicense.historyId) {
       data["historyId"] = currentLicense.historyId;
     }
@@ -248,10 +296,8 @@ const TrainingLicense = (props) => {
       );
       if (currentLicense.historyId) {
         data["historyId"] = currentLicense.historyId;
-        onClickUpdate(data);
-      } else {
-        onClickSave(data);
       }
+      onClickUpdate(data);
     } else {
       onClickSave(data);
     }
@@ -293,7 +339,6 @@ const TrainingLicense = (props) => {
       });
     }
   };
-
   return (
     <Container>
       <EditLocationPopup />
@@ -301,12 +346,12 @@ const TrainingLicense = (props) => {
         <h2 className="head">ขอรับ/ขอต่อ ใบอนุญาต</h2>
         <Card>
           <SearchPerson />
-          {/* <CardBody>
+          <CardBody>
             <LicenseDetail
               title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ"
               data={currentTraining}
             />
-          </CardBody> */}
+          </CardBody>
           <CardBody>
             <ButtonGroup>
               <Button
@@ -352,6 +397,7 @@ const TrainingLicense = (props) => {
               <TabPane tabId="1">
                 <CardBody>
                   <FormLicense
+                    saleData={saleData}
                     currentLicense={currentLicense}
                     expireDate={saleData && saleData.expireDate}
                     onChange={(v) => setCurrentLicense(v)}
@@ -409,11 +455,7 @@ const TrainingLicense = (props) => {
                   <CardBody style={{ textAlign: "right" }}>
                     <RsContainer>
                       <SubmitButton
-                        // disabled={
-                        //   disabled ||
-                        //   scheduleDetail === null ||
-                        //   scheduleDetail === ""
-                        // }
+                        disabled={disabled}
                         title="บันทึก"
                         // onClick={mode === "history" ? onClickUpdate : onClickSave}
                         onClick={onClickSubmit}

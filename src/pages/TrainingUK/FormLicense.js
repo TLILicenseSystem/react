@@ -8,12 +8,7 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-const FormLicense = ({
-  licenseDetail,
-  currentLicense,
-  expireDate,
-  onChange,
-}) => {
+const FormLicense = ({ currentLicense, expireDate, onChange }) => {
   const [data, setData] = useState(currentLicense);
   const [readOnly, setReadOnly] = useState(false);
 
@@ -28,45 +23,12 @@ const FormLicense = ({
   const onSelectOfferType = (value) => {
     const offerType = get(value, "offerType", null);
     const offerTypeName = get(value, "offerTypeName", "");
+    //     if (checkConditionExpireDate()) return;
+    // if (checkExpired()) return;
     if (offerType === "1") {
       //  { offerType: "1", offerTypeName: "ขึ้นใหม่ทะเบียน UL" }
-      if (!expireDate) {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่พบข้อมูลเลขที่ใบอนุญาตหลัก",
-        });
-        return;
-      } // ตรวจสอบสถานะ ใบอนุญาตตัวแทนประกันชีวิต 10 หลัก ไม่หมดอายุ ที่ระบบ TL License
-      // เช็คประเภทการขอใบอนุญาตหลัก ว่าถ้าเป็นประเภท  ขอใหม่ และ ขอเปลี่ยนบริษัท
-      if (
-        licenseDetail &&
-        (licenseDetail.offerType === "1" || licenseDetail.offerType === "3")
-      ) {
-        // มีอายุการใช้งาน 6 เดือน(เช็คจาก issuedate ของ license หลัก >=6เดือน)
-        let issueDate = dayjs(new Date(licenseDetail.issueDate))
-          .add(6, "month")
-          .format("YYYY-MM-DD");
-        let today = dayjs(new Date()).format("YYYY-MM-DD");
-        if (issueDate < today) {
-          Swal.fire({
-            icon: "error",
-            title: "ไม่สามารถขึ้นใหม่ทะเบียน UL ได้ ",
-            text: `เนื่องจากใบอนุญาตหลักมีอายุการใช้งานไม่ถึง 6 เดือน`,
-          });
-          return;
-        }
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่สามารถขึ้นใหม่ทะเบียน UL ได้",
-        });
-        return;
-      }
     } else if (offerType === "2") {
       // { offerType: "2", offerTypeName: "ขาดทะเบียน UL" }
-      if (checkExpired()) return;
     } else if (offerType === "3") {
       //  { offerType: "3", offerTypeName: "ต่อทะเบียน UL" }
     } else if (offerType === "4") {
@@ -77,18 +39,14 @@ const FormLicense = ({
       ...data,
       offerType: offerType,
       offerTypeName: offerTypeName,
-      licenseNo: licenseDetail.licenseNo,
-      issueDate: licenseDetail.issueDate,
-      expireDate: licenseDetail.expireDate,
     });
   };
-
   const checkExpired = () => {
     if (!expireDate) {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "ไม่พบข้อมูลเลขที่ใบอนุญาตหลัก",
+        text: "ไม่พบข้อมูลเลขที่ใบอนุญาต",
       });
       return true;
     } else {
@@ -106,6 +64,31 @@ const FormLicense = ({
     return false;
   };
 
+  const checkConditionExpireDate = () => {
+    if (!expireDate) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่พบข้อมูลเลขที่ใบอนุญาต",
+      });
+      return true;
+    } else {
+      let minData = dayjs(new Date(expireDate))
+        .subtract(61, "day")
+        .format("YYYY-MM-DD");
+      let today = dayjs(new Date()).format("YYYY-MM-DD");
+      if (today <= minData) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: `สามารถต่ออายุได้ตั้งแต่ ${dayjs(minData).format(
+            "DD/MM/BBBB"
+          )} ถึง ${dayjs(new Date()).format("DD/MM/BBBB")}`,
+        });
+        return true;
+      } else return false;
+    }
+  };
   return (
     <Container>
       <h3>การขอรับใบอนุญาต</h3>

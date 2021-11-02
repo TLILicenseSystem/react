@@ -40,7 +40,10 @@ export const LicenseDetail = ({ title, data }) => {
         <Col sm="3">
           <Item
             title="วันที่อบรม"
-            value={dayjs(_.get(data, "startDate", "")).format("DD/MM/YYYY")}
+            value={
+              _.get(data, "startDate", "") &&
+              dayjs(_.get(data, "startDate", "")).format("DD/MM/YYYY")
+            }
             size_k={6}
             size_v={6}
           />
@@ -70,7 +73,7 @@ export const LicenseDetail = ({ title, data }) => {
           </Row>
         </Col>
       </Row>
-      <Row>
+      <Row style={{ paddingBottom: "12px" }}>
         <Col sm="3">
           <Row>
             <Col sm="6">รวมชั่วโมงอบรม</Col>
@@ -95,15 +98,30 @@ export const LicenseDetail = ({ title, data }) => {
         </Col>
         <Col sm="5">
           <Item
-            title="วันที่อัพโหลผลการสอบ"
-            value={dayjs(_.get(data, "certificateDate", "")).format(
-              "DD/MM/YYYY"
-            )}
+            title="วันที่อัพโหลดผลการอบรม"
+            value={
+              _.get(data, "certificateDate", "") &&
+              dayjs(_.get(data, "certificateDate", "")).format("DD/MM/YYYY")
+            }
             size_k={5}
             size_v={5}
           />
         </Col>
       </Row>
+      <Row style={{ paddingBottom: "12px" }}>
+        <Col>
+          หมายเหตุ
+          <div style={{ paddingTop: "10px" }}>
+            <Input
+              style={{ fontSize: "90%", resize: "none" }}
+              type="textarea"
+              disabled
+              value={_.get(data, "remark", "")}
+            />
+          </div>
+        </Col>
+      </Row>
+
       <hr />
     </>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
+  Container as RsContainer,
   Card,
   CardBody,
   Row,
@@ -24,6 +25,7 @@ import {
   PersonelData,
   Table,
   SearchPerson,
+  LicenseDetail,
 } from "../../components/shared";
 import { get } from "lodash";
 import { showSearchSchedulePopup } from "../../redux/actions";
@@ -36,54 +38,80 @@ import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 // import { getExamResult} from "../../api/apiGetConfig"
 import Swal from "sweetalert2";
 import { columns } from "./columns";
-import { columns as columnsUL } from "../TrainingUL/columns";
+import FormLicense from "./FormLicense";
+import FormResult from "./FormResult";
+import FormCreateUser from "../ExamApplication/FormCreateUser";
+import { getTrainingByCid } from "../../api/apiTraining";
 
 import moment from "moment";
 
 const TrainingUK = (props) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
-  const [licenseDetail, setLicenseDetail] = useState(null);
+  const [currentLicense, setCurrentLicense] = useState(null);
+
+  const [currentTraining, setCurrentTraining] = useState(null);
+  const [disabled, setDisabled] = useState(false);
+
   const [mode, setMode] = useState("add");
-  const [application, setApplication] = useState([]);
+  const [saleData, setSaleData] = useState(
+    sessionStorage.getItem("sale")
+      ? JSON.parse(sessionStorage.getItem("sale"))
+      : null
+  );
+  const { seleted } = useSelector((state) => state.selectSalePopup);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    setSaleData(seleted);
+    checkStatus(seleted);
+    if (seleted && seleted.citizenID) {
+      fetchData(seleted.citizenID);
+    }
+  }, [seleted]);
 
-  const fetchData = async () => {
+  const fetchData = async (citizenID) => {
     // setLoading(true);
     // const response = await getExamApplication("1122334455667");
     // setApplication(response);
     // setLoading(false);
+    const training = await getTrainingByCid(citizenID);
+    setCurrentTraining(training);
   };
 
-  const rows = application.map((row) => {
-    return { id: row.scheduleId, ...row };
-  });
+  const checkStatus = (seleted) => {
+    if (seleted) {
+      if (
+        seleted.status === "Q" ||
+        seleted.status === "M" ||
+        seleted.status === "D"
+      )
+        setDisabled(true);
+      else setDisabled(false);
+    } else setDisabled(false);
+  };
 
   const onClickEditExamApplication = () => {};
   const onClickCancel = () => {
-    setLicenseDetail(null);
+    setCurrentLicense(null);
     setActiveTab("1");
     setMode("add");
   };
   const onClickAdd = () => {
-    setLicenseDetail(null);
+    setCurrentLicense(null);
     setActiveTab("1");
     setMode("add");
   };
 
   const onClickShowHistory = () => {
-    setLicenseDetail(null);
+    setCurrentLicense(null);
     setActiveTab("2");
     setMode("history");
   };
 
   const onClickShowDetail = () => {
-    setLicenseDetail(null);
+    setCurrentLicense(null);
     setActiveTab("3");
     setMode("detail");
   };
@@ -185,15 +213,62 @@ const TrainingUK = (props) => {
           <div>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
-                <CardBody>eee</CardBody>
+                <CardBody>
+                  <CardBody>fergreg</CardBody>
+                  <CardBody>
+                    <FormResult
+                      currentLicense={currentLicense}
+                      onChange={(v) => setCurrentLicense(v)}
+                    />
+                  </CardBody>
+                  <CardBody>
+                    <RsContainer>
+                      <Row sm="1">
+                        <Col sm="9">
+                          <FormGroup>
+                            <label className={styles.label}>หมายเหตุ</label>
+                            <Input
+                              type="text"
+                              name="remark"
+                              disabled={
+                                get(currentLicense, "offerType", null)
+                                  ? false
+                                  : true
+                              }
+                              value={get(currentLicense, "remark", "")}
+                              onChange={(e) =>
+                                setCurrentLicense({
+                                  ...currentLicense,
+                                  remark: e.target.value,
+                                })
+                              }
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <FormCreateUser mode={"history"} data={currentLicense} />
+                    </RsContainer>
+                    <CardBody style={{ textAlign: "right" }}>
+                      <RsContainer>
+                        <SubmitButton
+                          disabled={disabled}
+                          title="บันทึก"
+                          onClick={() => console.log("defef")}
+                          // onClick={onClickSubmit}
+                        />{" "}
+                        <CancelButton title="ยกเลิก" onClick={onClickCancel} />
+                      </RsContainer>
+                    </CardBody>
+                  </CardBody>
+                </CardBody>
               </TabPane>
               <TabPane tabId="2">
                 <CardBody>
                   {" "}
                   <Table
                     id="scheduleId"
-                    data={rows}
-                    columns={columnsUL}
+                    data={[]}
+                    columns={[]}
                     loading={false}
                   />
                 </CardBody>
@@ -203,7 +278,7 @@ const TrainingUK = (props) => {
                   {" "}
                   <Table
                     id="scheduleId"
-                    data={rows}
+                    data={[]}
                     columns={columns}
                     loading={false}
                   />

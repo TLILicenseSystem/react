@@ -67,9 +67,9 @@ export const getCompany = async () => {
   }
 };
 
-export const getOfferType = async () => {
+export const getOfferType = async (offerType = "offerType") => {
   try {
-    const response = await api.get(`data/offerType?offerType=A`);
+    const response = await api.get(`data/${offerType}?offerType=A`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -79,7 +79,6 @@ export const getOfferType = async () => {
     throw err;
   }
 };
-
 
 export const getOfferResult = async (type) => {
   try {
@@ -93,4 +92,3 @@ export const getOfferResult = async (type) => {
     throw err;
   }
 };
-

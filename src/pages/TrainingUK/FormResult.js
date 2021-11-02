@@ -6,7 +6,6 @@ import {
   DatePickerThai,
   InputLicenseNo,
   SubmitButton,
-  AddButton,
   DeleteButton,
 } from "../../components/shared";
 import Swal from "sweetalert2";
@@ -39,10 +38,6 @@ const FormResult = ({ currentLicense, onChange }) => {
       if (currentLicense.disapprovePerson) {
         setCause(currentLicense.disapprovePerson);
       }
-    } else {
-      setData(null);
-      setLesson(null);
-      setCause([]);
     }
   }, [currentLicense]);
 
@@ -88,7 +83,7 @@ const FormResult = ({ currentLicense, onChange }) => {
               requiredField
               label="ผลการขอรับ"
               disabled={_.get(data, "offerType", null) ? false : true}
-              type={"offerResult"}
+              type={"offerResultUL"}
               value={_.get(data, "offerResult", "")}
               showError={_.get(data, "offerResult", null) ? false : true}
               onClick={(e) => onSelectOfferResult(e)}
@@ -103,10 +98,7 @@ const FormResult = ({ currentLicense, onChange }) => {
               name="licenseNo"
               value={_.get(data, "licenseNo", "")}
               onChange={(e) =>
-                setData({
-                  ...data,
-                  licenseNo: e.target.value.substr(0, 10).replace(/[^\d]/, ""),
-                })
+                setData({ ...data, licenseNo: e.target.value.substr(0, 10) })
               }
             />
           </FormGroup>
@@ -141,7 +133,7 @@ const FormResult = ({ currentLicense, onChange }) => {
                           .add(1, "year")
                           .subtract(1, "day")
                           .format("DD/MM/BBBB")
-                      : null
+                      : ""
                   }
                 />
               </FormGroup>
@@ -183,7 +175,7 @@ const FormResult = ({ currentLicense, onChange }) => {
             alignItems: "flex-end",
           }}
         >
-          <AddButton
+          <SubmitButton
             disabled={lesson ? false : true}
             title="เลือก"
             onClick={onSelectCause}

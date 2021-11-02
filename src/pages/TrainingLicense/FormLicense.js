@@ -10,25 +10,22 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-const FormLicense = ({ currentLicense, expireDate, onChange }) => {
+const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
   const [blacklist, setBlacklist] = useState(false);
   const [data, setData] = useState(currentLicense);
   const [readOnly, setReadOnly] = useState(false);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
     setData(currentLicense);
-    // if(currentLicense){
-    //   if(currentLicense.offerType === "1") setReadOnly(false)
-    //   else setReadOnly(true)
-    // }
   }, [currentLicense]);
 
   useEffect(() => {
+    fetchData();
+  }, [saleData]);
+
+  useEffect(() => {
     setBlacklist(blacklist);
+    onChange({ ...data, blacklist: blacklist });
   }, [blacklist]);
 
   useEffect(() => {
@@ -36,10 +33,13 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
   }, [data]);
 
   const fetchData = async () => {
-    if (data && data.citizenId) {
-      const response = await searchBlacklist("C", data.citizenId);
+    if (saleData && saleData.citizenID) {
+      const response = await searchBlacklist("C", saleData.citizenID);
       const responseData = get(response, "data", []);
-      if (responseData.responseRecord.dataList.length > 0) {
+      if (
+        responseData.responseRecord.dataList &&
+        responseData.responseRecord.dataList.length > 0
+      ) {
         setBlacklist(true);
       } else setBlacklist(false);
     }
@@ -70,7 +70,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "ไม่พบข้อมูลเลขที่ใบอนุญาต",
+        text: "ไม่พบข้อมูลเลขที่ใบอนุญาตหลัก",
       });
       return true;
     } else {
@@ -141,7 +141,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
                 value={
                   get(data, "offerDate", null)
                     ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
-                    : dayjs(new Date())
+                    : ""
                 }
               />
             ) : (
@@ -163,14 +163,14 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
           <FormGroup>
             <label className={styles.label}>
               ส่ง สนญ.ตามหนังสือที่{" "}
-              <label className={styles.required}> *</label>
+              {/* <label className={styles.required}> *</label> */}
             </label>
             <Input
               readOnly={readOnly}
               type="text"
               name="bookNo"
               value={get(data, "bookNo", "")}
-              invalid={get(data, "bookNo", null) ? false : true}
+              // invalid={get(data, "bookNo", null) ? false : true}
               onChange={(e) =>
                 setData({ ...data, bookNo: e.target.value.substr(0, 6) })
               }
@@ -188,7 +188,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
                 value={
                   get(data, "bookDate", null)
                     ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
-                    : dayjs(new Date())
+                    : ""
                 }
               />
             ) : (

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { Container, Row, Col, FormFeedback,Input } from "reactstrap";
-import { InputWithLabelRow, SubmitButton ,InputField} from "../components/shared";
+import { Container, Row, Col, FormFeedback, Input } from "reactstrap";
+import {
+  InputWithLabelRow,
+  SubmitButton,
+  InputField,
+} from "../components/shared";
 import { useHistory } from "react-router-dom";
 import Logo from "../assets/images/logo.png";
 import { colors } from "./style";
@@ -62,8 +66,25 @@ const Login = () => {
     }
 
     if (!error) {
+      let data = {
+        employeeID: "9503440",
+        positionCode: "A",
+        positionName: "สมุห์บัญชีสาขา",
+        orgCode: "421",
+        orgName: "แม่ฮ่องสอน",
+        preName: "นาง",
+        firstName: "กัญญพัฒน์",
+        lastName: "กุลธนฐิติพงศ์",
+        retireDate: "00000000",
+        depositNo: "00734",
+        referenceId: "TL00000009109",
+      };
       sessionStorage.setItem("login", "Y");
-      sessionStorage.setItem("login_name", "firstName lastName");
+      sessionStorage.setItem(
+        "login_name",
+        `${data.firstName} ${data.lastName}`
+      );
+      sessionStorage.setItem("updateUser", JSON.stringify(data));
       window.location.reload();
       //   let postdata = {
       //     username: data.username.value,
@@ -131,27 +152,27 @@ const Login = () => {
           <h5>Log on</h5>
           <br />
           <Row form>
-            <Col md={6} style={{paddingBottom: '20px'}}>
+            <Col md={6} style={{ paddingBottom: "20px" }}>
               <Input
                 label="Username"
                 type="email"
                 id="email"
                 name="email"
                 placeholder="Username"
-              //  value={data.email.value}
+                //  value={data.email.value}
                 onChange={onChange}
                 textboxSize={12}
                 invalid={data.email.valid}
               />
             </Col>
-            <Col md={6} style={{paddingBottom: '20px'}}>
+            <Col md={6} style={{ paddingBottom: "20px" }}>
               <Input
                 label="Password"
                 type="password"
                 id="password"
                 name="password"
                 placeholder="Password"
-             //   value={data.password.value}
+                //   value={data.password.value}
                 onChange={onChange}
                 textboxSize={12}
                 invalid={data.password.valid}

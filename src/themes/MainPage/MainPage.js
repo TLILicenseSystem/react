@@ -3,20 +3,20 @@ import { Row, Col } from "reactstrap";
 import { Container, Card, CardBody } from "./MainPageStyle";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { updateSelectSale} from "../../redux/actions";
+import { updateSelectSale } from "../../redux/actions";
 
 const MainPage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  useEffect(() =>{
-    sessionStorage.removeItem("sale")
+  useEffect(() => {
+    sessionStorage.removeItem("sale");
     dispatch(
       updateSelectSale({
-        seleted : null
+        seleted: null,
       })
     );
-  },[])
+  }, []);
 
   return (
     <Container style={{ padding: "3em", margin: "auto" }}>

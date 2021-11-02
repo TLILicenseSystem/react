@@ -41,7 +41,11 @@ const ExamOrganizer = (props) => {
   const [pressEdit, setPressEdit] = useState(false);
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [user, setUser] = useState(
+    sessionStorage.getItem("updateUser")
+      ? JSON.parse(sessionStorage.getItem("updateUser"))
+      : null
+  );
   const columns = [
     { field: "orgCode", headerName: "รหัสสถานที่สอบ", width: 200 },
     { field: "orgName", headerName: "สถานที่สอบ", width: 300 },
@@ -88,8 +92,8 @@ const ExamOrganizer = (props) => {
   let canInsert = false;
   // let date = new Date().toISOString(); //2020-11-05T14:06:33.006Z
   // let messageId = "028840ec147510517da2b23c8b0b6707";
-  let create_user_code = "9009998";
-  let update_user_code = "9009999";
+  let create_user_code = user && user.employeeID;
+  let update_user_code = user && user.employeeID;
 
   useEffect(() => {
     fetchData();
@@ -121,6 +125,7 @@ const ExamOrganizer = (props) => {
       setResult([...result, { orgCode: id, orgName: orgName }]);
       //alert("บันทึกข้อมูลเรียบร้อยแล้ว");
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+      fetchData();
     } catch (err) {
       let { data } = err.response;
       Swal.fire({
@@ -147,6 +152,7 @@ const ExamOrganizer = (props) => {
       // update row ในตาราง
       updateItem(id, "orgName", orgName);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+      fetchData();
       //alert("แก้ไขข้อมูลเรียบร้อยแล้ว");
     } catch (err) {
       let { data } = err.response;

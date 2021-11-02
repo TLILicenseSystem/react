@@ -3,11 +3,12 @@ import { Button } from "reactstrap";
 import PropTypes from "prop-types";
 import { colors } from "../../themes/style";
 
-export const AddButton = ({ onClick, title }) => {
+export const AddButton = ({ onClick, title, disabled }) => {
   return (
     <Button
       id="addButton"
       onClick={onClick}
+      disabled={disabled}
       style={{
         backgroundColor: `${colors.SECONDARYBLUE}`,
         border: `${colors.SECONDARYBLUE}`,
@@ -19,11 +20,14 @@ export const AddButton = ({ onClick, title }) => {
 };
 AddButton.defaultProps = {
   title: "เพิ่ม",
+  disabled: false,
+
   onClick: () => {},
 };
 AddButton.propTypes = {
   title: PropTypes.string,
   onClick: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 export const EditButton = ({ title, onClick }) => {

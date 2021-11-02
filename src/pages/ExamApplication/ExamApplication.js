@@ -58,7 +58,11 @@ const ExamApplication = (props) => {
       ? JSON.parse(sessionStorage.getItem("sale"))
       : null
   );
-
+  const [user, setUser] = useState(
+    sessionStorage.getItem("updateUser")
+      ? JSON.parse(sessionStorage.getItem("updateUser"))
+      : null
+  );
   const { seleted } = useSelector((state) => state.selectSalePopup);
   const dispatch = useDispatch();
 
@@ -179,6 +183,7 @@ const ExamApplication = (props) => {
     const response = await getExamApplication(citizenID);
     setApplication(response);
     setLoading(false);
+    onClickCancel();
   };
 
   const checkStatus = (seleted) => {
@@ -370,8 +375,8 @@ const ExamApplication = (props) => {
         seatNoStr: scheduleDetail.seatNoStr,
         examResult: scheduleDetail.examResult,
         remark: scheduleDetail.remark,
-        createUserCode: "2901133",
-        updateUserCode: "2901133",
+        createUserCode: user && user.employeeID,
+        updateUserCode: user && user.employeeID,
         referenceNo: "",
       };
 
@@ -482,8 +487,8 @@ const ExamApplication = (props) => {
         seatNoStr: scheduleDetail.seatNoStr,
         examResult: scheduleDetail.examResult,
         remark: scheduleDetail.remark,
-        createUserCode: "2901133",
-        updateUserCode: "2901133",
+        createUserCode: user && user.employeeID,
+        updateUserCode: user && user.employeeID,
         referenceNo: "",
       };
       // if (scheduleDetail.newScheduleId !== scheduleDetail.scheduleId)
@@ -583,9 +588,9 @@ const ExamApplication = (props) => {
                     <i class="fas fa-search" type="button"></i> ค้นหาตารางสอบ
                   </Button>{" "}
                   {mode === "history" &&
-                    dayjs(new Date()).format("DD/MM/BBBB") <
+                    dayjs(new Date()).format("YYYY-MM-DD") <
                       dayjs(get(scheduleDetail, "examDate", "")).format(
-                        "DD/MM/BBBB"
+                        "YYYY-MM-DD"
                       ) && (
                       <Button
                         size="sm"
