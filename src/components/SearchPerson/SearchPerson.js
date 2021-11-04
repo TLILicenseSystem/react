@@ -16,7 +16,7 @@ import {
   EmployeeSearch,
 } from "../shared";
 import { showSelectSalePopup, updateSelectSale } from "../../redux/actions";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   searchSalesbyname,
   searchPersonset,
@@ -27,6 +27,7 @@ import { getLicenseByCid } from "../../api/apiLicense";
 import Swal from "sweetalert2";
 
 export const SearchPerson = () => {
+  const state = useSelector((state) => state.selectSalePopup);
   const [saleData, setSaleData] = useState(
     sessionStorage.getItem("sale")
       ? JSON.parse(sessionStorage.getItem("sale"))
@@ -36,13 +37,17 @@ export const SearchPerson = () => {
 
   const [, forceUpdate] = useState(0);
   const dispatch = useDispatch();
-
   const [activeTab, setActiveTab] = useState("1");
+
   const toggle = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
     }
   };
+
+  useEffect(() => {
+    setSaleData(state && state.seleted);
+  }, [state]);
 
   useEffect(() => {
     if (saleData) setIsShow(false);

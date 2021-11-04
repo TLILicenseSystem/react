@@ -77,6 +77,12 @@ const FormResult = ({ currentLicense, onChange }) => {
     setCause([]);
   };
 
+  const onDeleteCause = (causeId) => {
+    onChange({
+      ...data,
+      disapprovePerson: _.filter(cause, (c) => c.causeId !== causeId),
+    });
+  };
   return (
     <Container>
       <h3>ผลการขอรับใบอนุญาต</h3>
@@ -210,13 +216,7 @@ const FormResult = ({ currentLicense, onChange }) => {
                   </th>
                   <td>{item.detail ? item.detail : item.causeDetail}</td>
                   <td style={{ textAlign: "center", width: "10%" }}>
-                    <DeleteButton
-                      onClick={() =>
-                        setCause(
-                          _.filter(cause, (c) => c.causeId !== item.causeId)
-                        )
-                      }
-                    />
+                    <DeleteButton onClick={() => onDeleteCause(item.causeId)} />
                   </td>
                 </tr>
               ))}

@@ -1,6 +1,6 @@
 export const columns = [
   {
-    field: "a",
+    field: "id",
     headerName: "ลำดับ",
     minWidth: 80,
     hideSortIcons: "true",
@@ -8,22 +8,22 @@ export const columns = [
     cellClassName: "cellDark",
   },
   {
-    field: "b",
+    field: "offerTypeName",
     headerName: "ประเภท",
-    minWidth: 160,
+    minWidth: 180,
     hideSortIcons: "true",
     headerClassName: "header",
   },
   {
-    field: "c",
+    field: "offerResultName",
     headerName: "ผลการขอใบอนุญาต",
-    width: 160,
+    width: 180,
     align: "left",
     hideSortIcons: "true",
     headerClassName: "header",
   },
   {
-    field: "d",
+    field: "licenseNo",
     headerName: "เลขที่ใบอนุญาต",
     width: 160,
     align: "left",
@@ -32,7 +32,7 @@ export const columns = [
   },
 
   {
-    field: "e",
+    field: "approveDate",
     headerName: "วันที่ คปภ. อนุมัติ",
     width: 160,
     align: "left",
@@ -40,7 +40,7 @@ export const columns = [
     headerClassName: "header",
   },
   {
-    field: "f",
+    field: "receiveDate",
     headerName: "วันที่ได้รับแบบฟอร์ม",
     minWidth: 160,
     align: "left",
@@ -48,7 +48,7 @@ export const columns = [
     headerClassName: "header",
   },
   {
-    field: "x",
+    field: "issueDate",
     headerName: "วันที่ออกบัตร",
     minWidth: 160,
     align: "left",
@@ -56,29 +56,13 @@ export const columns = [
     headerClassName: "header",
   },
   {
-    field: "x",
+    field: "expireDate",
     headerName: "วันที่หมดอายุ",
     minWidth: 160,
     align: "left",
     hideSortIcons: "true",
     headerClassName: "header",
   },
-  // {
-  //   field: "v",
-  //   headerName: "เลือก",
-  //   align: "center",
-  //   hideSortIcons: "true",
-  //   headerClassName: "header",
-  //   width: 100,
-  //   renderCell: (cellValues) => {
-  //     return (
-  //       <EditButton
-  //         title="เลือก"
-  //         onClick={() => onClickEditExamApplication(cellValues.row)}
-  //       />
-  //     );
-  //   },
-  // },
 ];
 
 export const columns_tab3 = [

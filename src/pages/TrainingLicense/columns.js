@@ -122,7 +122,7 @@ export const columns_company = [
   {
     field: "companyName",
     headerName: "สังกัดบริษัท",
-    minWidth: 160,
+    minWidth: 300,
     align: "left",
     // valueGetter: (params) =>
     // `${moment(params.getValue(params.id, "issueDate")).format(

@@ -31,11 +31,17 @@ import FormLicense from "./FormLicense";
 import FormResult from "./FormResult";
 import FormCreateUser from "../ExamApplication/FormCreateUser";
 import { getTrainingByCid } from "../../api/apiTraining";
-import { getLicenseByCid } from "../../api/apiGetLicense";
+import {
+  getLicenseULHistoryByCid,
+  getLicenseByCid,
+  getLicenseULByCid,
+} from "../../api/apiGetLicense";
 import {
   insertTrainingLicenseUL,
   updateTrainingLicenseUL,
 } from "./ModelTrainingLicenseUL";
+import { searchBlacklist } from "../../api/apiBlacklist";
+
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
@@ -45,6 +51,7 @@ const TrainingUL = (props) => {
   const [activeTab, setActiveTab] = useState("1");
   const [currentLicense, setCurrentLicense] = useState(null);
   const [license, setLicense] = useState(null);
+  const [licenseUL, setLicenseUL] = useState([]);
 
   const [currentTraining, setCurrentTraining] = useState(null);
   const [disabled, setDisabled] = useState(false);
@@ -80,20 +87,40 @@ const TrainingUL = (props) => {
       disapprovePerson: get(data, "disapprovePerson", []),
       moveCompany: get(data, "moveCompanyList", [])[0],
     });
-    const training = await getTrainingByCid(citizenID);
+    const currentUL = await getLicenseULByCid(citizenID);
+    data = get(currentUL, "data", []);
+    setCurrentLicense({
+      ...get(data, "license", []),
+      disapprovePerson: get(data, "disapprovePerson", []),
+    });
+    const training = await getTrainingByCid("UL", citizenID);
     setCurrentTraining(training);
   };
 
-  const checkStatus = (seleted) => {
-    if (seleted) {
-      if (
-        seleted.status === "Q" ||
-        seleted.status === "M" ||
-        seleted.status === "D"
-      )
-        setDisabled(true);
-      else setDisabled(false);
-    } else setDisabled(false);
+  const checkStatus = async (seleted) => {
+    // if (seleted) {
+    //   const response = await searchBlacklist("C", saleData.citizenID);
+    //   const responseData = get(response, "data", []);
+    //   if (
+    //     responseData.responseRecord.dataList &&
+    //     responseData.responseRecord.dataList.length > 0
+    //   ) {
+    //     setDisabled(true);
+    //     Swal.fire({
+    //       icon: "error",
+    //       title: "เกิดข้อผิดพลาด",
+    //       text: "พบข้อมูลคดีความที่ระบบส่วนวินัยฝ่ายขาย",
+    //     });
+    //     return;
+    //   } else if (
+    //     seleted.status === "Q" ||
+    //     seleted.status === "M" ||
+    //     seleted.status === "D"
+    //   ) {
+    //     setDisabled(true);
+    //     return;
+    //   } else setDisabled(false);
+    // } else setDisabled(false);
   };
 
   const onClickCancel = () => {
@@ -102,15 +129,41 @@ const TrainingUL = (props) => {
     setMode("add");
   };
   const onClickAdd = () => {
-    setCurrentLicense(null);
+    // setCurrentLicense(null);
     setActiveTab("1");
     setMode("add");
   };
 
-  const onClickShowHistory = () => {
+  const onClickShowHistory = async () => {
     setCurrentLicense(null);
     setActiveTab("2");
     setMode("history");
+    if (saleData && saleData.citizenID) {
+      const response = await getLicenseULHistoryByCid(saleData.citizenID);
+      let data = get(response, "data", []).map((row, index) => {
+        return {
+          ...row,
+          id: index + 1,
+          receiveDate:
+            row.receiveDate &&
+            dayjs(new Date(row.receiveDate)).format("DD-MM-BBBB"),
+          approveDate:
+            row.approveDate &&
+            dayjs(new Date(row.approveDate)).format("DD-MM-BBBB"),
+          offerDate:
+            row.offerDate &&
+            dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+          issueDate:
+            row.issueDate &&
+            dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+          expireDate:
+            row.expireDate &&
+            dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+        };
+      });
+      setLicenseUL(data);
+      setLoading(false);
+    }
   };
 
   const onClickShowDetail = () => {
@@ -234,7 +287,7 @@ const TrainingUL = (props) => {
 
   const onClickUpdate = async (data) => {
     try {
-      let response = await insertTrainingLicenseUL(data);
+      let response = await updateTrainingLicenseUL(data);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
       if (saleData && saleData.citizenID) {
         fetchData(saleData.citizenID);
@@ -251,6 +304,7 @@ const TrainingUL = (props) => {
     }
   };
 
+  console.log(currentLicense, "currentLicense");
   return (
     <Container>
       <EditLocationPopup />
@@ -357,8 +411,8 @@ const TrainingUL = (props) => {
                 <CardBody>
                   {" "}
                   <Table
-                    id="scheduleId"
-                    data={[]}
+                    id="historyId"
+                    data={licenseUL}
                     columns={columns}
                     loading={false}
                   />

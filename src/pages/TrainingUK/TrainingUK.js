@@ -39,11 +39,10 @@ import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import Swal from "sweetalert2";
 import { columns } from "./columns";
 import FormLicense from "./FormLicense";
+import FormLicenseIC from "./FormLicenseIC";
 import FormResult from "./FormResult";
 import FormCreateUser from "../ExamApplication/FormCreateUser";
 import { getTrainingByCid } from "../../api/apiTraining";
-
-import moment from "moment";
 
 const TrainingUK = (props) => {
   const [loading, setLoading] = useState(false);
@@ -76,7 +75,7 @@ const TrainingUK = (props) => {
     // const response = await getExamApplication("1122334455667");
     // setApplication(response);
     // setLoading(false);
-    const training = await getTrainingByCid(citizenID);
+    const training = await getTrainingByCid("UK", citizenID);
     setCurrentTraining(training);
   };
 
@@ -180,6 +179,12 @@ const TrainingUK = (props) => {
         <Card>
           <SearchPerson />
           <CardBody>
+            <LicenseDetail
+              title="ผลการอบรมความรู้เกี่ยวกับขายกรมธรรม์ประกันชีวิตควบการลงทุน"
+              data={currentTraining}
+            />
+          </CardBody>
+          <CardBody>
             <ButtonGroup>
               <Button
                 outline
@@ -214,7 +219,24 @@ const TrainingUK = (props) => {
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
                 <CardBody>
-                  <CardBody>fergreg</CardBody>
+                  <CardBody>
+                    <FormLicenseIC
+                      currentLicense={currentLicense}
+                      // licenseDetail={license}
+                      expireDate={saleData && saleData.expireDate}
+                      onChange={(v) => console.log(v)}
+                      // onChange={(v) => setCurrentLicense(v)}
+                    />
+                  </CardBody>
+                  <CardBody>
+                    <FormLicense
+                      currentLicense={currentLicense}
+                      // licenseDetail={license}
+                      expireDate={saleData && saleData.expireDate}
+                      // onChange={(v) => setCurrentLicense(v)}
+                      onChange={(v) => console.log(v)}
+                    />
+                  </CardBody>
                   <CardBody>
                     <FormResult
                       currentLicense={currentLicense}

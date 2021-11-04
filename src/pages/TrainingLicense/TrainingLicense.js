@@ -24,6 +24,7 @@ import {
   CancelButton,
 } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
+import { updateSelectSale } from "../../redux/actions";
 
 import {
   getLicenseHistoryByCid,
@@ -67,6 +68,7 @@ const TrainingLicense = (props) => {
       : null
   );
   const { seleted } = useSelector((state) => state.selectSalePopup);
+  const [, forceUpdate] = useState(0);
   const dispatch = useDispatch();
 
   // useEffect(() => {
@@ -103,20 +105,27 @@ const TrainingLicense = (props) => {
       disapprovePerson: get(data, "disapprovePerson", []),
       moveCompany: get(data, "moveCompanyList", [])[0],
     });
-    const training = await getTrainingByCid(citizenID);
+
+    if (seleted) {
+      let saleLicenseData = seleted;
+      saleLicenseData["licenseNo"] = get(data.license, "licenseNo", "");
+      saleLicenseData["expireDate"] = get(data.license, "expireDate", "");
+      saleLicenseData["expireDate"] = get(data.license, "expireDate", "");
+      setSaleData(saleLicenseData);
+      sessionStorage.setItem("sale", JSON.stringify(saleLicenseData));
+      forceUpdate((n) => !n);
+      dispatch(
+        updateSelectSale({
+          isShow: false,
+          seleted: saleLicenseData,
+        })
+      );
+    }
+    const training = await getTrainingByCid("KRKT", citizenID);
     setCurrentTraining(training);
     onClickAdd();
   };
 
-  const fetchCurrentLicense = async (citizenID) => {
-    const current = await getLicenseByCid(citizenID);
-    let data = get(current, "data", []);
-    setCurrentLicense({
-      ...get(data, "license", []),
-      disapprovePerson: get(data, "disapprovePerson", []),
-      moveCompany: get(data, "moveCompanyList", [])[0],
-    });
-  };
   const rows = license.map((row, index) => {
     return { id: index + 1, ...row };
   });
@@ -125,7 +134,7 @@ const TrainingLicense = (props) => {
     setActiveTab("1");
     setMode("add");
     if (saleData && saleData.citizenID) {
-      fetchCurrentLicense(saleData.citizenID);
+      fetchData(saleData.citizenID);
     } else {
       setCurrentLicense(null);
     }
@@ -252,7 +261,7 @@ const TrainingLicense = (props) => {
         ? dayjs(new Date(currentLicense.bookDate)).format(
             "YYYY-MM-DDTHH:mm:ssZ"
           )
-        : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
+        : null,
       referenceNo: "",
       remark: currentLicense.remark,
       createUserCode: user && user.employeeID,
@@ -268,18 +277,32 @@ const TrainingLicense = (props) => {
         "YYYY-MM-DDTHH:mm:ssZ"
       );
     }
-    if (currentLicense.disapprovePerson) {
-      const disapprovePerson = [];
-      currentLicense.disapprovePerson.map((item) => {
-        disapprovePerson.push({
-          citizenId: citizenId,
-          causeId: item.causeId,
-          licenseType: currentLicense.offerType,
-          historyId: currentLicense.historyId,
+    if (currentLicense.offerResult === "3") {
+      //{ offerResult: "3", offerResultName: "ไม่อนุมัติ" }
+      if (
+        currentLicense.disapprovePerson &&
+        currentLicense.disapprovePerson.length > 0
+      ) {
+        const disapprovePerson = [];
+        currentLicense.disapprovePerson.map((item) => {
+          disapprovePerson.push({
+            citizenId: citizenId,
+            causeId: item.causeId,
+            licenseType: currentLicense.offerType,
+            historyId: currentLicense.historyId,
+          });
         });
-      });
-      data["disapprovePerson"] = disapprovePerson;
-    }
+        data["disapprovePerson"] = disapprovePerson;
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "กรุณาเลือกเหตุผลการไม่อนุมัติ",
+        });
+        return;
+      }
+    } else data["disapprovePerson"] = null;
+
     if (currentLicense.moveCompany) {
       data["moveCompany"] = currentLicense.moveCompany;
     }
@@ -287,6 +310,14 @@ const TrainingLicense = (props) => {
       data["historyId"] = currentLicense.historyId;
     }
     if (currentLicense.licenseNo) {
+      if (currentLicense.licenseNo.length < 10) {
+        Swal.fire({
+          icon: "warning",
+          title: "เกิดข้อผิดพลาด",
+          text: "กรุณากรอกเลขที่ใบอนุญาตให้ถูกต้อง",
+        });
+        return;
+      }
       data["licenseNo"] = currentLicense.licenseNo;
       data["issueDate"] = dayjs(new Date(currentLicense.issueDate)).format(
         "YYYY-MM-DDTHH:mm:ssZ"
@@ -297,10 +328,14 @@ const TrainingLicense = (props) => {
       if (currentLicense.historyId) {
         data["historyId"] = currentLicense.historyId;
       }
-      onClickUpdate(data);
-    } else {
-      onClickSave(data);
     }
+    if (saleData && saleData.licenseNo) {
+      onClickUpdate(data);
+    } else if (sessionStorage.getItem("sale")) {
+      let stored = JSON.parse(sessionStorage.getItem("sale"));
+      if (stored && saleData.licenseNo) onClickUpdate(data);
+      else onClickSave(data);
+    } else onClickSave(data);
   };
   const onClickSave = async (data) => {
     try {
@@ -339,6 +374,7 @@ const TrainingLicense = (props) => {
       });
     }
   };
+
   return (
     <Container>
       <EditLocationPopup />
@@ -405,6 +441,7 @@ const TrainingLicense = (props) => {
                 </CardBody>
                 <CardBody>
                   <FormCompany
+                    saleData={saleData}
                     currentLicense={currentLicense}
                     expireDate={saleData && saleData.expireDate}
                     onChange={(v) => setCurrentLicense(v)}

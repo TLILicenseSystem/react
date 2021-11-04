@@ -51,14 +51,32 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
     if (offerType === "4" || offerType === "6") {
       //  { offerType: "4", offerTypeName: "ต่ออายุ" }
       //  { offerType: "6", offerTypeName: "ต่ออายุพร้อมขอใบแทน" }
+      if (checkExpired()) return;
       if (checkConditionExpireDate()) return;
     } else if (offerType === "2") {
-      if (checkExpired()) return;
+      if (!expireDate) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่พบข้อมูลเลขที่ใบอนุญาตหลัก",
+        });
+        return true;
+      }
+      let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
+      let today = dayjs(new Date()).format("YYYY-MM-DD");
+      if (today <= date) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ใบอนุญาตยังไม่หมดอายุ ไม่สามารถเลือกขาดอายุได้",
+        });
+        return true;
+      }
       // { offerType: "2", offerTypeName: "ขาดอายุ" }
-    } else if (offerType === "3") {
-      //{ offerType: "3", offerTypeName: "เปลี่ยนบริษัท" }
-    } else {
+    } else if (offerType && offerType !== "0" && offerType !== "1") {
+      if (checkExpired()) return;
     }
+
     setData({
       ...data,
       offerType: offerType,
@@ -76,11 +94,11 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
     } else {
       let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
       let today = dayjs(new Date()).format("YYYY-MM-DD");
-      if (today <= date) {
+      if (today > date) {
         Swal.fire({
           icon: "error",
           title: "เกิดข้อผิดพลาด",
-          text: "ใบอนุญาติยังไม่หมดอายุ ไม่สามารถเลือกขาดอายุได้",
+          text: "ใบอนุญาตหมดอายุแล้ว โปรดเลือกขาดอายุเท่านั้น",
         });
         return true;
       }
@@ -97,6 +115,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
       });
       return true;
     } else {
+      let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
       let minData = dayjs(new Date(expireDate))
         .subtract(61, "day")
         .format("YYYY-MM-DD");
@@ -147,13 +166,14 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
             ) : (
               <DatePickerThai
                 name="offerDate"
+                canNull
                 value={
                   get(data, "offerDate", null)
                     ? dayjs(new Date(data.offerDate))
-                    : dayjs(new Date())
+                    : null
                 }
                 onChange={(e) =>
-                  setData({ ...data, offerDate: dayjs(new Date(e)) })
+                  setData({ ...data, offerDate: e ? dayjs(new Date(e)) : null })
                 }
               />
             )}
@@ -161,10 +181,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
         </Col>
         <Col>
           <FormGroup>
-            <label className={styles.label}>
-              ส่ง สนญ.ตามหนังสือที่{" "}
-              {/* <label className={styles.required}> *</label> */}
-            </label>
+            <label className={styles.label}>ส่ง สนญ.ตามหนังสือที่ </label>
             <Input
               readOnly={readOnly}
               type="text"
@@ -194,13 +211,12 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
             ) : (
               <DatePickerThai
                 name="bookDate"
+                canNull
                 value={
-                  get(data, "bookDate", null)
-                    ? dayjs(new Date(data.bookDate))
-                    : dayjs(new Date())
+                  get(data, "bookDate") ? dayjs(new Date(data.bookDate)) : null
                 }
                 onChange={(e) =>
-                  setData({ ...data, bookDate: dayjs(new Date(e)) })
+                  setData({ ...data, bookDate: e ? dayjs(new Date(e)) : null })
                 }
               />
             )}

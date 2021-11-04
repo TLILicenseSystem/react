@@ -22,7 +22,6 @@ const FormCreateUser = ({ mode, data }) => {
     let response = null;
     if (user) {
       if (data) {
-        console.log("if", data);
         if (
           (!data.updateUserCode || data.updateUserCode === "") &&
           data.updateUserName
@@ -30,17 +29,13 @@ const FormCreateUser = ({ mode, data }) => {
           setUser({
             firstName: data.updateUserName,
           });
-          console.log("if 1", data.updateUserCode);
         } else if (
           data.updateUserCode &&
           data.updateUserCode !== user.employeeID
         ) {
           response = await fetchData(data.updateUserCode);
           setUser(response);
-          console.log("if 2", data.updateUserCode);
         } else {
-          console.log("if else");
-
           setUser(
             sessionStorage.getItem("updateUser")
               ? JSON.parse(sessionStorage.getItem("updateUser"))

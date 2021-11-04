@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Col, Row, Input } from "reactstrap";
 import { get } from "lodash";
 import PropTypes from "prop-types";
-import moment from "moment";
 import InputMask from "react-input-mask";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
+
 export const PersonelData = ({ data }) => {
   return (
     <>

@@ -3,7 +3,7 @@ import { FormGroup, Container, Row, Col, Input } from "reactstrap";
 import { DropdownOfferType, DatePickerThai } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import Swal from "sweetalert2";
-import { get } from "lodash";
+import _ from "lodash";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
@@ -21,8 +21,8 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
   }, [data]);
 
   const onSelectOfferType = (value) => {
-    const offerType = get(value, "offerType", null);
-    const offerTypeName = get(value, "offerTypeName", "");
+    const offerType = _.get(value, "offerType", null);
+    const offerTypeName = _.get(value, "offerTypeName", "");
     //     if (checkConditionExpireDate()) return;
     // if (checkExpired()) return;
     if (offerType === "1") {
@@ -56,7 +56,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
         Swal.fire({
           icon: "error",
           title: "เกิดข้อผิดพลาด",
-          text: "ใบอนุญาติยังไม่หมดอายุ ไม่สามารถเลือกขาดอายุได้",
+          text: "ใบอนุญาตยังไม่หมดอายุ ไม่สามารถเลือกขาดอายุได้",
         });
         return true;
       }
@@ -91,17 +91,58 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
   };
   return (
     <Container>
-      <h3>การขอรับใบอนุญาต</h3>
+      <h3>คปภ</h3>
       <hr />
+      <Row sm="4">
+        <Col>
+          <FormGroup>
+            <label className={styles.label}>เลขที่ใบอนุญาต</label>
+            <Input
+              readOnly={true}
+              name="licenseNo"
+              value={_.get(data, "licenseNo", "")}
+            />
+          </FormGroup>
+        </Col>
+        <Col>
+          <FormGroup>
+            <label className={styles.label}>วันที่หมดอายุ</label>
+            <Input
+              readOnly={true}
+              name="expireDate"
+              value={
+                _.get(data, "expireDate", null)
+                  ? dayjs(new Date(data.expireDate)).format("DD/MM/BBBB")
+                  : ""
+              }
+            />
+          </FormGroup>
+        </Col>
+        <Col>
+          <FormGroup>
+            <label className={styles.label}>วันที่ได้รับความเห็นชอบ</label>
+            <Input
+              readOnly={true}
+              name="expireDate"
+              value={
+                _.get(data, "expireDate", null)
+                  ? dayjs(new Date(data.expireDate)).format("DD/MM/BBBB")
+                  : ""
+              }
+            />
+          </FormGroup>
+        </Col>
+        <Col></Col>
+      </Row>
       <Row sm="4">
         <Col>
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownOfferType
               requiredField
               label="ประเภทการขอ"
-              type={"offerTypeUL"}
-              value={get(data, "offerType", "")}
-              showError={get(data, "offerType", null) ? false : true}
+              type={"offerTypeUK"}
+              value={_.get(data, "offerType", "")}
+              showError={_.get(data, "offerType", null) ? false : true}
               onClick={(e) => onSelectOfferType(e)}
             />
           </FormGroup>
@@ -115,7 +156,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
                 type="text"
                 name="offerDate"
                 value={
-                  get(data, "offerDate", null)
+                  _.get(data, "offerDate", null)
                     ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
                     : ""
                 }
@@ -124,7 +165,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
               <DatePickerThai
                 name="offerDate"
                 value={
-                  get(data, "offerDate", null)
+                  _.get(data, "offerDate", null)
                     ? dayjs(new Date(data.offerDate))
                     : dayjs(new Date())
                 }
@@ -144,7 +185,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
                 type="text"
                 name="offerDate"
                 value={
-                  get(data, "offerDate", null)
+                  _.get(data, "offerDate", null)
                     ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
                     : ""
                 }
@@ -153,7 +194,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
               <DatePickerThai
                 name="offerDate"
                 value={
-                  get(data, "offerDate", null)
+                  _.get(data, "offerDate", null)
                     ? dayjs(new Date(data.offerDate))
                     : dayjs(new Date())
                 }

@@ -53,6 +53,7 @@ export { SearchPerson } from "./SearchPerson/SearchPerson";
 export { SelectSalePopup } from "./Popup/SelectSalePopup";
 
 export { DateRangePicker } from "./DatePicker/DateRangePicker";
+
 export { Table } from "./Table/Table";
 export {
   AddButton,

@@ -25,15 +25,15 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
   const [readOnly, setReadOnly] = useState(true);
   const [required, setRequired] = useState(false);
 
-  useEffect(() => {
-    if (expireDate && !readOnly) {
-      if (
-        dayjs(new Date(expireDate)).format("YYYY-MM-DD") <
-        dayjs(new Date()).format("YYYY-MM-DD")
-      )
-        setRequired(true);
-    }
-  }, [expireDate]);
+  // useEffect(() => {
+  //   if (expireDate && !readOnly) {
+  //     if (
+  //       dayjs(new Date(expireDate)).format("YYYY-MM-DD") <
+  //       dayjs(new Date()).format("YYYY-MM-DD")
+  //     )
+  //       setRequired(true);
+  //   }
+  // }, [expireDate]);
 
   useEffect(() => {
     setData(currentLicense);
@@ -41,11 +41,25 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
     if (offerType === "3") {
       //{ offerType: "3", offerTypeName: "เปลี่ยนบริษัท" }
       setReadOnly(false);
-    } else setReadOnly(true);
+      const expireDate = _.get(
+        currentLicense && currentLicense.moveCompany,
+        "expireDate",
+        null
+      );
+    }
   }, [currentLicense]);
 
   useEffect(() => {
     onChange(data);
+    if (
+      data &&
+      dayjs(new Date()).format("YYYY-MM-DD") >
+        dayjs(
+          new Date(_.get(data && data.moveCompany, "expireDate", null))
+        ).format("YYYY-MM-DD")
+    ) {
+      setRequired(true);
+    } else setRequired(false);
   }, [data]);
 
   return (
@@ -73,13 +87,24 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
           <FormGroup>
             <label className={styles.label}>เลขที่ใบอนุญาต</label>
             <Input
-              readOnly={true}
+              readOnly={readOnly}
               name="licenseNo"
-              value={_.get(data, "licenseNo", "")}
+              value={_.get(data && data.moveCompany, "licenseNo", "")}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  moveCompany: {
+                    ...data.moveCompany,
+                    licenseNo: e.target.value
+                      .substr(0, 10)
+                      .replace(/[^\d]/, ""),
+                  },
+                })
+              }
             />
           </FormGroup>
         </Col>
-        {_.get(data, "licenseNo", null) ? (
+        {readOnly ? (
           <>
             <Col>
               <FormGroup>
@@ -87,14 +112,12 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
                 <Input
                   readOnly={true}
                   type="text"
-                  name="issueDateC"
+                  name="issueDate"
                   value={
-                    _.get(data, "issueDate", null)
-                      ? dayjs(new Date(data.issueDate))
-                          .add(1, "year")
-                          .subtract(1, "day")
-                          .format("DD/MM/BBBB")
-                      : ""
+                    _.get(data && data.moveCompany, "issueDate", null) &&
+                    dayjs(new Date(data.moveCompany.issueDate)).format(
+                      "DD/MM/BBBB"
+                    )
                   }
                 />
               </FormGroup>
@@ -105,14 +128,58 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
                 <Input
                   readOnly={true}
                   type="text"
-                  name="expireDateC"
+                  name="expireDate"
                   value={
-                    _.get(data, "issueDate", null)
-                      ? dayjs(new Date(data.issueDate))
-                          .add(1, "year")
-                          .subtract(1, "day")
-                          .format("DD/MM/BBBB")
-                      : ""
+                    _.get(data && data.moveCompany, "expireDate", null) &&
+                    dayjs(new Date(data.moveCompany.expireDate)).format(
+                      "DD/MM/BBBB"
+                    )
+                  }
+                />
+              </FormGroup>
+            </Col>
+          </>
+        ) : _.get(data && data.moveCompany, "licenseNo", null) ? (
+          <>
+            <Col>
+              <FormGroup>
+                <label className={styles.label}>วันที่ออกบัตร</label>
+                <DatePickerThai
+                  name="issueDate"
+                  value={
+                    _.get(data && data.moveCompany, "issueDate", null) &&
+                    dayjs(new Date(data.moveCompany.issueDate))
+                  }
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      moveCompany: {
+                        ...data.moveCompany,
+                        issueDate: dayjs(new Date(e)),
+                      },
+                    })
+                  }
+                />
+              </FormGroup>
+            </Col>
+            <Col>
+              <FormGroup>
+                <label className={styles.label}>วันที่หมดอายุ</label>
+
+                <DatePickerThai
+                  name="expireDate"
+                  value={
+                    _.get(data && data.moveCompany, "expireDate", null) &&
+                    dayjs(new Date(data.moveCompany.expireDate))
+                  }
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      moveCompany: {
+                        ...data.moveCompany,
+                        expireDate: dayjs(new Date(e)),
+                      },
+                    })
                   }
                 />
               </FormGroup>
@@ -135,13 +202,14 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
           </>
         )}
       </Row>
+
       <Row sm="4">
         <Col>
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownCompanyType
               label="ประเภท"
               requiredField={required}
-              disabled={readOnly}
+              disabled={!required}
               isClearable={true}
               value={_.get(data && data.moveCompany, "artype", "")}
               onClick={(e) =>
@@ -160,17 +228,15 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
           <FormGroup>
             <label className={styles.label}> วันที่&nbsp;</label>
             {required && <label className={styles.required}> *</label>}
-            {readOnly ? (
-              <Input readOnly={true} name="ee" />
-            ) : (
+            {required ? (
               <DatePickerThai
                 name="ardate"
                 value={
                   _.get(data && data.moveCompany, "ardate", null)
                     ? dayjs(new Date(data.moveCompany.ardate))
-                    : null
+                    : dayjs(new Date())
                 }
-                onClick={(e) =>
+                onChange={(e) =>
                   setData({
                     ...data,
                     moveCompany: {
@@ -178,6 +244,18 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
                       ardate: dayjs(new Date(e)),
                     },
                   })
+                }
+              />
+            ) : (
+              <Input
+                readOnly={true}
+                name="dis"
+                value={
+                  _.get(data && data.moveCompany, "ardate", null)
+                    ? dayjs(new Date(data.moveCompany.ardate)).format(
+                        "DD/MM/BBBB"
+                      )
+                    : ""
                 }
               />
             )}
