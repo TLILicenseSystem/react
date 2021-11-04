@@ -18,13 +18,14 @@ import "./DatePickerThai.css";
 dayjs.extend(buddhistEra);
 
 export const DatePickerThai = ({
+  canNull,
   value,
   onChange,
   mindate,
   maxdate,
   showError,
 }) => {
-  const [valuePicker, setValuePicker] = useState(new Date());
+  const [valuePicker, setValuePicker] = useState();
   const [buddhistDate, setBuddhistDate] = useState(
     dayjs(valuePicker).format("DD/MM/BBBB")
   );
@@ -61,7 +62,11 @@ export const DatePickerThai = ({
         setValuePicker(new Date());
         onChange(new Date());
       }
-    } else onChange(new Date());
+    } else {
+      if (canNull) {
+        onChange(null);
+      } else onChange(new Date());
+    }
     setBuddhistDate(e.target.value);
   };
   return (
@@ -98,9 +103,11 @@ export const DatePickerThai = ({
 
 DatePickerThai.defaultProps = {
   showError: false,
+  canNull: false,
   onChange: () => {},
 };
 DatePickerThai.propTypes = {
   showError: PropTypes.bool,
+  canNull: PropTypes.bool,
   onChange: PropTypes.func,
 };
