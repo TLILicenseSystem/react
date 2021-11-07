@@ -180,7 +180,12 @@ export const PersonelData = ({ data }) => {
           <Row style={{ marginBottom: "0" }}>
             <Col sm="4">สถานะ</Col>
             <Col sm="8" style={{ padding: "0" }}>
-              <Input readOnly={true} value={get(data, "statusName", "")} />
+              <Input
+                disabled
+                style={get(data, "disabled", null) ? { color: "red" } : {}}
+                readOnly={true}
+                value={get(data, "statusName", "")}
+              />
             </Col>
           </Row>
         </Col>

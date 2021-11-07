@@ -23,6 +23,7 @@ import {
   searchLicenseNo,
   searchEmployeeInfo,
 } from "../../api/apiSearchSale";
+import { getStatusActive } from "../../api/apiCheckStatus";
 import { getLicenseByCid } from "../../api/apiLicense";
 import Swal from "sweetalert2";
 
@@ -278,17 +279,6 @@ export const SearchPerson = () => {
     } else if (key === "licenseNo") {
       let response = await searchLicenseNo(value[key].replaceAll("-", ""), "S");
       if (response.data && response.data.responseStatus.errorCode === "200") {
-        if (
-          response.data.responseRecord.status === "Q" ||
-          response.data.responseRecord.status === "M" ||
-          response.data.responseRecord.status === "D"
-        ) {
-          Swal.fire({
-            icon: "warning",
-            title: "เกิดข้อผิดพลาด",
-            text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
-          });
-        }
         let licenseNo = await getLicenseByCid(
           response.data.responseRecord.citizenID
         );
@@ -302,6 +292,16 @@ export const SearchPerson = () => {
           "expireDate",
           ""
         );
+        let status = await getStatusActive(response.data.responseRecord.status);
+        if (status === "false" || status === false) {
+          response.data.responseRecord["disabled"] = true;
+          Swal.fire({
+            icon: "warning",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถดำเนินการได้ เนื่องจากไม่ได้เป็นตัวแทนบริษัท",
+          });
+        }
+
         response.data.responseRecord["agentType"] = "S";
         setSaleData(response.data.responseRecord);
         sessionStorage.setItem(
@@ -349,17 +349,6 @@ export const SearchPerson = () => {
         value[key].replaceAll("-", "")
       );
       if (response.data && response.data.responseStatus.errorCode === "200") {
-        if (
-          response.data.responseRecord.status === "Q" ||
-          response.data.responseRecord.status === "M" ||
-          response.data.responseRecord.status === "D"
-        ) {
-          Swal.fire({
-            icon: "warning",
-            title: "เกิดข้อผิดพลาด",
-            text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
-          });
-        }
         let licenseNo = await getLicenseByCid(
           response.data.responseRecord.citizenID
         );
@@ -374,6 +363,15 @@ export const SearchPerson = () => {
           "expireDate",
           ""
         );
+        let status = await getStatusActive(response.data.responseRecord.status);
+        if (status === "false" || status === false) {
+          response.data.responseRecord["disabled"] = true;
+          Swal.fire({
+            icon: "warning",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถดำเนินการได้ เนื่องจากไม่ได้เป็นตัวแทนบริษัท",
+          });
+        }
         response.data.responseRecord["agentType"] = "S";
         setSaleData(response.data.responseRecord);
         sessionStorage.setItem(
@@ -409,17 +407,6 @@ export const SearchPerson = () => {
         data.citizenID.replaceAll("-", "")
       );
       if (response.data && response.data.responseStatus.errorCode === "200") {
-        if (
-          response.data.responseRecord.status === "Q" ||
-          response.data.responseRecord.status === "M" ||
-          response.data.responseRecord.status === "D"
-        ) {
-          Swal.fire({
-            icon: "warning",
-            title: "เกิดข้อผิดพลาด",
-            text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
-          });
-        }
         let licenseNo = await getLicenseByCid(
           response.data.responseRecord.citizenID
         );
@@ -433,6 +420,15 @@ export const SearchPerson = () => {
           "expireDate",
           ""
         );
+        let status = await getStatusActive(response.data.responseRecord.status);
+        if (status === "false" || status === false) {
+          response.data.responseRecord["disabled"] = true;
+          Swal.fire({
+            icon: "warning",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถดำเนินการได้ เนื่องจากไม่ได้เป็นตัวแทนบริษัท",
+          });
+        }
         response.data.responseRecord["agentType"] = "S";
         setSaleData(response.data.responseRecord);
         sessionStorage.setItem(
