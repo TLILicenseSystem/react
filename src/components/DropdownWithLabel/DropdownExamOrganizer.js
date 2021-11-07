@@ -64,6 +64,7 @@ export const DropdownExamOrganizer = ({
           isClearable={true}
           isSearchable={true}
           name="examOrganizer"
+          placeholder="โปรดระบุ"
           options={userData}
           isDisabled={disabled}
           getOptionLabel={(option) => `${option.orgCode} ${option.orgName}`}

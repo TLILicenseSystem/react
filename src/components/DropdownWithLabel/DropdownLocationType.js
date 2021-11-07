@@ -53,6 +53,7 @@ export const DropdownLocationType = ({
             isClearable={true}
             isSearchable={true}
             name="locationType"
+            placeholder="โปรดระบุ"
             options={userData}
             getOptionLabel={(option) => `${option.examTypeName}`}
             getOptionValue={(option) => `${option.examTypeId}`}

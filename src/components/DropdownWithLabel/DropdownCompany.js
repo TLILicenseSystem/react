@@ -59,6 +59,7 @@ export const DropdownCompany = ({
             isClearable={true}
             isSearchable={true}
             name="company"
+            placeholder="โปรดระบุ"
             isDisabled={disabled}
             options={companyList}
             getOptionLabel={(option) =>

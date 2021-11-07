@@ -59,6 +59,7 @@ export const DropdownCause = ({
             isClearable={true}
             isSearchable={true}
             name="cause"
+            placeholder="โปรดระบุ"
             isDisabled={disabled}
             options={causetList}
             getOptionLabel={(option) => `${option.detail}`}

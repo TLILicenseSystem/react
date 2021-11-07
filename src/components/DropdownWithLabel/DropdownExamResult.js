@@ -67,6 +67,7 @@ export const DropdownExamResult = ({
             isClearable={true}
             isSearchable={true}
             name="examResult"
+            placeholder="โปรดระบุ"
             isDisabled={disabled}
             options={examResultList}
             getOptionLabel={(option) => `${option.resultName}`}

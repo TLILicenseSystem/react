@@ -62,6 +62,7 @@ export const DropdownExamRegion = ({
             isClearable={true}
             isSearchable={true}
             name="provinceCodeSelected"
+            placeholder="โปรดระบุ"
             options={userData}
             getOptionLabel={(option) =>
               `${option.provinceCode} ${option.provinceName}`

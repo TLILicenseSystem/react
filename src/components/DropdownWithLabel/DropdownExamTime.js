@@ -68,6 +68,7 @@ export const DropdownExamTime = ({
             isClearable={true}
             isSearchable={true}
             name="examTime"
+            placeholder="โปรดระบุ"
             options={examRoundList}
             getOptionLabel={(option) => `${option.timeStr}`}
             getOptionValue={(option) => `${option.roundId}`}
