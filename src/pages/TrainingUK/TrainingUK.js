@@ -28,29 +28,36 @@ import {
   LicenseDetail,
 } from "../../components/shared";
 import { get } from "lodash";
-import { showSearchSchedulePopup } from "../../redux/actions";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
-// import {
-//   getExamApplication,
-//   insertExamApplication,
-//   updateExamApplication,
-// } from "./ModelExamApplication";
-// import { getExamResult} from "../../api/apiGetConfig"
+import {
+  getLicenseUKHistoryByCid,
+  getLicenseSICHistoryByCid,
+  getLicenseByCid,
+  getLicenseUKByCid,
+  getLicenseSICByCid,
+} from "../../api/apiGetLicense";
+
 import Swal from "sweetalert2";
-import { columns } from "./columns";
+import { columns, columnsSIC } from "./columns";
 import FormLicense from "./FormLicense";
 import FormLicenseIC from "./FormLicenseIC";
 import FormResult from "./FormResult";
 import FormCreateUser from "../ExamApplication/FormCreateUser";
 import { getTrainingByCid } from "../../api/apiTraining";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
 
 const TrainingUK = (props) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const [currentLicense, setCurrentLicense] = useState(null);
-
+  const [currentLicenseSIC, setCurrentLicenseSIC] = useState(null);
   const [currentTraining, setCurrentTraining] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const [license, setLicense] = useState(null);
+  const [licenseUK, setLicenseUK] = useState([]);
+  const [licenseSIC, setLicenseSIC] = useState([]);
 
   const [mode, setMode] = useState("add");
   const [saleData, setSaleData] = useState(
@@ -71,56 +78,219 @@ const TrainingUK = (props) => {
   }, [seleted]);
 
   const fetchData = async (citizenID) => {
-    // setLoading(true);
-    // const response = await getExamApplication("1122334455667");
-    // setApplication(response);
-    // setLoading(false);
+    const current = await getLicenseByCid(citizenID);
+    let data = get(current, "data", []);
+    setLicense({
+      ...get(data, "license", []),
+      disapprovePerson: get(data, "disapprovePerson", []),
+      moveCompany: get(data, "moveCompanyList", [])[0],
+    });
+    const currentUK = await getLicenseUKByCid(citizenID);
+    data = get(currentUK, "data", []);
+    setCurrentLicense({
+      ...get(data, "licenseUK", []),
+      disapprovePerson: get(data, "disapprovePerson", []),
+    });
+    const currentSIC = await getLicenseSICByCid(citizenID);
+    data = get(currentSIC, "data", [])[0];
+    setCurrentLicenseSIC(data);
     const training = await getTrainingByCid("UK", citizenID);
     setCurrentTraining(training);
+    onClickAdd();
   };
 
   const checkStatus = (seleted) => {
-    if (seleted) {
-      if (
-        seleted.status === "Q" ||
-        seleted.status === "M" ||
-        seleted.status === "D"
-      )
-        setDisabled(true);
-      else setDisabled(false);
-    } else setDisabled(false);
+    // if (seleted) {
+    //   if (
+    //     seleted.status === "Q" ||
+    //     seleted.status === "M" ||
+    //     seleted.status === "D"
+    //   )
+    //     setDisabled(true);
+    //   else setDisabled(false);
+    // } else setDisabled(false);
   };
 
-  const onClickEditExamApplication = () => {};
   const onClickCancel = () => {
-    setCurrentLicense(null);
     setActiveTab("1");
     setMode("add");
+    if (saleData && saleData.citizenID) {
+      fetchData(saleData.citizenID);
+    } else {
+      setCurrentLicense(null);
+    }
   };
   const onClickAdd = () => {
-    setCurrentLicense(null);
     setActiveTab("1");
     setMode("add");
   };
 
-  const onClickShowHistory = () => {
-    setCurrentLicense(null);
+  const onClickShowHistory = async () => {
     setActiveTab("2");
     setMode("history");
+    if (saleData && saleData.citizenID) {
+      const response = await getLicenseUKHistoryByCid(saleData.citizenID);
+      let data = get(response, "data", []).map((row, index) => {
+        return {
+          ...row,
+          id: index + 1,
+          receiveDate:
+            row.receiveDate &&
+            dayjs(new Date(row.receiveDate)).format("DD/MM/BBBB"),
+          approveDate:
+            row.approveDate &&
+            dayjs(new Date(row.approveDate)).format("DD/MM/BBBB"),
+          offerDate:
+            row.offerDate &&
+            dayjs(new Date(row.offerDate)).format("DD/MM/BBBB"),
+          issueDate:
+            row.issueDate &&
+            dayjs(new Date(row.issueDate)).format("DD/MM/BBBB"),
+          expireDate:
+            row.expireDate &&
+            dayjs(new Date(row.expireDate)).format("DD/MM/BBBB"),
+        };
+      });
+      setLicenseUK(data);
+      setLoading(false);
+    }
   };
 
-  const onClickShowDetail = () => {
-    setCurrentLicense(null);
+  const onClickShowHistorySIC = async () => {
     setActiveTab("3");
-    setMode("detail");
+    setMode("historySIC");
+    if (saleData && saleData.citizenID) {
+      const response = await getLicenseSICHistoryByCid(saleData.citizenID);
+      let data = get(response, "data", []).map((row, index) => {
+        return {
+          ...row,
+          id: index + 1,
+          receiveDate:
+            row.receiveDate &&
+            dayjs(new Date(row.receiveDate)).format("DD/MM/BBBB"),
+          approveDate:
+            row.approveDate &&
+            dayjs(new Date(row.approveDate)).format("DD/MM/BBBB"),
+          offerDate:
+            row.offerDate &&
+            dayjs(new Date(row.offerDate)).format("DD/MM/BBBB"),
+          issueDate:
+            row.issueDate &&
+            dayjs(new Date(row.issueDate)).format("DD/MM/BBBB"),
+          expireDate:
+            row.expireDate &&
+            dayjs(new Date(row.expireDate)).format("DD/MM/BBBB"),
+        };
+      });
+      setLicenseSIC(data);
+      setLoading(false);
+    }
   };
-  const onClickChangeLocation = () => {
-    dispatch(
-      showSearchSchedulePopup({
-        title: "ค้นหาตารางสอบ",
-        description: "",
-      })
-    );
+  const onClickSubmit = async () => {
+    let citizenId = "";
+    if (!saleData) {
+      if (sessionStorage.getItem("sale")) {
+        let stored = JSON.parse(sessionStorage.getItem("sale"));
+        citizenId = stored.citizenID;
+        if (
+          stored.status === "Q" ||
+          stored.status === "M" ||
+          stored.status === "D"
+        ) {
+          Swal.fire({
+            icon: "warning",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+          });
+          return;
+        }
+        setSaleData(stored);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "กรุณาเลือกข้อมูลผู้สมัคร",
+        });
+        return;
+      }
+    } else {
+      citizenId = saleData.citizenID;
+      if (
+        saleData.status === "Q" ||
+        saleData.status === "M" ||
+        saleData.status === "D"
+      ) {
+        Swal.fire({
+          icon: "warning",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่พบข้อมูลฝ่ายขายในแฟ้มโครงสร้างปัจจุบัน",
+        });
+        return;
+      }
+      if (!saleData.licenseNo) {
+        Swal.fire({
+          icon: "warning",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่พบข้อมูลใบอนุญาตหลัก",
+        });
+        return;
+      }
+      if (!currentLicenseSIC || !currentLicenseSIC.licenseNo) {
+        Swal.fire({
+          icon: "warning",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่พบข้อมูลใบอนุญาตกลต",
+        });
+        return;
+      }
+    }
+
+    console.log();
+    // let data = {
+    //   citizenId: citizenId,
+    //   licenseNo: currentLicense.licenseNo,
+    //   issueDate: currentLicense.issueDate,
+    //   expireDate: currentLicense.expireDate,
+    //   offerType: currentLicense.offerType,
+    //   approveDate: currentLicense.approveDate
+    //     ? dayjs(new Date(currentLicense.approveDate)).format(
+    //         "YYYY-MM-DDTHH:mm:ssZ"
+    //       )
+    //     : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
+    //   receiveDate: currentLicense.receiveDate
+    //     ? dayjs(new Date(currentLicense.receiveDate)).format(
+    //         "YYYY-MM-DDTHH:mm:ssZ"
+    //       )
+    //     : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
+    //   offerResult: currentLicense.offerResult,
+    //   agentType: saleData.agentType,
+    //   remark: currentLicense.remark,
+    //   createUserCode: user && user.employeeID,
+    //   updateUserCode: user && user.employeeID,
+    // };
+
+    // if (currentLicense.disapprovePerson) {
+    //   const disapprovePerson = [];
+    //   currentLicense.disapprovePerson.map((item) => {
+    //     disapprovePerson.push({
+    //       citizenId: citizenId,
+    //       causeId: item.causeId,
+    //       licenseType: currentLicense.offerType,
+    //       historyId: currentLicense.historyId,
+    //     });
+    //   });
+    //   data["disapprovePerson"] = disapprovePerson;
+    // }
+
+    // if (currentLicense.historyId) {
+    //   data["historyId"] = currentLicense.historyId;
+    // }
+
+    // const response = await getLicenseULByCid(citizenId);
+    // let currentUL = await get(response && response.data, "licenseUL");
+    // if (currentUL && currentUL.licenseNo) {
+    //   onClickUpdate(data);
+    // } else onClickSave(data);
   };
   const onClickSave = async () => {
     // licenseDetail.citizenId = "1122334455667";
@@ -208,8 +378,8 @@ const TrainingUK = (props) => {
                 outline
                 color="secondary"
                 style={{ width: "12em" }}
-                active={mode === "detail"}
-                onClick={onClickShowDetail}
+                active={mode === "historySIC"}
+                onClick={onClickShowHistorySIC}
               >
                 ประวัติ ก.ล.ต.
               </Button>
@@ -221,20 +391,18 @@ const TrainingUK = (props) => {
                 <CardBody>
                   <CardBody>
                     <FormLicenseIC
-                      currentLicense={currentLicense}
-                      // licenseDetail={license}
+                      currentLicense={currentLicenseSIC}
+                      licenseDetail={license}
                       expireDate={saleData && saleData.expireDate}
-                      onChange={(v) => console.log(v)}
-                      // onChange={(v) => setCurrentLicense(v)}
+                      onChange={(v) => setCurrentLicenseSIC(v)}
                     />
                   </CardBody>
                   <CardBody>
                     <FormLicense
                       currentLicense={currentLicense}
-                      // licenseDetail={license}
+                      licenseDetail={license}
                       expireDate={saleData && saleData.expireDate}
-                      // onChange={(v) => setCurrentLicense(v)}
-                      onChange={(v) => console.log(v)}
+                      onChange={(v) => setCurrentLicense(v)}
                     />
                   </CardBody>
                   <CardBody>
@@ -275,8 +443,7 @@ const TrainingUK = (props) => {
                         <SubmitButton
                           disabled={disabled}
                           title="บันทึก"
-                          onClick={() => console.log("defef")}
-                          // onClick={onClickSubmit}
+                          onClick={onClickSubmit}
                         />{" "}
                         <CancelButton title="ยกเลิก" onClick={onClickCancel} />
                       </RsContainer>
@@ -286,11 +453,10 @@ const TrainingUK = (props) => {
               </TabPane>
               <TabPane tabId="2">
                 <CardBody>
-                  {" "}
                   <Table
-                    id="scheduleId"
-                    data={[]}
-                    columns={[]}
+                    id="historyUK"
+                    data={licenseUK}
+                    columns={columns}
                     loading={false}
                   />
                 </CardBody>
@@ -299,9 +465,9 @@ const TrainingUK = (props) => {
                 <CardBody>
                   {" "}
                   <Table
-                    id="scheduleId"
-                    data={[]}
-                    columns={columns}
+                    id="historySIC"
+                    data={licenseSIC}
+                    columns={columnsSIC}
                     loading={false}
                   />
                 </CardBody>

@@ -18,6 +18,7 @@ export { DropdownCause } from "./DropdownWithLabel/DropdownCause";
 export { DropdownCompanyType } from "./DropdownWithLabel/DropdownCompanyType";
 export { DropdownOfferResult } from "./DropdownWithLabel/DropdownOfferResult";
 export { DropdownOfferType } from "./DropdownWithLabel/DropdownOfferType";
+export { DropdownAgreeType } from "./DropdownWithLabel/DropdownAgreeType";
 
 export { LocationTable } from "./Table/LocationTable";
 export { ScheduleTable } from "./Table/ScheduleTable";

@@ -12,6 +12,13 @@
             {
                 "title":"ใบอนุญาต",
                 "path" : "/license/trainingLicense"	
+            },{
+                "title":"ใบอนุญาต UL",
+                "path" : "/license/trainingUL"	
+            },
+            {
+                "title":"ใบอนุญาต UK",
+                "path" : "/license/trainingUK"
             }
         ]
         }

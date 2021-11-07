@@ -6,6 +6,7 @@ import {
   DatePickerThai,
   InputLicenseNo,
   SubmitButton,
+  AddButton,
   DeleteButton,
 } from "../../components/shared";
 import Swal from "sweetalert2";
@@ -18,11 +19,34 @@ dayjs.extend(buddhistEra);
 
 const FormResult = ({ currentLicense, onChange }) => {
   const [data, setData] = useState(currentLicense);
+  const [readOnly, setReadOnly] = useState(true);
   const [lesson, setLesson] = useState(null);
   const [cause, setCause] = useState([]);
 
   useEffect(() => {
     setData(currentLicense);
+    if (currentLicense) {
+      if (!currentLicense.offerType || currentLicense.offerType !== "3") {
+        //ต่ออายุ
+        if (currentLicense.issueDate) {
+          currentLicense.expireDate = dayjs(new Date(currentLicense.issueDate))
+            .add(1, "year")
+            .subtract(1, "day");
+        } else {
+          currentLicense.issueDate = dayjs(new Date());
+          currentLicense.expireDate = dayjs(new Date())
+            .add(1, "year")
+            .subtract(1, "day");
+        }
+      }
+      if (currentLicense.disapprovePerson) {
+        setCause(currentLicense.disapprovePerson);
+      }
+    } else {
+      setData(null);
+      setLesson(null);
+      setCause([]);
+    }
   }, [currentLicense]);
 
   useEffect(() => {
@@ -56,6 +80,12 @@ const FormResult = ({ currentLicense, onChange }) => {
     setCause([]);
   };
 
+  const onDeleteCause = (causeId) => {
+    onChange({
+      ...data,
+      disapprovePerson: _.filter(cause, (c) => c.causeId !== causeId),
+    });
+  };
   return (
     <Container>
       <h3>ผลการขอรับใบอนุญาต</h3>
@@ -89,25 +119,28 @@ const FormResult = ({ currentLicense, onChange }) => {
             <label className={styles.label}>วันที่ออกบัตร</label>
             <Input
               readOnly={true}
+              type="text"
               name="issueDate"
               value={
                 _.get(data, "issueDate", null)
                   ? dayjs(new Date(data.issueDate)).format("DD/MM/BBBB")
-                  : ""
+                  : null
               }
             />
           </FormGroup>
         </Col>
+
         <Col>
           <FormGroup>
             <label className={styles.label}>วันที่หมดอายุ</label>
             <Input
               readOnly={true}
+              type="text"
               name="expireDate"
               value={
                 _.get(data, "expireDate", null)
                   ? dayjs(new Date(data.expireDate)).format("DD/MM/BBBB")
-                  : ""
+                  : null
               }
             />
           </FormGroup>
@@ -132,7 +165,7 @@ const FormResult = ({ currentLicense, onChange }) => {
             alignItems: "flex-end",
           }}
         >
-          <SubmitButton
+          <AddButton
             disabled={lesson ? false : true}
             title="เลือก"
             onClick={onSelectCause}
@@ -159,13 +192,7 @@ const FormResult = ({ currentLicense, onChange }) => {
                   </th>
                   <td>{item.detail ? item.detail : item.causeDetail}</td>
                   <td style={{ textAlign: "center", width: "10%" }}>
-                    <DeleteButton
-                      onClick={() =>
-                        setCause(
-                          _.filter(cause, (c) => c.causeId !== item.causeId)
-                        )
-                      }
-                    />
+                    <DeleteButton onClick={() => onDeleteCause(item.causeId)} />
                   </td>
                 </tr>
               ))}

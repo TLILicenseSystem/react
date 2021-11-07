@@ -73,7 +73,7 @@ const TrainingLicense = (props) => {
 
   // useEffect(() => {
   //   if (saleData && saleData.citizenID) {
-  //     fetchData(saleData.citizenID);
+  //     fetchData(saleData);
   //   }
   // }, []);
 
@@ -81,7 +81,7 @@ const TrainingLicense = (props) => {
     setSaleData(seleted);
     checkStatus(seleted);
     if (seleted && seleted.citizenID) {
-      fetchData(seleted.citizenID);
+      fetchData(seleted);
     }
   }, [seleted]);
 
@@ -97,31 +97,32 @@ const TrainingLicense = (props) => {
     } else setDisabled(false);
   };
 
-  const fetchData = async (citizenID) => {
-    const current = await getLicenseByCid(citizenID);
-    let data = get(current, "data", []);
-    setCurrentLicense({
-      ...get(data, "license", []),
-      disapprovePerson: get(data, "disapprovePerson", []),
-      moveCompany: get(data, "moveCompanyList", [])[0],
-    });
-
-    if (seleted) {
-      let saleLicenseData = seleted;
-      saleLicenseData["licenseNo"] = get(data.license, "licenseNo", "");
-      saleLicenseData["expireDate"] = get(data.license, "expireDate", "");
-      saleLicenseData["expireDate"] = get(data.license, "expireDate", "");
-      setSaleData(saleLicenseData);
-      sessionStorage.setItem("sale", JSON.stringify(saleLicenseData));
-      forceUpdate((n) => !n);
-      dispatch(
-        updateSelectSale({
-          isShow: false,
-          seleted: saleLicenseData,
-        })
-      );
-    }
-    const training = await getTrainingByCid("KRKT", citizenID);
+  const fetchData = async (saleData) => {
+    if (!saleData.disabled) {
+      const current = await getLicenseByCid(saleData.citizenID);
+      let data = get(current, "data", []);
+      setCurrentLicense({
+        ...get(data, "license", []),
+        disapprovePerson: get(data, "disapprovePerson", []),
+        moveCompany: get(data, "moveCompanyList", [])[0],
+      });
+      if (seleted) {
+        let saleLicenseData = seleted;
+        saleLicenseData["licenseNo"] = get(data.license, "licenseNo", "");
+        saleLicenseData["expireDate"] = get(data.license, "expireDate", "");
+        saleLicenseData["expireDate"] = get(data.license, "expireDate", "");
+        setSaleData(saleLicenseData);
+        sessionStorage.setItem("sale", JSON.stringify(saleLicenseData));
+        forceUpdate((n) => !n);
+        dispatch(
+          updateSelectSale({
+            isShow: false,
+            seleted: saleLicenseData,
+          })
+        );
+      }
+    } else setCurrentLicense(null);
+    const training = await getTrainingByCid("KRKT", saleData.citizenID);
     setCurrentTraining(training);
     onClickAdd();
   };
@@ -134,7 +135,7 @@ const TrainingLicense = (props) => {
     setActiveTab("1");
     setMode("add");
     if (saleData && saleData.citizenID) {
-      fetchData(saleData.citizenID);
+      fetchData(saleData);
     } else {
       setCurrentLicense(null);
     }
@@ -156,15 +157,15 @@ const TrainingLicense = (props) => {
           id: index + 1,
           offerDate:
             row.offerDate &&
-            dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.offerDate)).format("DD/MM/BBBB"),
           issueDate:
             row.issueDate &&
-            dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.issueDate)).format("DD/MM/BBBB"),
           expireDate:
             row.expireDate &&
-            dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.expireDate)).format("DD/MM/BBBB"),
           bookDate:
-            row.bookDate && dayjs(new Date(row.bookDate)).format("DD-MM-BBBB"),
+            row.bookDate && dayjs(new Date(row.bookDate)).format("DD/MM/BBBB"),
         };
       });
       setLicense(data);
@@ -182,13 +183,13 @@ const TrainingLicense = (props) => {
           id: index + 1,
           offerDate:
             row.offerDate &&
-            dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.offerDate)).format("DD/MM/BBBB"),
           issueDate:
             row.issueDate &&
-            dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.issueDate)).format("DD/MM/BBBB"),
           expireDate:
             row.expireDate &&
-            dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.expireDate)).format("DD/MM/BBBB"),
         };
       });
       setHistoryCompany(data);
@@ -304,7 +305,43 @@ const TrainingLicense = (props) => {
     } else data["disapprovePerson"] = null;
 
     if (currentLicense.moveCompany) {
+      if (
+        currentLicense.moveCompany.licenseNo &&
+        currentLicense.moveCompany.licenseNo.length < 10
+      ) {
+        Swal.fire({
+          icon: "warning",
+          title: "เกิดข้อผิดพลาด",
+          text: "กรุณากรอกเลขที่ใบอนุญาตให้ถูกต้อง",
+        });
+        return;
+      }
+
+      if (
+        currentLicense.moveCompany.licenseNo &&
+        dayjs(new Date(currentLicense.moveCompany.expireDate)).format(
+          "YYYY-MM-DD"
+        ) >= dayjs(new Date()).format("YYYY-MM-DD")
+      ) {
+        currentLicense.moveCompany.ardate = currentLicense.moveCompany.ardate
+          ? dayjs(new Date(currentLicense.moveCompany.ardate)).format(
+              "YYYY-MM-DDTHH:mm:ssZ"
+            )
+          : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ");
+        if (
+          !currentLicense.moveCompany.ardate ||
+          !currentLicense.moveCompany.artype
+        ) {
+          Swal.fire({
+            icon: "warning",
+            title: "เกิดข้อผิดพลาด",
+            text: "กรุณากรอกข้อมูลให้ครบถ้วน",
+          });
+          return;
+        }
+      }
       data["moveCompany"] = currentLicense.moveCompany;
+      data["moveCompany"]["citizenId"] = citizenId;
     }
     if (currentLicense.historyId) {
       data["historyId"] = currentLicense.historyId;
@@ -342,7 +379,7 @@ const TrainingLicense = (props) => {
       let response = await insertTrainingLicense(data);
       Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
       if (saleData && saleData.citizenID) {
-        fetchData(saleData.citizenID);
+        fetchData(saleData);
       }
     } catch (err) {
       let { data } = err.response;
@@ -361,7 +398,7 @@ const TrainingLicense = (props) => {
       let response = await updateTrainingLicense(data);
       Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
       if (saleData && saleData.citizenID) {
-        fetchData(saleData.citizenID);
+        fetchData(saleData);
       }
     } catch (err) {
       let { data } = err.response;

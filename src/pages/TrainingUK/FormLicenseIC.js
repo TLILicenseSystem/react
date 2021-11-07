@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FormGroup, Container, Row, Col, Input } from "reactstrap";
-import { DropdownOfferType, DatePickerThai } from "../../components/shared";
+import {
+  DropdownOfferType,
+  DatePickerThai,
+  DropdownAgreeType,
+} from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import Swal from "sweetalert2";
 import _ from "lodash";
@@ -89,6 +93,7 @@ const FormLicenseIC = ({ currentLicense, expireDate, onChange }) => {
       } else return false;
     }
   };
+
   return (
     <Container>
       <h3>กลต</h3>
@@ -97,23 +102,26 @@ const FormLicenseIC = ({ currentLicense, expireDate, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>เลขที่ใบอนุญาต</label>
-            <Input
-              readOnly={true}
-              name="licenseNo"
-              value={_.get(data, "licenseNo", "")}
-            />
+            <p style={{ textAlign: "left", paddingTop: "10px" }}>
+              {" "}
+              {_.get(data, "licenseNo", "")}{" "}
+            </p>
           </FormGroup>
         </Col>
         <Col>
           <FormGroup>
             <label className={styles.label}>วันที่หมดอายุ</label>
-            <Input
-              readOnly={true}
+            <label className={styles.required}>&nbsp;*</label>
+            <DatePickerThai
               name="expireDate"
+              requiredField
               value={
                 _.get(data, "expireDate", null)
-                  ? dayjs(new Date(data.expireDate)).format("DD/MM/BBBB")
-                  : ""
+                  ? dayjs(new Date(data.expireDate))
+                  : dayjs(new Date())
+              }
+              onChange={(e) =>
+                setData({ ...data, expireDate: dayjs(new Date(e)) })
               }
             />
           </FormGroup>
@@ -121,21 +129,33 @@ const FormLicenseIC = ({ currentLicense, expireDate, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>วันที่ได้รับความเห็นชอบ</label>
-            <Input
-              readOnly={true}
-              name="expireDate"
+            <label className={styles.required}>&nbsp;*</label>
+            <DatePickerThai
+              name="agreeDate"
+              requiredField
               value={
-                _.get(data, "expireDate", null)
-                  ? dayjs(new Date(data.expireDate)).format("DD/MM/BBBB")
-                  : ""
+                _.get(data, "agreeDate", null)
+                  ? dayjs(new Date(data.agreeDate))
+                  : dayjs(new Date())
+              }
+              onChange={(e) =>
+                setData({ ...data, agreeDate: dayjs(new Date(e)) })
               }
             />
           </FormGroup>
         </Col>
         <Col>
-          <FormGroup>
-            <label className={styles.label}>ประเภทที่ได้รับความเห็นชอบ</label>
-            //
+          <FormGroup style={{ paddingTop: "10px" }}>
+            <DropdownAgreeType
+              requiredField
+              label="ประเภทที่ได้รับความเห็นชอบ"
+              type={"agreeType"}
+              value={_.get(data, "agreeType", "")}
+              showError={_.get(data, "agreeType", null) ? false : true}
+              onClick={(e) =>
+                setData({ ...data, agreeType: _.get(e, "agreeType", null) })
+              }
+            />
           </FormGroup>
         </Col>
       </Row>
@@ -154,28 +174,29 @@ const FormLicenseIC = ({ currentLicense, expireDate, onChange }) => {
         </Col>
         <Col>
           <FormGroup>
-            <label className={styles.label}>วันที่ คปภ. อนุมัติ</label>
+            <label className={styles.label}>วันที่ คปภ. อนุมัติ </label>
+            <label className={styles.required}>&nbsp;*</label>
             {readOnly ? (
               <Input
                 readOnly={readOnly}
                 type="text"
-                name="offerDate"
+                name="approveDate"
                 value={
-                  _.get(data, "offerDate", null)
+                  _.get(data, "approveDate", null)
                     ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
                     : ""
                 }
               />
             ) : (
               <DatePickerThai
-                name="offerDate"
+                name="approveDate"
                 value={
-                  _.get(data, "offerDate", null)
-                    ? dayjs(new Date(data.offerDate))
+                  _.get(data, "approveDate", null)
+                    ? dayjs(new Date(data.approveDate))
                     : dayjs(new Date())
                 }
                 onChange={(e) =>
-                  setData({ ...data, offerDate: dayjs(new Date(e)) })
+                  setData({ ...data, approveDate: dayjs(new Date(e)) })
                 }
               />
             )}
@@ -184,30 +205,50 @@ const FormLicenseIC = ({ currentLicense, expireDate, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>วันที่ได้รับแบบฟอร์ม</label>
+            <label className={styles.required}>&nbsp;*</label>
+
             {readOnly ? (
               <Input
                 readOnly={readOnly}
                 type="text"
-                name="offerDate"
+                name="receiveDate"
                 value={
-                  _.get(data, "offerDate", null)
-                    ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
+                  _.get(data, "receiveDate", null)
+                    ? dayjs(new Date(data.receiveDate)).format("DD/MM/BBBB")
                     : ""
                 }
               />
             ) : (
               <DatePickerThai
-                name="offerDate"
+                name="receiveDate"
                 value={
-                  _.get(data, "offerDate", null)
-                    ? dayjs(new Date(data.offerDate))
+                  _.get(data, "receiveDate", null)
+                    ? dayjs(new Date(data.receiveDate))
                     : dayjs(new Date())
                 }
                 onChange={(e) =>
-                  setData({ ...data, offerDate: dayjs(new Date(e)) })
+                  setData({ ...data, receiveDate: dayjs(new Date(e)) })
                 }
               />
             )}
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row sm="1">
+        <Col sm="9">
+          <FormGroup>
+            <label className={styles.label}>หมายเหตุ</label>
+            <Input
+              type="text"
+              name="remark"
+              value={_.get(data, "remark", "")}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  remark: e.target.value,
+                })
+              }
+            />
           </FormGroup>
         </Col>
       </Row>

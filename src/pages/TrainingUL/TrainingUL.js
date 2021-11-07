@@ -90,11 +90,12 @@ const TrainingUL = (props) => {
     const currentUL = await getLicenseULByCid(citizenID);
     data = get(currentUL, "data", []);
     setCurrentLicense({
-      ...get(data, "license", []),
+      ...get(data, "licenseUL", []),
       disapprovePerson: get(data, "disapprovePerson", []),
     });
     const training = await getTrainingByCid("UL", citizenID);
     setCurrentTraining(training);
+    onClickAdd();
   };
 
   const checkStatus = async (seleted) => {
@@ -124,18 +125,20 @@ const TrainingUL = (props) => {
   };
 
   const onClickCancel = () => {
-    setCurrentLicense(null);
     setActiveTab("1");
     setMode("add");
+    if (saleData && saleData.citizenID) {
+      fetchData(saleData.citizenID);
+    } else {
+      setCurrentLicense(null);
+    }
   };
   const onClickAdd = () => {
-    // setCurrentLicense(null);
     setActiveTab("1");
     setMode("add");
   };
 
   const onClickShowHistory = async () => {
-    setCurrentLicense(null);
     setActiveTab("2");
     setMode("history");
     if (saleData && saleData.citizenID) {
@@ -146,19 +149,19 @@ const TrainingUL = (props) => {
           id: index + 1,
           receiveDate:
             row.receiveDate &&
-            dayjs(new Date(row.receiveDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.receiveDate)).format("DD/MM/BBBB"),
           approveDate:
             row.approveDate &&
-            dayjs(new Date(row.approveDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.approveDate)).format("DD/MM/BBBB"),
           offerDate:
             row.offerDate &&
-            dayjs(new Date(row.offerDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.offerDate)).format("DD/MM/BBBB"),
           issueDate:
             row.issueDate &&
-            dayjs(new Date(row.issueDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.issueDate)).format("DD/MM/BBBB"),
           expireDate:
             row.expireDate &&
-            dayjs(new Date(row.expireDate)).format("DD-MM-BBBB"),
+            dayjs(new Date(row.expireDate)).format("DD/MM/BBBB"),
         };
       });
       setLicenseUL(data);
@@ -167,7 +170,6 @@ const TrainingUL = (props) => {
   };
 
   const onClickShowDetail = () => {
-    setCurrentLicense(null);
     setActiveTab("3");
     setMode("detail");
   };
@@ -257,14 +259,16 @@ const TrainingUL = (props) => {
       });
       data["disapprovePerson"] = disapprovePerson;
     }
-    console.log(data);
 
     if (currentLicense.historyId) {
       data["historyId"] = currentLicense.historyId;
-      onClickUpdate(data);
-    } else {
-      onClickSave(data);
     }
+
+    const response = await getLicenseULByCid(citizenId);
+    let currentUL = await get(response && response.data, "licenseUL");
+    if (currentUL && currentUL.licenseNo) {
+      onClickUpdate(data);
+    } else onClickSave(data);
   };
   const onClickSave = async (data) => {
     try {

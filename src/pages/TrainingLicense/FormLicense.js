@@ -34,6 +34,9 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
 
   const fetchData = async () => {
     if (saleData && saleData.citizenID) {
+      if (saleData.disabled) setReadOnly(true);
+      else setReadOnly(false);
+
       const response = await searchBlacklist("C", saleData.citizenID);
       const responseData = get(response, "data", []);
       if (
@@ -51,17 +54,11 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
     if (offerType === "4" || offerType === "6") {
       //  { offerType: "4", offerTypeName: "ต่ออายุ" }
       //  { offerType: "6", offerTypeName: "ต่ออายุพร้อมขอใบแทน" }
+      if (checkLicenseNO()) return;
       if (checkExpired()) return;
       if (checkConditionExpireDate()) return;
     } else if (offerType === "2") {
-      if (!expireDate) {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่พบข้อมูลเลขที่ใบอนุญาตหลัก",
-        });
-        return true;
-      }
+      if (checkLicenseNO()) return;
       let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
       let today = dayjs(new Date()).format("YYYY-MM-DD");
       if (today <= date) {
@@ -73,7 +70,11 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
         return true;
       }
       // { offerType: "2", offerTypeName: "ขาดอายุ" }
+    } else if (offerType === "3") {
+      // { offerType: "3", offerTypeName: "เปลี่ยนบริษัท" }
+      if (checkExpired()) return;
     } else if (offerType && offerType !== "0" && offerType !== "1") {
+      if (checkLicenseNO()) return;
       if (checkExpired()) return;
     }
 
@@ -83,7 +84,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
       offerTypeName: offerTypeName,
     });
   };
-  const checkExpired = () => {
+  const checkLicenseNO = () => {
     if (!expireDate) {
       Swal.fire({
         icon: "error",
@@ -91,7 +92,11 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
         text: "ไม่พบข้อมูลเลขที่ใบอนุญาตหลัก",
       });
       return true;
-    } else {
+    }
+    return false;
+  };
+  const checkExpired = () => {
+    if (expireDate) {
       let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
       let today = dayjs(new Date()).format("YYYY-MM-DD");
       if (today > date) {
@@ -102,6 +107,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
         });
         return true;
       }
+      return false;
     }
     return false;
   };
@@ -141,6 +147,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownOfferType
               requiredField
+              disabled={get(saleData, "disabled", null)}
               label="ประเภทการขอ"
               type={"offerType"}
               value={get(data, "offerType", "")}

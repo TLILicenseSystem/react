@@ -531,7 +531,7 @@ const ExamApplication = (props) => {
     let { examDate } = scheduleDetail;
     const { value: check } = await Swal.fire({
       text: `ต้องการยกเลิกการสมัครสอบวันที่ ${dayjs(new Date(examDate)).format(
-        "DD-MM-BBBB"
+        "DD/MM/BBBB"
       )} ใช่หรือไม่`,
       icon: "warning",
       showCancelButton: true,

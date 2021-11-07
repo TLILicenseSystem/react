@@ -38,6 +38,19 @@ export const getExamResult = async () => {
     throw err;
   }
 };
+export const getAgreeType = async () => {
+  try {
+    const response = await api.get(`data/agree/type?id=A`);
+    if (response.status === 200) {
+      return response;
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    console.log("msg", err);
+    throw err;
+  }
+};
 
 export const getCauseByType = async () => {
   try {

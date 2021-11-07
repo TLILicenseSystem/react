@@ -30,7 +30,6 @@ export const columns = [
     hideSortIcons: "true",
     headerClassName: "header",
   },
-
   {
     field: "approveDate",
     headerName: "วันที่ คปภ. อนุมัติ",

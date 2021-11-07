@@ -6,6 +6,7 @@ import {
   DatePickerThai,
   InputLicenseNo,
   SubmitButton,
+  AddButton,
   DeleteButton,
 } from "../../components/shared";
 import Swal from "sweetalert2";
@@ -25,19 +26,13 @@ const FormResult = ({ currentLicense, onChange }) => {
   useEffect(() => {
     setData(currentLicense);
     if (currentLicense) {
-      if (currentLicense.issueDate) {
-        currentLicense.expireDate = dayjs(new Date(currentLicense.issueDate))
-          .add(1, "year")
-          .subtract(1, "day");
-      } else {
-        currentLicense.issueDate = dayjs(new Date());
-        currentLicense.expireDate = dayjs(new Date())
-          .add(1, "year")
-          .subtract(1, "day");
-      }
       if (currentLicense.disapprovePerson) {
         setCause(currentLicense.disapprovePerson);
       }
+    } else {
+      setData(null);
+      setLesson(null);
+      setCause([]);
     }
   }, [currentLicense]);
 
@@ -72,10 +67,14 @@ const FormResult = ({ currentLicense, onChange }) => {
     setCause([]);
   };
 
+  const onDeleteCause = (causeId) => {
+    onChange({
+      ...data,
+      disapprovePerson: _.filter(cause, (c) => c.causeId !== causeId),
+    });
+  };
   return (
     <Container>
-      <h3>ผลการขอรับใบอนุญาต</h3>
-      <hr />
       <Row sm="4">
         <Col>
           <FormGroup style={{ paddingTop: "10px" }}>
@@ -90,71 +89,6 @@ const FormResult = ({ currentLicense, onChange }) => {
             />
           </FormGroup>
         </Col>
-        <Col>
-          <FormGroup>
-            <label className={styles.label}>เลขที่ใบอนุญาต</label>
-            <Input
-              readOnly={_.get(data, "offerResult", null) ? false : true}
-              name="licenseNo"
-              value={_.get(data, "licenseNo", "")}
-              onChange={(e) =>
-                setData({ ...data, licenseNo: e.target.value.substr(0, 10) })
-              }
-            />
-          </FormGroup>
-        </Col>
-        {_.get(data, "licenseNo", null) ? (
-          <>
-            <Col>
-              <FormGroup>
-                <label className={styles.label}>วันที่ออกบัตร</label>
-                <DatePickerThai
-                  name="issueDate"
-                  value={
-                    _.get(data, "issueDate", null) &&
-                    dayjs(new Date(data.issueDate))
-                  }
-                  onChange={(e) =>
-                    setData({ ...data, issueDate: dayjs(new Date(e)) })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <label className={styles.label}>วันที่หมดอายุ</label>
-                <Input
-                  readOnly={true}
-                  type="text"
-                  name="expireDateE"
-                  value={
-                    _.get(data, "issueDate", null)
-                      ? dayjs(new Date(data.issueDate))
-                          .add(1, "year")
-                          .subtract(1, "day")
-                          .format("DD/MM/BBBB")
-                      : ""
-                  }
-                />
-              </FormGroup>
-            </Col>
-          </>
-        ) : (
-          <>
-            <Col>
-              <FormGroup>
-                <label className={styles.label}>วันที่ออกบัตร</label>
-                <Input readOnly={true} type="text" name="issueDate" />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <label className={styles.label}>วันที่หมดอายุ</label>
-                <Input readOnly={true} type="text" name="expireDate" />
-              </FormGroup>
-            </Col>
-          </>
-        )}
       </Row>
       <Row sm="4">
         <Col>
@@ -175,7 +109,7 @@ const FormResult = ({ currentLicense, onChange }) => {
             alignItems: "flex-end",
           }}
         >
-          <SubmitButton
+          <AddButton
             disabled={lesson ? false : true}
             title="เลือก"
             onClick={onSelectCause}
@@ -202,13 +136,7 @@ const FormResult = ({ currentLicense, onChange }) => {
                   </th>
                   <td>{item.detail ? item.detail : item.causeDetail}</td>
                   <td style={{ textAlign: "center", width: "10%" }}>
-                    <DeleteButton
-                      onClick={() =>
-                        setCause(
-                          _.filter(cause, (c) => c.causeId !== item.causeId)
-                        )
-                      }
-                    />
+                    <DeleteButton onClick={() => onDeleteCause(item.causeId)} />
                   </td>
                 </tr>
               ))}

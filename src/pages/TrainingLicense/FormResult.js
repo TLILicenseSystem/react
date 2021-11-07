@@ -83,6 +83,7 @@ const FormResult = ({ currentLicense, onChange }) => {
       disapprovePerson: _.filter(cause, (c) => c.causeId !== causeId),
     });
   };
+  console.log(_.get(data, "issueDate"));
   return (
     <Container>
       <h3>ผลการขอรับใบอนุญาต</h3>
@@ -140,9 +141,9 @@ const FormResult = ({ currentLicense, onChange }) => {
                 <Input
                   readOnly={true}
                   type="text"
-                  name="expireDateE"
+                  name="expireDateFormat"
                   value={
-                    _.get(data, "issueDate", null)
+                    _.get(data, "issueDate")
                       ? dayjs(new Date(data.issueDate))
                           .add(1, "year")
                           .subtract(1, "day")
@@ -158,13 +159,13 @@ const FormResult = ({ currentLicense, onChange }) => {
             <Col>
               <FormGroup>
                 <label className={styles.label}>วันที่ออกบัตร</label>
-                <Input readOnly={true} type="text" name="issueDate" />
+                <Input readOnly={true} type="text" name="issueDate" value="" />
               </FormGroup>
             </Col>
             <Col>
               <FormGroup>
                 <label className={styles.label}>วันที่หมดอายุ</label>
-                <Input readOnly={true} type="text" name="expireDate" />
+                <Input readOnly={true} type="text" name="expireDate" value="" />
               </FormGroup>
             </Col>
           </>

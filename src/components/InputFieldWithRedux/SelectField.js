@@ -62,6 +62,7 @@ export const SelectField = ({
               defaultValue={option.find(
                 (option) => option.value === input.value
               )}
+              placeholder="โปรดระบุ"
               isClearable={true}
               isSearchable={true}
               options={option}

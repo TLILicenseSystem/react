@@ -8,7 +8,12 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-const FormLicense = ({ currentLicense, expireDate, onChange }) => {
+const FormLicense = ({
+  currentLicense,
+  licenseDetail,
+  expireDate,
+  onChange,
+}) => {
   const [data, setData] = useState(currentLicense);
   const [readOnly, setReadOnly] = useState(false);
 
@@ -100,7 +105,7 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
             <Input
               readOnly={true}
               name="licenseNo"
-              value={_.get(data, "licenseNo", "")}
+              value={_.get(licenseDetail, "licenseNo", "")}
             />
           </FormGroup>
         </Col>
@@ -111,8 +116,10 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
               readOnly={true}
               name="expireDate"
               value={
-                _.get(data, "expireDate", null)
-                  ? dayjs(new Date(data.expireDate)).format("DD/MM/BBBB")
+                _.get(licenseDetail, "expireDate", null)
+                  ? dayjs(new Date(licenseDetail.expireDate)).format(
+                      "DD/MM/BBBB"
+                    )
                   : ""
               }
             />
@@ -183,23 +190,23 @@ const FormLicense = ({ currentLicense, expireDate, onChange }) => {
               <Input
                 readOnly={readOnly}
                 type="text"
-                name="offerDate"
+                name="reciveDate"
                 value={
-                  _.get(data, "offerDate", null)
-                    ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
+                  _.get(data, "reciveDate", null)
+                    ? dayjs(new Date(data.reciveDate)).format("DD/MM/BBBB")
                     : ""
                 }
               />
             ) : (
               <DatePickerThai
-                name="offerDate"
+                name="reciveDate"
                 value={
-                  _.get(data, "offerDate", null)
-                    ? dayjs(new Date(data.offerDate))
+                  _.get(data, "reciveDate", null)
+                    ? dayjs(new Date(data.reciveDate))
                     : dayjs(new Date())
                 }
                 onChange={(e) =>
-                  setData({ ...data, offerDate: dayjs(new Date(e)) })
+                  setData({ ...data, reciveDate: dayjs(new Date(e)) })
                 }
               />
             )}

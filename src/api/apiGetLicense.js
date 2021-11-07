@@ -59,3 +59,63 @@ export const getLicenseULByCid = async (citizenId) => {
     return "error";
   }
 };
+
+export const getLicenseUKHistoryByCid = async (citizenId) => {
+  try {
+    const response = await apiSpring.get(
+      `licenseUK/search/history?citizenId=${citizenId}`
+    );
+    if (response.status === 200) {
+      return response;
+    } else {
+      return response.data;
+    }
+  } catch (err) {
+    return "error";
+  }
+};
+
+export const getLicenseUKByCid = async (citizenId) => {
+  try {
+    const response = await apiSpring.get(
+      `licenseUK/search?citizenId=${citizenId}`
+    );
+    if (response.status === 200) {
+      return response;
+    } else {
+      return response.data;
+    }
+  } catch (err) {
+    return "error";
+  }
+};
+
+export const getLicenseSICHistoryByCid = async (citizenId) => {
+  try {
+    const response = await apiSpring.get(
+      `licenseSIC/search/history?citizenId=${citizenId}`
+    );
+    if (response.status === 200) {
+      return response;
+    } else {
+      return response.data;
+    }
+  } catch (err) {
+    return "error";
+  }
+};
+
+export const getLicenseSICByCid = async (citizenId) => {
+  try {
+    const response = await apiSpring.get(
+      `licenseSIC/search?citizenId=${citizenId}`
+    );
+    if (response.status === 200) {
+      return response;
+    } else {
+      return response.data;
+    }
+  } catch (err) {
+    return "error";
+  }
+};

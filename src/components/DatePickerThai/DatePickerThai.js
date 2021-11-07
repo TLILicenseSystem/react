@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-date-picker";
 import dayjs from "dayjs";
 import InputMask from "react-input-mask";
@@ -29,10 +29,15 @@ export const DatePickerThai = ({
   const [buddhistDate, setBuddhistDate] = useState(
     dayjs(valuePicker).format("DD/MM/BBBB")
   );
+  const formRef = useRef(null);
 
   useEffect(() => {
-    if (value) {
+    if (canNull) {
       setFormat(value);
+    } else {
+      if (value) {
+        setFormat(value);
+      }
     }
   }, [value]);
 
@@ -69,11 +74,13 @@ export const DatePickerThai = ({
     }
     setBuddhistDate(e.target.value);
   };
+
   return (
     <Form>
       <FormGroup row>
         <InputGroup>
           <InputMask
+            ref={formRef}
             mask="99/99/9999"
             onChange={onChangeinput}
             onBlur={onBlur}

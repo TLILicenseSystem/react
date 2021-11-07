@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FormGroup, Label, Container, Row, Col, Input } from "reactstrap";
 import {
-  FormGroup,
-  Label,
-  Container,
-  Row,
-  Col,
-  Input,
-  Button,
-} from "reactstrap";
-import {
-  AddButton,
   DatePickerThai,
   DropdownCompany,
   DropdownCompanyType,
@@ -36,31 +27,72 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
   // }, [expireDate]);
 
   useEffect(() => {
-    setData(currentLicense);
     const offerType = _.get(currentLicense, "offerType", null);
     if (offerType === "3") {
       //{ offerType: "3", offerTypeName: "เปลี่ยนบริษัท" }
       setReadOnly(false);
-      const expireDate = _.get(
-        currentLicense && currentLicense.moveCompany,
-        "expireDate",
-        null
-      );
+    } else {
+      setData(null);
+      setReadOnly(true);
     }
+    checkRequired(currentLicense);
   }, [currentLicense]);
 
   useEffect(() => {
     onChange(data);
-    if (
-      data &&
-      dayjs(new Date()).format("YYYY-MM-DD") >
-        dayjs(
-          new Date(_.get(data && data.moveCompany, "expireDate", null))
-        ).format("YYYY-MM-DD")
-    ) {
-      setRequired(true);
-    } else setRequired(false);
   }, [data]);
+
+  const checkRequired = (currentLicense) => {
+    if (currentLicense) {
+      if (currentLicense.moveCompany) {
+        currentLicense["moveCompany"]["issueDate"] = _.get(
+          currentLicense.moveCompany,
+          "issueDate",
+          new Date()
+        );
+        currentLicense["moveCompany"]["expireDate"] = _.get(
+          currentLicense.moveCompany,
+          "expireDate",
+          new Date()
+        );
+
+        if (currentLicense.moveCompany.licenseNo) {
+          if (
+            dayjs(new Date()).format("YYYY-MM-DD") <=
+            dayjs(
+              new Date(_.get(currentLicense.moveCompany, "expireDate", null))
+            ).format("YYYY-MM-DD")
+          ) {
+            setRequired(true);
+            currentLicense["moveCompany"]["artype"] = _.get(
+              currentLicense.moveCompany,
+              "artype",
+              null
+            );
+            currentLicense["moveCompany"]["ardate"] = _.get(
+              currentLicense.moveCompany,
+              "ardate",
+              new Date()
+            );
+          } else {
+            setRequired(false);
+            currentLicense["moveCompany"]["ardate"] = null;
+            currentLicense["moveCompany"]["artype"] = null;
+          }
+        } else {
+          setRequired(false);
+          currentLicense["moveCompany"]["ardate"] = null;
+          currentLicense["moveCompany"]["artype"] = null;
+        }
+      } else {
+        currentLicense["moveCompany"] = null;
+        setRequired(false);
+      }
+    } else {
+      setRequired(false);
+    }
+    setData(currentLicense);
+  };
 
   return (
     <Container>
@@ -146,9 +178,15 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
                 <label className={styles.label}>วันที่ออกบัตร</label>
                 <DatePickerThai
                   name="issueDate"
+                  mindate={
+                    _.get(data && data.moveCompany, "expireDate", null)
+                      ? dayjs(new Date(data.moveCompany.expireDate))
+                      : dayjs(new Date())
+                  }
                   value={
-                    _.get(data && data.moveCompany, "issueDate", null) &&
-                    dayjs(new Date(data.moveCompany.issueDate))
+                    _.get(data && data.moveCompany, "issueDate", null)
+                      ? dayjs(new Date(data.moveCompany.issueDate))
+                      : dayjs(new Date())
                   }
                   onChange={(e) =>
                     setData({
@@ -165,12 +203,12 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
             <Col>
               <FormGroup>
                 <label className={styles.label}>วันที่หมดอายุ</label>
-
                 <DatePickerThai
                   name="expireDate"
                   value={
-                    _.get(data && data.moveCompany, "expireDate", null) &&
-                    dayjs(new Date(data.moveCompany.expireDate))
+                    _.get(data && data.moveCompany, "expireDate", null)
+                      ? dayjs(new Date(data.moveCompany.expireDate))
+                      : dayjs(new Date())
                   }
                   onChange={(e) =>
                     setData({
@@ -211,6 +249,13 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
               requiredField={required}
               disabled={!required}
               isClearable={true}
+              showError={
+                required
+                  ? _.get(data && data.moveCompany, "artype")
+                    ? false
+                    : true
+                  : false
+              }
               value={_.get(data && data.moveCompany, "artype", "")}
               onClick={(e) =>
                 setData({

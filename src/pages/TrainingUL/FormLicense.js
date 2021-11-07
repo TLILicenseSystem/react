@@ -28,6 +28,7 @@ const FormLicense = ({
   const onSelectOfferType = (value) => {
     const offerType = get(value, "offerType", null);
     const offerTypeName = get(value, "offerTypeName", "");
+
     if (offerType === "1") {
       //  { offerType: "1", offerTypeName: "ขึ้นใหม่ทะเบียน UL" }
       if (!expireDate) {
@@ -48,7 +49,7 @@ const FormLicense = ({
           .add(6, "month")
           .format("YYYY-MM-DD");
         let today = dayjs(new Date()).format("YYYY-MM-DD");
-        if (issueDate < today) {
+        if (issueDate > today) {
           Swal.fire({
             icon: "error",
             title: "ไม่สามารถขึ้นใหม่ทะเบียน UL ได้ ",
@@ -66,20 +67,31 @@ const FormLicense = ({
       }
     } else if (offerType === "2") {
       // { offerType: "2", offerTypeName: "ขาดทะเบียน UL" }
+      if (!expireDate) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่พบข้อมูลเลขที่ใบอนุญาตหลัก",
+        });
+        return true;
+      }
+      let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
+      let today = dayjs(new Date()).format("YYYY-MM-DD");
+      if (today <= date) {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ใบอนุญาตยังไม่หมดอายุ ไม่สามารถเลือกขาดทะเบียน UL ได้",
+        });
+        return true;
+      }
+    } else if (offerType && offerType !== "0") {
       if (checkExpired()) return;
-    } else if (offerType === "3") {
-      //  { offerType: "3", offerTypeName: "ต่อทะเบียน UL" }
-    } else if (offerType === "4") {
-      //  { offerType: "4", offerTypeName: "ยกเลิกทะเบียน UL" }
-    } else {
     }
     setData({
       ...data,
       offerType: offerType,
       offerTypeName: offerTypeName,
-      licenseNo: licenseDetail.licenseNo,
-      issueDate: licenseDetail.issueDate,
-      expireDate: licenseDetail.expireDate,
     });
   };
 
@@ -94,11 +106,11 @@ const FormLicense = ({
     } else {
       let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
       let today = dayjs(new Date()).format("YYYY-MM-DD");
-      if (today <= date) {
+      if (today > date) {
         Swal.fire({
           icon: "error",
           title: "เกิดข้อผิดพลาด",
-          text: "ใบอนุญาตยังไม่หมดอายุ ไม่สามารถเลือกขาดอายุได้",
+          text: "ใบอนุญาตหมดอายุแล้ว โปรดเลือกขาดทะเบียน UL เท่านั้น",
         });
         return true;
       }
@@ -140,13 +152,14 @@ const FormLicense = ({
             ) : (
               <DatePickerThai
                 name="offerDate"
+                canNull
                 value={
                   get(data, "offerDate", null)
                     ? dayjs(new Date(data.offerDate))
-                    : dayjs(new Date())
+                    : null
                 }
                 onChange={(e) =>
-                  setData({ ...data, offerDate: dayjs(new Date(e)) })
+                  setData({ ...data, offerDate: e ? dayjs(new Date(e)) : null })
                 }
               />
             )}
@@ -159,23 +172,27 @@ const FormLicense = ({
               <Input
                 readOnly={readOnly}
                 type="text"
-                name="offerDate"
+                name="reciveDate"
                 value={
-                  get(data, "offerDate", null)
-                    ? dayjs(new Date(data.offerDate)).format("DD/MM/BBBB")
+                  get(data, "reciveDate", null)
+                    ? dayjs(new Date(data.reciveDate)).format("DD/MM/BBBB")
                     : ""
                 }
               />
             ) : (
               <DatePickerThai
-                name="offerDate"
+                name="reciveDate"
+                canNull
                 value={
-                  get(data, "offerDate", null)
+                  get(data, "reciveDate", null)
                     ? dayjs(new Date(data.offerDate))
-                    : dayjs(new Date())
+                    : null
                 }
                 onChange={(e) =>
-                  setData({ ...data, offerDate: dayjs(new Date(e)) })
+                  setData({
+                    ...data,
+                    reciveDate: e ? dayjs(new Date(e)) : null,
+                  })
                 }
               />
             )}
