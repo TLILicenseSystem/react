@@ -17,20 +17,26 @@ import Select from "react-select";
 
 export const DropdownExamResult = ({
   label,
-  type,
   value,
   onClick,
   disabled,
   requiredField,
-  isClearable,
   showError,
+  disabledOption,
 }) => {
   const [examResultList, setExamResultList] = useState([]);
 
   const fetchData = async () => {
     const response = await getExamResult();
-    setExamResultList(get(response, "data", []));
+    let options = get(response, "data", []);
+    if (disabledOption) {
+      options = options.filter((option) => option.resultId === "0");
+    }
+    setExamResultList(options);
   };
+  useEffect(() => {
+    fetchData();
+  }, [disabledOption]);
 
   useEffect(() => {
     fetchData();
@@ -84,21 +90,17 @@ export const DropdownExamResult = ({
 // กำหนดค่าเริ่มต้นของ InputWithLabel
 DropdownExamResult.defaultProps = {
   label: "",
-  type: "text",
   value: "",
   //กรณีไม่ได้ส่ง onChange เข้ามาก็จะไม่พัง
   onClick: () => {},
   disabled: false,
   requiredField: false,
-  isClearable: false,
 };
 
 DropdownExamResult.propTypes = {
   label: PropTypes.string,
-  type: PropTypes.string,
   value: PropTypes.string,
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   requiredField: PropTypes.bool,
-  isClearable: PropTypes.bool,
 };

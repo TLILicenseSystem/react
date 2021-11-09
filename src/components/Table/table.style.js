@@ -3,12 +3,13 @@ import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import TablePagination from "@material-ui/core/TablePagination";
 import { createTheme, darken, lighten } from "@material-ui/core/styles";
+import { colors } from "../../themes/style";
 
 export const useStyles = makeStyles({
   root: {
     "& div": {
       fontFamily: "Prompt-Regular",
-      fontSize: 13,
+      fontSize: 14,
     },
     "& .header": {},
     "& .MuiDataGrid-columnHeaderTitle": {
@@ -41,8 +42,9 @@ export const useStyles = makeStyles({
     "& .Mui-even": {
       //margin: -5,
     },
-    "& .MuiDataGrid-row": {
-      //backgroundColor: "rgb(0, 0, 248)",
+    "& .primary-cell": {
+      color: colors.PRIMARYBLUE,
+      fontWeight: "bold",
       // margin: -5,
     },
   },

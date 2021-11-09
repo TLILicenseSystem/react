@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-export const LicenseDetail = ({ title, data }) => {
+export const TrainingDetail = ({ title, data }) => {
   const Item = ({ title, value, size_k = 6, size_v = 6 }) => {
     return (
       <Row style={{ textAlign: "left" }}>
@@ -127,11 +127,11 @@ export const LicenseDetail = ({ title, data }) => {
   );
 };
 
-LicenseDetail.defaultProps = {
+TrainingDetail.defaultProps = {
   title: "ผลการอบรม",
   data: [],
 };
-LicenseDetail.propTypes = {
+TrainingDetail.propTypes = {
   string: PropTypes.string,
   data: PropTypes.array,
 };

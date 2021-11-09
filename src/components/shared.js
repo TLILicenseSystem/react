@@ -46,7 +46,7 @@ export { InputStrID } from "./InputFieldWithFormat/InputStrID";
 
 export { SearchSchedulePopup } from "./Popup/SearchSchedulePopup";
 export { PersonelData } from "./CustomCard/PersonelData";
-export { LicenseDetail } from "./CustomCard/LicenseDetail";
+export { TrainingDetail } from "./CustomCard/TrainingDetail";
 export { SaleSearch } from "./CustomCard/SaleSearch";
 export { EmployeeSearch } from "./CustomCard/EmployeeSearch";
 export { StructData } from "./CustomCard/StructData";

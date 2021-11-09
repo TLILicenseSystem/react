@@ -9,7 +9,7 @@ import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
 const FormLicense = ({
-  licenseDetail,
+  TrainingDetail,
   currentLicense,
   expireDate,
   onChange,
@@ -41,11 +41,11 @@ const FormLicense = ({
       } // ตรวจสอบสถานะ ใบอนุญาตตัวแทนประกันชีวิต 10 หลัก ไม่หมดอายุ ที่ระบบ TL License
       // เช็คประเภทการขอใบอนุญาตหลัก ว่าถ้าเป็นประเภท  ขอใหม่ และ ขอเปลี่ยนบริษัท
       if (
-        licenseDetail &&
-        (licenseDetail.offerType === "1" || licenseDetail.offerType === "3")
+        TrainingDetail &&
+        (TrainingDetail.offerType === "1" || TrainingDetail.offerType === "3")
       ) {
         // มีอายุการใช้งาน 6 เดือน(เช็คจาก issuedate ของ license หลัก >=6เดือน)
-        let issueDate = dayjs(new Date(licenseDetail.issueDate))
+        let issueDate = dayjs(new Date(TrainingDetail.issueDate))
           .add(6, "month")
           .format("YYYY-MM-DD");
         let today = dayjs(new Date()).format("YYYY-MM-DD");
@@ -58,12 +58,7 @@ const FormLicense = ({
           return;
         }
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่สามารถขึ้นใหม่ทะเบียน UL ได้",
-        });
-        return;
+        if (checkExpired()) return;
       }
     } else if (offerType === "2") {
       // { offerType: "2", offerTypeName: "ขาดทะเบียน UL" }
@@ -85,7 +80,7 @@ const FormLicense = ({
         });
         return true;
       }
-    } else if (offerType && offerType !== "0") {
+    } else if (offerType) {
       if (checkExpired()) return;
     }
     setData({

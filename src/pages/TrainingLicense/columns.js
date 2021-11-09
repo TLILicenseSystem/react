@@ -25,6 +25,7 @@ export const columns = [
     align: "left",
     hideSortIcons: "true",
     headerClassName: "header",
+    cellClassName: "primary-cell",
   },
   {
     field: "licenseNo",
@@ -97,7 +98,7 @@ export const columns_company = [
   {
     field: "licenseNo",
     headerName: "เลขที่ใบอนุญาต",
-    width: 160,
+    width: 200,
     align: "left",
     hideSortIcons: "true",
     headerClassName: "header",

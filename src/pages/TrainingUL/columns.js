@@ -21,11 +21,12 @@ export const columns = [
     align: "left",
     hideSortIcons: "true",
     headerClassName: "header",
+    cellClassName: "primary-cell",
   },
   {
     field: "licenseNo",
     headerName: "เลขที่ใบอนุญาต",
-    width: 160,
+    width: 200,
     align: "left",
     hideSortIcons: "true",
     headerClassName: "header",
@@ -76,7 +77,7 @@ export const columns_tab3 = [
   {
     field: "b",
     headerName: "เลขที่กรมธรรม์",
-    minWidth: 160,
+    width: 200,
     hideSortIcons: "true",
     headerClassName: "header",
   },

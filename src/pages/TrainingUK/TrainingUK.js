@@ -14,18 +14,12 @@ import {
   FormGroup,
 } from "reactstrap";
 import {
-  SearchSchedulePopup,
-  DropdownExamResult,
   Container,
-  EditLocationPopup,
-  EditButton,
   CancelButton,
   SubmitButton,
-  FilterCollapse,
-  PersonelData,
   Table,
   SearchPerson,
-  LicenseDetail,
+  TrainingDetail,
 } from "../../components/shared";
 import { get } from "lodash";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
@@ -36,7 +30,10 @@ import {
   getLicenseUKByCid,
   getLicenseSICByCid,
 } from "../../api/apiGetLicense";
-
+import {
+  insertTrainingLicenseSIC,
+  updateTrainingLicenseSIC,
+} from "./ModelTrainingLicenseUK";
 import Swal from "sweetalert2";
 import { columns, columnsSIC } from "./columns";
 import FormLicense from "./FormLicense";
@@ -63,6 +60,11 @@ const TrainingUK = (props) => {
   const [saleData, setSaleData] = useState(
     sessionStorage.getItem("sale")
       ? JSON.parse(sessionStorage.getItem("sale"))
+      : null
+  );
+  const [user, setUser] = useState(
+    sessionStorage.getItem("updateUser")
+      ? JSON.parse(sessionStorage.getItem("updateUser"))
       : null
   );
   const { seleted } = useSelector((state) => state.selectSalePopup);
@@ -244,112 +246,134 @@ const TrainingUK = (props) => {
         return;
       }
     }
+    let data = {
+      citizenId: citizenId,
+      licenseNo: currentLicenseSIC.licenseNo,
+      issueDate: currentLicenseSIC.issueDate,
+      expireDate: currentLicenseSIC.expireDate,
+      offerType: currentLicenseSIC.offerType,
+      approveDate: currentLicenseSIC.approveDate
+        ? dayjs(new Date(currentLicenseSIC.approveDate)).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          )
+        : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
+      receiveDate: currentLicenseSIC.receiveDate
+        ? dayjs(new Date(currentLicenseSIC.receiveDate)).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          )
+        : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
+      agreeDate: currentLicenseSIC.agreeDate
+        ? dayjs(new Date(currentLicenseSIC.agreeDate)).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          )
+        : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
+      agreeType: currentLicenseSIC.agreeType || "0",
+      offerResult: currentLicenseSIC.offerResult,
+      agentType: saleData.agentType,
+      remark: currentLicenseSIC.remark,
+      createUserCode: user && user.employeeID,
+      updateUserCode: user && user.employeeID,
+    };
 
-    console.log();
-    // let data = {
-    //   citizenId: citizenId,
-    //   licenseNo: currentLicense.licenseNo,
-    //   issueDate: currentLicense.issueDate,
-    //   expireDate: currentLicense.expireDate,
-    //   offerType: currentLicense.offerType,
-    //   approveDate: currentLicense.approveDate
-    //     ? dayjs(new Date(currentLicense.approveDate)).format(
-    //         "YYYY-MM-DDTHH:mm:ssZ"
-    //       )
-    //     : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
-    //   receiveDate: currentLicense.receiveDate
-    //     ? dayjs(new Date(currentLicense.receiveDate)).format(
-    //         "YYYY-MM-DDTHH:mm:ssZ"
-    //       )
-    //     : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
-    //   offerResult: currentLicense.offerResult,
-    //   agentType: saleData.agentType,
-    //   remark: currentLicense.remark,
-    //   createUserCode: user && user.employeeID,
-    //   updateUserCode: user && user.employeeID,
-    // };
+    if (currentLicense.historyId) {
+      data["historyId"] = currentLicense.historyId;
+    }
+    const response = await getLicenseSICByCid(citizenId);
+    let currentSIC = get(response, "data", [])[0];
+    if (currentSIC && currentSIC.licenseNo) {
+      onClickUpdate(data);
+    } else onClickSave(data);
 
-    // if (currentLicense.disapprovePerson) {
-    //   const disapprovePerson = [];
-    //   currentLicense.disapprovePerson.map((item) => {
-    //     disapprovePerson.push({
-    //       citizenId: citizenId,
-    //       causeId: item.causeId,
-    //       licenseType: currentLicense.offerType,
-    //       historyId: currentLicense.historyId,
-    //     });
-    //   });
-    //   data["disapprovePerson"] = disapprovePerson;
-    // }
+    let dataUK = {
+      citizenId: citizenId,
+      licenseNo: license.licenseNo,
+      issueDate: license.issueDate,
+      expireDate: license.expireDate,
+      offerType: currentLicense.offerType,
+      approveDate: currentLicense.approveDate
+        ? dayjs(new Date(currentLicense.approveDate)).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          )
+        : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
+      receiveDate: currentLicense.receiveDate
+        ? dayjs(new Date(currentLicense.receiveDate)).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          )
+        : dayjs(new Date()).format("YYYY-MM-DDTHH:mm:ssZ"),
 
-    // if (currentLicense.historyId) {
-    //   data["historyId"] = currentLicense.historyId;
-    // }
+      offerResult: currentLicense.offerResult,
+      agentType: saleData.agentType,
+      remark: currentLicense.remark,
+      createUserCode: user && user.employeeID,
+      updateUserCode: user && user.employeeID,
+    };
 
-    // const response = await getLicenseULByCid(citizenId);
-    // let currentUL = await get(response && response.data, "licenseUL");
-    // if (currentUL && currentUL.licenseNo) {
+    if (currentLicense.disapprovePerson) {
+      const disapprovePerson = [];
+      currentLicense.disapprovePerson.map((item) => {
+        disapprovePerson.push({
+          citizenId: citizenId,
+          causeId: item.causeId,
+          licenseType: currentLicense.offerType,
+          historyId: currentLicense.historyId,
+        });
+      });
+      dataUK["disapprovePerson"] = disapprovePerson;
+    }
+
+    console.log(dataUK, "dataUK");
+    // const response = await getLicenseSICByCid(citizenId);
+    // let currentSIC = get(response, "data", [])[0];
+    // if (currentSIC && currentSIC.licenseNo) {
     //   onClickUpdate(data);
     // } else onClickSave(data);
   };
-  const onClickSave = async () => {
-    // licenseDetail.citizenId = "1122334455667";
-    // licenseDetail.createUserCode = "2901133";
-    // console.log(licenseDetail);
-    // try {
-    //   let response = await insertExamApplication(licenseDetail);
-    //   Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
-    // } catch (err) {
-    //   let { data } = err.response;
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "เกิดข้อผิดพลาด",
-    //     text: data.errorMessage
-    //       ? data.errorMessage
-    //       : "พบข้อผิดพลาดในการบันทึกข้อมูล!",
-    //   });
-    // }
+  const onClickSave = async (data) => {
+    try {
+      let response = await insertTrainingLicenseSIC(data);
+      Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+      if (saleData && saleData.citizenID) {
+        fetchData(saleData.citizenID);
+      }
+    } catch (err) {
+      let { data } = err.response;
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการบันทึกข้อมูล!",
+      });
+    }
   };
 
-  const onClickUpdate = async () => {
-    // try {
-    //   let data = {
-    //     citizenId: licenseDetail.citizenId,
-    //     scheduleId: licenseDetail.scheduleId,
-    //     applyTime: licenseDetail.applyTime,
-    //     applicantType: licenseDetail.applicantType,
-    //     seatNo: licenseDetail.seatNo,
-    //     examResult: licenseDetail.examResult,
-    //     remark: licenseDetail.remark,
-    //     createUserCode: licenseDetail.createUserCode,
-    //     updateUserCode: licenseDetail.updateUserCode,
-    //     referenceNo: licenseDetail.referenceNo,
-    //   };
-    //   let response = await updateExamApplication(licenseDetail);
-    //   Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
-    //   onClickCancel();
-    //   fetchData();
-    // } catch (err) {
-    //   let { data } = err.response;
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "เกิดข้อผิดพลาด",
-    //     text: data.errorMessage
-    //       ? data.errorMessage
-    //       : "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
-    //   });
-    // }
+  const onClickUpdate = async (data) => {
+    try {
+      let response = await updateTrainingLicenseSIC(data);
+      Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
+      if (saleData && saleData.citizenID) {
+        fetchData(saleData.citizenID);
+      }
+    } catch (err) {
+      let { data } = err.response;
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
+      });
+    }
   };
 
   return (
     <Container>
-      <EditLocationPopup />
       <div className="contents">
         <h2 className="head">ขอรับ/ขอต่อ ใบอนุญาต UK</h2>
         <Card>
           <SearchPerson />
           <CardBody>
-            <LicenseDetail
+            <TrainingDetail
               title="ผลการอบรมความรู้เกี่ยวกับขายกรมธรรม์ประกันชีวิตควบการลงทุน"
               data={currentTraining}
             />
@@ -392,7 +416,7 @@ const TrainingUK = (props) => {
                   <CardBody>
                     <FormLicenseIC
                       currentLicense={currentLicenseSIC}
-                      licenseDetail={license}
+                      TrainingDetail={license}
                       expireDate={saleData && saleData.expireDate}
                       onChange={(v) => setCurrentLicenseSIC(v)}
                     />
@@ -400,7 +424,7 @@ const TrainingUK = (props) => {
                   <CardBody>
                     <FormLicense
                       currentLicense={currentLicense}
-                      licenseDetail={license}
+                      TrainingDetail={license}
                       expireDate={saleData && saleData.expireDate}
                       onChange={(v) => setCurrentLicense(v)}
                     />

@@ -129,7 +129,7 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
                     ...data.moveCompany,
                     licenseNo: e.target.value
                       .substr(0, 10)
-                      .replace(/[^\d]/, ""),
+                      .replace(/[^0-9]/g, ""),
                   },
                 })
               }
@@ -247,7 +247,7 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
             <DropdownCompanyType
               label="ประเภท"
               requiredField={required}
-              disabled={!required}
+              disabled={readOnly || !required}
               isClearable={true}
               showError={
                 required
@@ -273,7 +273,19 @@ const FormCompany = ({ currentLicense, expireDate, onChange }) => {
           <FormGroup>
             <label className={styles.label}> วันที่&nbsp;</label>
             {required && <label className={styles.required}> *</label>}
-            {required ? (
+            {readOnly ? (
+              <Input
+                readOnly={true}
+                name="dis"
+                value={
+                  _.get(data && data.moveCompany, "ardate", null)
+                    ? dayjs(new Date(data.moveCompany.ardate)).format(
+                        "DD/MM/BBBB"
+                      )
+                    : ""
+                }
+              />
+            ) : required ? (
               <DatePickerThai
                 name="ardate"
                 value={

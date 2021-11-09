@@ -10,7 +10,7 @@ dayjs.extend(buddhistEra);
 
 const FormLicense = ({
   currentLicense,
-  licenseDetail,
+  TrainingDetail,
   expireDate,
   onChange,
 }) => {
@@ -94,6 +94,7 @@ const FormLicense = ({
       } else return false;
     }
   };
+
   return (
     <Container>
       <h3>คปภ</h3>
@@ -105,7 +106,23 @@ const FormLicense = ({
             <Input
               readOnly={true}
               name="licenseNo"
-              value={_.get(licenseDetail, "licenseNo", "")}
+              value={_.get(TrainingDetail, "licenseNo", "")}
+            />
+          </FormGroup>
+        </Col>
+        <Col>
+          <FormGroup>
+            <label className={styles.label}>วันที่ออกบัตร</label>
+            <Input
+              readOnly={true}
+              name="issueDate"
+              value={
+                _.get(TrainingDetail, "issueDate", null)
+                  ? dayjs(new Date(TrainingDetail.issueDate)).format(
+                      "DD/MM/BBBB"
+                    )
+                  : ""
+              }
             />
           </FormGroup>
         </Col>
@@ -116,24 +133,10 @@ const FormLicense = ({
               readOnly={true}
               name="expireDate"
               value={
-                _.get(licenseDetail, "expireDate", null)
-                  ? dayjs(new Date(licenseDetail.expireDate)).format(
+                _.get(TrainingDetail, "expireDate", null)
+                  ? dayjs(new Date(TrainingDetail.expireDate)).format(
                       "DD/MM/BBBB"
                     )
-                  : ""
-              }
-            />
-          </FormGroup>
-        </Col>
-        <Col>
-          <FormGroup>
-            <label className={styles.label}>วันที่ได้รับความเห็นชอบ</label>
-            <Input
-              readOnly={true}
-              name="expireDate"
-              value={
-                _.get(data, "expireDate", null)
-                  ? dayjs(new Date(data.expireDate)).format("DD/MM/BBBB")
                   : ""
               }
             />

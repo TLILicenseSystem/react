@@ -15,27 +15,22 @@ import {
 } from "reactstrap";
 import {
   Container,
-  EditLocationPopup,
   Table,
   SearchPerson,
   StructData,
-  LicenseDetail,
+  TrainingDetail,
   SubmitButton,
   CancelButton,
 } from "../../components/shared";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import { updateSelectSale } from "../../redux/actions";
-
 import {
   getLicenseHistoryByCid,
   getLicenseByCid,
 } from "../../api/apiGetLicense";
 import { getTrainingByCid } from "../../api/apiTraining";
-import {
-  getMoveCompany,
-  insertTrainingLicense,
-  updateTrainingLicense,
-} from "./ModelTrainingLicense";
+import { calLicenseTime } from "../../api/apiCheckStatus";
+import { getMoveCompany, updateTrainingLicense } from "./ModelTrainingLicense";
 import Swal from "sweetalert2";
 import { columns, columns_company } from "./columns";
 import { get } from "lodash";
@@ -79,26 +74,27 @@ const TrainingLicense = (props) => {
 
   useEffect(() => {
     setSaleData(seleted);
-    checkStatus(seleted);
     if (seleted && seleted.citizenID) {
       fetchData(seleted);
     }
   }, [seleted]);
 
-  const checkStatus = (seleted) => {
-    if (seleted) {
-      if (
-        seleted.status === "Q" ||
-        seleted.status === "M" ||
-        seleted.status === "D"
-      )
-        setDisabled(true);
-      else setDisabled(false);
-    } else setDisabled(false);
-  };
-
   const fetchData = async (saleData) => {
-    if (!saleData.disabled) {
+    const training = await getTrainingByCid("KRKT", saleData.citizenID);
+    if (training && training.result !== "P") {
+      saleData["disabledTraining"] = true;
+      setSaleData(saleData);
+      sessionStorage.setItem("sale", JSON.stringify(saleData));
+      forceUpdate((n) => !n);
+      dispatch(
+        updateSelectSale({
+          isShow: false,
+          seleted: saleData,
+        })
+      );
+    }
+    setCurrentTraining(training);
+    if (!saleData.disabled && !saleData.disabledTraining) {
       const current = await getLicenseByCid(saleData.citizenID);
       let data = get(current, "data", []);
       setCurrentLicense({
@@ -121,9 +117,12 @@ const TrainingLicense = (props) => {
           })
         );
       }
-    } else setCurrentLicense(null);
-    const training = await getTrainingByCid("KRKT", saleData.citizenID);
-    setCurrentTraining(training);
+      setDisabled(false);
+    } else {
+      setCurrentLicense(null);
+      setDisabled(true);
+    }
+
     onClickAdd();
   };
 
@@ -244,6 +243,14 @@ const TrainingLicense = (props) => {
         return;
       }
     }
+    if (saleData.disabled || saleData.disabledTraining) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถดำเนินการได้ เนื่องจากผลการอบรมไม่ครบตามเงื่อนไข",
+      });
+      return;
+    }
     let data = {
       citizenId: citizenId,
       licenseNo: null,
@@ -276,6 +283,13 @@ const TrainingLicense = (props) => {
       );
       data["expireDate"] = dayjs(new Date(currentLicense.expireDate)).format(
         "YYYY-MM-DDTHH:mm:ssZ"
+      );
+    }
+    if (currentLicense.offerType === "4" || currentLicense.offerType === "6") {
+      data["licenseTimes"] = await calLicenseTime(
+        citizenId,
+        currentLicense.offerType,
+        data["expireDate"]
       );
     }
     if (currentLicense.offerResult === "3") {
@@ -366,18 +380,19 @@ const TrainingLicense = (props) => {
         data["historyId"] = currentLicense.historyId;
       }
     }
-    if (saleData && saleData.licenseNo) {
-      onClickUpdate(data);
-    } else if (sessionStorage.getItem("sale")) {
-      let stored = JSON.parse(sessionStorage.getItem("sale"));
-      if (stored && saleData.licenseNo) onClickUpdate(data);
-      else onClickSave(data);
-    } else onClickSave(data);
+    // if (saleData && saleData.licenseNo) {
+    //   onClickUpdate(data);
+    // } else if (sessionStorage.getItem("sale")) {
+    //   let stored = JSON.parse(sessionStorage.getItem("sale"));
+    //   if (stored && saleData.licenseNo) onClickUpdate(data);
+    //   else onClickSave(data);
+    // } else onClickSave(data);
+    onClickSave(data);
   };
   const onClickSave = async (data) => {
     try {
-      let response = await insertTrainingLicense(data);
-      Swal.fire("Added!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+      let response = await updateTrainingLicense(data);
+      Swal.fire("Updated!", "บันทึกข้อมูลเรียบร้อยแล้ว", "success");
       if (saleData && saleData.citizenID) {
         fetchData(saleData);
       }
@@ -393,34 +408,14 @@ const TrainingLicense = (props) => {
     }
   };
 
-  const onClickUpdate = async (data) => {
-    try {
-      let response = await updateTrainingLicense(data);
-      Swal.fire("Updated!", "แก้ไขข้อมูลเรียบร้อยแล้ว", "success");
-      if (saleData && saleData.citizenID) {
-        fetchData(saleData);
-      }
-    } catch (err) {
-      let { data } = err.response;
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: data.errorMessage
-          ? data.errorMessage
-          : "พบข้อผิดพลาดในการแก้ไขข้อมูล!",
-      });
-    }
-  };
-
   return (
     <Container>
-      <EditLocationPopup />
       <div className="contents">
         <h2 className="head">ขอรับ/ขอต่อ ใบอนุญาต</h2>
         <Card>
           <SearchPerson />
           <CardBody>
-            <LicenseDetail
+            <TrainingDetail
               title="ผลการอบรมหลักสูตร ขอรับ/ขอต่อ"
               data={currentTraining}
             />

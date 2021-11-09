@@ -102,10 +102,19 @@ const FormLicenseIC = ({ currentLicense, expireDate, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>เลขที่ใบอนุญาต</label>
-            <p style={{ textAlign: "left", paddingTop: "10px" }}>
-              {" "}
-              {_.get(data, "licenseNo", "")}{" "}
-            </p>
+            <Input
+              name="licenseNo"
+              value={_.get(data, "licenseNo", "")}
+              invalid={_.get(data, "licenseNo", null) ? false : true}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  licenseNo: e.target.value
+                    .substr(0, 10)
+                    .replace(/[^0-9]/g, ""),
+                })
+              }
+            />
           </FormGroup>
         </Col>
         <Col>

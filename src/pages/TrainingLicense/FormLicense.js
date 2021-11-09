@@ -26,6 +26,10 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
   useEffect(() => {
     setBlacklist(blacklist);
     onChange({ ...data, blacklist: blacklist });
+    if (saleData) {
+      if (saleData.disabled || saleData.disabledTraining) setReadOnly(true);
+      else setReadOnly(false);
+    }
   }, [blacklist]);
 
   useEffect(() => {
@@ -34,9 +38,6 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
 
   const fetchData = async () => {
     if (saleData && saleData.citizenID) {
-      if (saleData.disabled) setReadOnly(true);
-      else setReadOnly(false);
-
       const response = await searchBlacklist("C", saleData.citizenID);
       const responseData = get(response, "data", []);
       if (
@@ -45,6 +46,9 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
       ) {
         setBlacklist(true);
       } else setBlacklist(false);
+
+      if (saleData.disabled || saleData.disabledTraining) setReadOnly(true);
+      else setReadOnly(false);
     }
   };
 
@@ -121,7 +125,6 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
       });
       return true;
     } else {
-      let date = dayjs(new Date(expireDate)).format("YYYY-MM-DD");
       let minData = dayjs(new Date(expireDate))
         .subtract(61, "day")
         .format("YYYY-MM-DD");
@@ -132,7 +135,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
           title: "เกิดข้อผิดพลาด",
           text: `สามารถต่ออายุได้ตั้งแต่ ${dayjs(minData).format(
             "DD/MM/BBBB"
-          )} ถึง ${dayjs(new Date()).format("DD/MM/BBBB")}`,
+          )} ถึง ${dayjs(new Date(expireDate)).format("DD/MM/BBBB")}`,
         });
         return true;
       } else return false;
@@ -147,7 +150,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownOfferType
               requiredField
-              disabled={get(saleData, "disabled", null)}
+              disabled={readOnly}
               label="ประเภทการขอ"
               type={"offerType"}
               value={get(data, "offerType", "")}

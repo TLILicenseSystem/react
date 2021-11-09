@@ -1,21 +1,9 @@
 import apiSpring from "../../api/apiSpring";
 
-export const insertTrainingLicense = async (request) => {
-  try {
-    const response = await apiSpring.post("license/add", request);
-    if (response.status === 200)
-      //data=success
-      return response.data;
-    else throw new Error();
-  } catch (err) {
-    throw err;
-  }
-};
-
 //----------------------------for update spring boot------------------------
 export const updateTrainingLicense = async (request) => {
   try {
-    const response = await apiSpring.put("/license/update", request);
+    const response = await apiSpring.post("/license/save", request);
     if (response.status === 200)
       //data=success
       return response.data;

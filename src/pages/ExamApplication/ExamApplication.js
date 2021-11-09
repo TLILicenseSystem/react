@@ -635,6 +635,15 @@ const ExamApplication = (props) => {
                         <FormGroup style={{ paddingTop: "10px" }}>
                           <DropdownExamResult
                             label="ผลสอบ"
+                            disabledOption={
+                              get(scheduleDetail, "examDate", "") &&
+                              dayjs(new Date()).format("YYYY-MM-DD") <
+                                dayjs(
+                                  get(scheduleDetail, "examDate", "")
+                                ).format("YYYY-MM-DD")
+                                ? true
+                                : false
+                            }
                             disabled={disabled}
                             value={get(scheduleDetail, "examResult", "")}
                             onClick={(v) =>

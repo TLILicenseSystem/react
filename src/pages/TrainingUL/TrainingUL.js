@@ -15,18 +15,17 @@ import {
 } from "reactstrap";
 import {
   Container,
-  EditLocationPopup,
   CancelButton,
   SubmitButton,
   Table,
   SearchPerson,
-  LicenseDetail,
+  TrainingDetail,
 } from "../../components/shared";
 import { get } from "lodash";
 import styles from "../../components/InputWithLabel/InputWithLabel.module.css";
 import Swal from "sweetalert2";
 import { columns } from "./columns";
-import From3 from "./Form3";
+import FormSalesBlameAndNewCase from "./FormSalesBlameAndNewCase";
 import FormLicense from "./FormLicense";
 import FormResult from "./FormResult";
 import FormCreateUser from "../ExamApplication/FormCreateUser";
@@ -87,11 +86,19 @@ const TrainingUL = (props) => {
       disapprovePerson: get(data, "disapprovePerson", []),
       moveCompany: get(data, "moveCompanyList", [])[0],
     });
+    console.log(data, "da");
     const currentUL = await getLicenseULByCid(citizenID);
-    data = get(currentUL, "data", []);
+    let dataUL = get(currentUL, "data", []);
     setCurrentLicense({
-      ...get(data, "licenseUL", []),
-      disapprovePerson: get(data, "disapprovePerson", []),
+      ...get(dataUL, "licenseUL", []),
+      licenseNo: get(dataUL, "licenseNo", get(data.license, "licenseNo", null)),
+      issueDate: get(dataUL, "issueDate", get(data.license, "issueDate", null)),
+      expireDate: get(
+        dataUL,
+        "expireDate",
+        get(data.license, "expireDate", null)
+      ),
+      disapprovePerson: get(dataUL, "disapprovePerson", []),
     });
     const training = await getTrainingByCid("UL", citizenID);
     setCurrentTraining(training);
@@ -308,16 +315,14 @@ const TrainingUL = (props) => {
     }
   };
 
-  console.log(currentLicense, "currentLicense");
   return (
     <Container>
-      <EditLocationPopup />
       <div className="contents">
         <h2 className="head">ขอรับ/ขอต่อ ใบอนุญาต UL</h2>
         <Card>
           <SearchPerson />
           <CardBody>
-            <LicenseDetail
+            <TrainingDetail
               title="ผลการอบรมหลักสูตร UL"
               data={currentTraining}
             />
@@ -342,7 +347,7 @@ const TrainingUL = (props) => {
               >
                 ประวัติ
               </Button>
-              <Button
+              {/* <Button
                 outline
                 color="secondary"
                 style={{ width: "12em" }}
@@ -350,7 +355,7 @@ const TrainingUL = (props) => {
                 onClick={onClickShowDetail}
               >
                 ตรวจสอบคุณสมบัติ
-              </Button>
+              </Button> */}
             </ButtonGroup>
           </CardBody>
           <div>
@@ -360,7 +365,7 @@ const TrainingUL = (props) => {
                   <CardBody>
                     <FormLicense
                       currentLicense={currentLicense}
-                      licenseDetail={license}
+                      TrainingDetail={license}
                       expireDate={saleData && saleData.expireDate}
                       onChange={(v) => setCurrentLicense(v)}
                     />
@@ -401,7 +406,11 @@ const TrainingUL = (props) => {
                     <CardBody style={{ textAlign: "right" }}>
                       <RsContainer>
                         <SubmitButton
-                          disabled={disabled}
+                          disabled={
+                            disabled ||
+                            !currentLicense ||
+                            !currentLicense.licenseNo
+                          }
                           title="บันทึก"
                           onClick={onClickSubmit}
                         />{" "}
@@ -424,7 +433,7 @@ const TrainingUL = (props) => {
               </TabPane>
               <TabPane tabId="3">
                 <CardBody>
-                  <From3 />
+                  <FormSalesBlameAndNewCase />
                 </CardBody>
               </TabPane>
             </TabContent>

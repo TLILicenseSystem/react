@@ -24,18 +24,25 @@ const FormResult = ({ currentLicense, onChange }) => {
   const [cause, setCause] = useState([]);
 
   useEffect(() => {
-    setData(currentLicense);
     if (currentLicense) {
-      if (currentLicense.issueDate) {
-        currentLicense.expireDate = dayjs(new Date(currentLicense.issueDate))
-          .add(1, "year")
-          .subtract(1, "day");
+      if (
+        currentLicense.offerType === "4" ||
+        currentLicense.offerType === "6"
+      ) {
+        conditionExpireDate(currentLicense);
       } else {
-        currentLicense.issueDate = dayjs(new Date());
-        currentLicense.expireDate = dayjs(new Date())
-          .add(1, "year")
-          .subtract(1, "day");
+        if (currentLicense.issueDate) {
+          currentLicense.expireDate = dayjs(new Date(currentLicense.issueDate))
+            .add(1, "year")
+            .subtract(1, "day");
+        } else {
+          currentLicense.issueDate = dayjs(new Date());
+          currentLicense.expireDate = dayjs(new Date())
+            .add(1, "year")
+            .subtract(1, "day");
+        }
       }
+
       if (currentLicense.disapprovePerson) {
         setCause(currentLicense.disapprovePerson);
       }
@@ -44,12 +51,35 @@ const FormResult = ({ currentLicense, onChange }) => {
       setLesson(null);
       setCause([]);
     }
+    setData(currentLicense);
   }, [currentLicense]);
 
   useEffect(() => {
     onChange(data);
   }, [data]);
 
+  const conditionExpireDate = (currentLicense) => {
+    if (currentLicense.issueDate && currentLicense.expireDate) {
+      if (
+        parseInt(currentLicense.licenseTimes) >= 2 &&
+        parseInt(currentLicense.licenseTimes) <= 14
+      ) {
+        currentLicense.expireDate = dayjs(new Date(currentLicense.issueDate))
+          .add(5, "year")
+          .subtract(1, "day");
+      } else {
+        currentLicense.expireDate = dayjs(new Date(currentLicense.issueDate))
+          .add(1, "year")
+          .subtract(1, "day");
+      }
+    } else {
+      currentLicense.issueDate = dayjs(new Date());
+      currentLicense.expireDate = dayjs(new Date())
+        .add(1, "year")
+        .subtract(1, "day");
+    }
+    setData(currentLicense);
+  };
   const onSelectCause = () => {
     if (lesson) {
       let find = _.find(cause, (item) => lesson.causeId === item.causeId);
@@ -83,7 +113,6 @@ const FormResult = ({ currentLicense, onChange }) => {
       disapprovePerson: _.filter(cause, (c) => c.causeId !== causeId),
     });
   };
-  console.log(_.get(data, "issueDate"));
   return (
     <Container>
       <h3>ผลการขอรับใบอนุญาต</h3>
@@ -112,7 +141,9 @@ const FormResult = ({ currentLicense, onChange }) => {
               onChange={(e) =>
                 setData({
                   ...data,
-                  licenseNo: e.target.value.substr(0, 10).replace(/[^\d]/, ""),
+                  licenseNo: e.target.value
+                    .substr(0, 10)
+                    .replace(/[^0-9]/g, ""),
                 })
               }
             />
@@ -130,7 +161,10 @@ const FormResult = ({ currentLicense, onChange }) => {
                     dayjs(new Date(data.issueDate))
                   }
                   onChange={(e) =>
-                    setData({ ...data, issueDate: dayjs(new Date(e)) })
+                    conditionExpireDate({
+                      ...data,
+                      issueDate: dayjs(new Date(e)),
+                    })
                   }
                 />
               </FormGroup>
@@ -143,11 +177,8 @@ const FormResult = ({ currentLicense, onChange }) => {
                   type="text"
                   name="expireDateFormat"
                   value={
-                    _.get(data, "issueDate")
-                      ? dayjs(new Date(data.issueDate))
-                          .add(1, "year")
-                          .subtract(1, "day")
-                          .format("DD/MM/BBBB")
+                    _.get(data, "expireDate")
+                      ? dayjs(new Date(data.expireDate)).format("DD/MM/BBBB")
                       : null
                   }
                 />
