@@ -174,17 +174,23 @@ const FormExamLocation = (props) => {
     });
 
     if (check) {
-      let response = await deleteExamLocation(locationId);
-
-      if (response === "success") {
+      try {
+        //ต้องเช็คว่ามีการบันทึกที่แฟ้มอื่นไปแล้วไหม ถ้ามีห้ามลบ ต้องแจ้งเตือน
+        //
+        let response = await deleteExamLocation(locationId);
         Swal.fire("Deleted!", "ลบข้อมูลแล้ว", "success");
         fetchData();
-      } else {
+        //alert("ลบข้อมูลเรียบร้อยแล้ว");
+      } catch (err) {
+        let { data } = err.response;
         Swal.fire({
           icon: "error",
           title: "เกิดข้อผิดพลาด",
-          text: "ไม่สามารถลบข้อมูลได้",
+          text: data.errorMessage
+            ? data.errorMessage
+            : "พบข้อผิดพลาดในการลบข้อมูล!",
         });
+        // throw err;
       }
     }
   };

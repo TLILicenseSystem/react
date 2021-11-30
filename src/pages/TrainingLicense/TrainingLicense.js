@@ -83,7 +83,7 @@ const TrainingLicense = (props) => {
     const training = await getTrainingByCid("KRKT", saleData.citizenID);
     if (training && training.result !== "P") {
       saleData["disabledTraining"] = true;
-      setSaleData(saleData);
+      await setSaleData(saleData);
       sessionStorage.setItem("sale", JSON.stringify(saleData));
       forceUpdate((n) => !n);
       dispatch(
@@ -93,7 +93,8 @@ const TrainingLicense = (props) => {
         })
       );
     }
-    setCurrentTraining(training);
+
+    await setCurrentTraining(training);
     if (!saleData.disabled && !saleData.disabledTraining) {
       const current = await getLicenseByCid(saleData.citizenID);
       let data = get(current, "data", []);

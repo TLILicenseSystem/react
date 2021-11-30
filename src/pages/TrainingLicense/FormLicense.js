@@ -27,7 +27,8 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
     setBlacklist(blacklist);
     onChange({ ...data, blacklist: blacklist });
     if (saleData) {
-      if (saleData.disabled || saleData.disabledTraining) setReadOnly(true);
+      if (saleData.disabled) setReadOnly(true);
+      else if (saleData.disabledTraining) setReadOnly(true);
       else setReadOnly(false);
     }
   }, [blacklist]);
@@ -35,6 +36,10 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
   useEffect(() => {
     onChange(data);
   }, [data]);
+
+  useEffect(() => {
+    setReadOnly(readOnly);
+  }, [readOnly]);
 
   const fetchData = async () => {
     if (saleData && saleData.citizenID) {
@@ -47,7 +52,8 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
         setBlacklist(true);
       } else setBlacklist(false);
 
-      if (saleData.disabled || saleData.disabledTraining) setReadOnly(true);
+      if (saleData.disabled) setReadOnly(true);
+      else if (saleData.disabledTraining) setReadOnly(true);
       else setReadOnly(false);
     }
   };
@@ -150,7 +156,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
           <FormGroup style={{ paddingTop: "10px" }}>
             <DropdownOfferType
               requiredField
-              disabled={readOnly}
+              disabled={readOnly || get(saleData, "disabledTraining")}
               label="ประเภทการขอ"
               type={"offerType"}
               value={get(data, "offerType", "")}
@@ -162,9 +168,9 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>วันที่ยื่น คปภ.</label>
-            {readOnly ? (
+            {readOnly || get(saleData, "disabledTraining") ? (
               <Input
-                readOnly={readOnly}
+                readOnly={readOnly || get(saleData, "disabledTraining")}
                 type="text"
                 name="offerDate"
                 value={
@@ -193,7 +199,7 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
           <FormGroup>
             <label className={styles.label}>ส่ง สนญ.ตามหนังสือที่ </label>
             <Input
-              readOnly={readOnly}
+              readOnly={readOnly || get(saleData, "disabledTraining")}
               type="text"
               name="bookNo"
               value={get(data, "bookNo", "")}
@@ -207,9 +213,9 @@ const FormLicense = ({ saleData, currentLicense, expireDate, onChange }) => {
         <Col>
           <FormGroup>
             <label className={styles.label}>ลง วันที่</label>
-            {readOnly ? (
+            {readOnly || get(saleData, "disabledTraining") ? (
               <Input
-                readOnly={readOnly}
+                readOnly={readOnly || get(saleData, "disabledTraining")}
                 type="text"
                 name="bookDate"
                 value={

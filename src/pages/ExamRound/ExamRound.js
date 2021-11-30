@@ -189,12 +189,14 @@ const ExamRound = (props) => {
       Swal.fire("Deleted!", "ลบข้อมูลเรียบร้อยแล้ว", "success");
       //alert("ลบข้อมูลเรียบร้อยแล้ว");
     } catch (err) {
+      let { data } = err.response;
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
-        text: "พบข้อผิดพลาดในการลบข้อมูล!",
+        text: data.errorMessage
+          ? data.errorMessage
+          : "พบข้อผิดพลาดในการลบข้อมูล!",
       });
-      throw new Error("พบข้อผิดพลาดในการลบข้อมูล! ", err);
       // throw err;
     }
   };

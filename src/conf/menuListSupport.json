@@ -4,22 +4,14 @@
     "path" : "/license/examApplication",
     "icon" : "far fa-edit",
     "submenu":null
-    },{
+    }  ,{
         "main": "ขอรับ/ขอต่อใบอนุญาต",
         "path" : "#",
-        "icon" : "far fa-address-card",
         "submenu":[
             {
                 "title":"ใบอนุญาต",
                 "path" : "/license/trainingLicense"	
-            },{
-                "title":"ใบอนุญาต UL",
-                "path" : "/license/trainingUL"	
-            } ,
-            {
-                "title":"ใบอนุญาต UK",
-                "path" : "/license/trainingUK"
-            }
+            } 
         ]
         }
 ]

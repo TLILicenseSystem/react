@@ -265,7 +265,7 @@ const ExamSchedule = () => {
     const { value: check } = await Swal.fire({
       text: `ต้องการลบตารางสอบวันที่ ${dayjs(
         get(selected, "examDate", "")
-      ).format("DD/MM/yyyy")} เวลา ${get(selected, "timeStr", "")} ใช่หรือไม่`,
+      ).format("DD/MM/BBBB")} เวลา ${get(selected, "timeStr", "")} ใช่หรือไม่`,
       icon: "warning",
       showCancelButton: true,
       cancelButtonColor: "#d9534f",
