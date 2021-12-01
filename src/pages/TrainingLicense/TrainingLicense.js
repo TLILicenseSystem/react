@@ -83,16 +83,18 @@ const TrainingLicense = (props) => {
     const training = await getTrainingByCid("KRKT", saleData.citizenID);
     if (training && training.result !== "P") {
       saleData["disabledTraining"] = true;
-      await setSaleData(saleData);
-      sessionStorage.setItem("sale", JSON.stringify(saleData));
-      forceUpdate((n) => !n);
-      dispatch(
-        updateSelectSale({
-          isShow: false,
-          seleted: saleData,
-        })
-      );
+    } else if (!training) {
+      saleData["disabledTraining"] = true;
     }
+    await setSaleData(saleData);
+    sessionStorage.setItem("sale", JSON.stringify(saleData));
+    forceUpdate((n) => !n);
+    dispatch(
+      updateSelectSale({
+        isShow: false,
+        seleted: saleData,
+      })
+    );
 
     await setCurrentTraining(training);
     if (!saleData.disabled && !saleData.disabledTraining) {
